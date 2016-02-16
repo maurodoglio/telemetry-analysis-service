@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_browserid',
+    "sslserver"
 ]
 
 for app in config('EXTRA_APPS', default='', cast=Csv()):
@@ -83,7 +85,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'django_browserid.auth.BrowserIDBackend',
 )
-
+LOGIN_URL = "/login/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
@@ -106,6 +108,7 @@ MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = config('MEDIA_URL', '/media/')
 
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=bool)
+SECURE_SSL_REDIRECT = True
 
 TEMPLATES = [
     {
@@ -118,6 +121,7 @@ TEMPLATES = [
                 'session_csrf.context_processor',
                 'analysis_service.base.context_processors.settings',
                 'analysis_service.base.context_processors.i18n',
+                'django_browserid.context_processors.browserid',
             ],
         }
     },
@@ -142,27 +146,34 @@ TEMPLATES = [
 # Django-CSP
 CSP_DEFAULT_SRC = (
     "'self'",
+    'https://login.persona.org',
 )
 CSP_FONT_SRC = (
     "'self'",
+    "'unsafe-inline'",
     'http://*.mozilla.net',
     'https://*.mozilla.net',
     'http://*.mozilla.org',
     'https://*.mozilla.org',
+    'https://login.persona.org',
 )
 CSP_IMG_SRC = (
     "'self'",
+    "data:",
     'http://*.mozilla.net',
     'https://*.mozilla.net',
     'http://*.mozilla.org',
     'https://*.mozilla.org',
+    'https://login.persona.org',
 )
 CSP_SCRIPT_SRC = (
     "'self'",
+    "'unsafe-inline'",
     'http://*.mozilla.org',
     'https://*.mozilla.org',
     'http://*.mozilla.net',
     'https://*.mozilla.net',
+    'https://login.persona.org',
 )
 CSP_STYLE_SRC = (
     "'self'",
@@ -171,6 +182,7 @@ CSP_STYLE_SRC = (
     'https://*.mozilla.org',
     'http://*.mozilla.net',
     'https://*.mozilla.net',
+    'https://login.persona.org',
 )
 
 # This is needed to get a CRSF token in /admin

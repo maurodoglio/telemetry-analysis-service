@@ -1,0 +1,10 @@
+{% extends "analysis_service/base.jinja" %}
+{% block home_active %} class="active" {% endblock %}
+{% block content %}
+<div class="jumbotron">
+  <h1>Telemetry Data Analysis</h1>
+  <p>The <a href="http://telemetry.mozilla.org" target="_blank">Telemetry Dashboards</a> cover the most common use cases for Telemetry data.</p>
+  <p>The Telemetry Data Analysis service covers everything else; bespoke, self serve data analysis. To get started, log in with an <code>@mozilla.com</code> email!</p>
+  {{ browserid_login(text='Login with Persona', next='/', color='dark', link_class='btn btn-lg') }}
+</div>
+{% endblock %}
