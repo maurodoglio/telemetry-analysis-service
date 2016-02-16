@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    {% block head %}
-    <link href="{{ static("css/style.css") }}" rel="stylesheet" />
+    {% block head_basic %}
     <link rel="shortcut icon" href="{{ static("favicon.ico") }}">
 
-    <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="{{ static("css/bootstrap.min.css")}}">
     <!-- jQuery -->
-    <script type="text/javascript" src="{{ static("js/jquery.min.js") }}"></script>
-    <script type="text/javascript" src="{{ static("js/jquery.validate.min.js") }}"></script>
+    <script type="text/javascript" src="{{ static("lib/jquery.min.js") }}"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ static("lib/bootstrap.min.css")}}">
+    <script type="text/javascript" src="{{ static("lib/bootstrap.min.js")}}"></script>
+
+    <link href="{{ static("css/base.css") }}" rel="stylesheet" />
 
     <title>Telemetry Self-Serve Data Analysis</title>
-    {% endblock %}
     {{ browserid_css() }}
-    <!--{{ browserid_js() }}-->
-    <script type="text/javascript" src="https://login.persona.org/include.orig.js"></script>
-    <script type="text/javascript" src="/static/browserid/api.js"></script>
-    <script type="text/javascript" src="/static/browserid/browserid.js"></script>
+    {{ browserid_js() }}
+    {% endblock %}
+    {% block head_extra %}
+    <!-- ADDITIONAL HEAD CONTENT USED BY EACH PAGE -->
+    {% endblock %}
   </head>
   <body role="document">
     {{ browserid_info() }}
