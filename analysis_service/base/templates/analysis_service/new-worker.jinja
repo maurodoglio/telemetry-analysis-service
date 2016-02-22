@@ -1,0 +1,36 @@
+<h2>Launch a Worker</h2>
+<p>Launch a server in the cloud and use it for custom map-reduce data analysis. The machine will be available for 24 hours, then it will be automatically terminated.</p>
+<div class="modal fade" id="new-cluster-dialog" tabindex="-1" role="dialog" aria-labelledby="new-cluster-dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Launch a Spark cluster</h4>
+      </div>
+      <div class="modal-body">
+        <span class="form-group">
+          <label for="new-cluster-identifier">Cluster identifier</label>
+          <input type="text" id="new-cluster-identifier" class="form-control" value="{{ username }}-telemetry-analysis"
+                 data-toggle="popover" data-trigger="focus" data-placement="top" data-container="body"
+                 data-content="Should be short and descriptive of the cluster's purpose, visible in AWS." />
+        </span>
+        <span class="form-group">
+          <label for="new-cluster-size">Cluster size</label>
+          <input type="number" id="new-cluster-size" class="form-control" value="1"
+                 data-toggle="popover" data-trigger="focus" data-placement="top" data-container="body"
+                 data-content="Number of workers to use in the cluster (use one when doing testing or development)." />
+        </span>
+          <label for="new-cluster-public-key">SSH public key</label>
+          <select name="new-cluster-public-key">
+            
+          </select>
+          <input type="file">
+          <div class="alert alert-warning">Upload your SSH <strong>public key</strong>, not private key! This will generally be found in places like <code>~/.ssh/id_rsa.pub</code>.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Launch</button>
+      </div>
+    </div>
+  </div>
+</div>

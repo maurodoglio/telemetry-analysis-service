@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^login/', views.login, name='login'),
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^new-cluster/', views.new_cluster),
+
     # contribute.json url
     url(r'^(?P<path>contribute\.json)$', static.serve, {'document_root': settings.ROOT}),
 

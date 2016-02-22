@@ -1,6 +1,7 @@
 {% extends "analysis_service/base.jinja" %}
 {% block head_extra %}
 <link href="{{ static("css/dashboard.css") }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static("js/dashboard.js") }}" rel="stylesheet"></script>
 {% endblock %}
 {% block content %}
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -35,14 +36,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h2>Launch a Spark Cluster</h2>
-      <p>Launch a Spark cluster in the cloud and use it for custom data analysis. The cluster will be available for 24 hours, then it will be automatically terminated.</p>
-      <p class="lead">
-        <a href="">
-          <img width="48" src="{{ static("img/cluster.png") }}" />
-          Launch an ad-hoc Spark cluster
-        </a>
-      </p>
+      {% include 'analysis_service/new-cluster.jinja' %}
     </div>
     <div class="col-md-6 dashboard-action">
       <h2>Schedule a Spark Job</h2>
@@ -57,14 +51,7 @@
   </div>
   <div class="row">
     <div class="col-md-6">
-      <h2>Launch a Worker</h2>
-      <p>Launch a server in the cloud and use it for custom map-reduce data analysis. The machine will be available for 24 hours, then it will be automatically terminated.</p>
-      <p class="lead">
-        <a href="">
-          <img width="48" src="{{ static("img/worker.png") }}" />
-          Launch an ad-hoc analysis worker
-        </a>
-      </p>
+      {% include 'analysis_service/new-worker.jinja' %}
     </div>
     <div class="col-md-6">
       <h2>Schedule a Job</h2>
