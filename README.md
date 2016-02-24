@@ -44,7 +44,15 @@ Quick troubleshooting guide:
     * Make sure the user is in the `docker` group (use the `sudo usermod -aG docker ${USER}` command to do this). This allows the user to use Docker without superuser privileges. Note that this does not take effect until the user logs out and logs in again.
 * Docker gives an error message similar to `Err http://security.debian.org jessie/updates InRelease`
     * The installed Docker version is possibly too old. Make sure to use the latest available stable version.
-    * Ensure that the DNS configuration is sane: `docker-compose run web ping security.debian.org`.
+    * Ensure that the DNS configuration is sane: see if `docker-compose run web ping security.debian.org` can connect successfully.
+* Django gives an error message similar to `OperationalError: SOME_TABLE doesn't exist`
+    * The database likely isn't set up correctly.
+    * Run `docker-compose run web ./manage.py migrate --syncdb` to update it.
+* Database errors are usually caused by an improper database configuration. For development purposes, recreating the database will often solve the issue.
+* Django gives an error message similar to `'NoneType' object has no attribute 'get_frozen_credentials'`.
+    * The AWS credentials on the current machine are likely not correctly set.
+    * Set them in your **ENVIRONMENT VARIABLES** (these environment variables are transferred to the docker container, from definitions in `docker-compose.yml`).
+    * See the [relevant section of the Boto3 docs](https://boto3.readthedocs.org/en/latest/guide/configuration.html#environment-variables) for more details.
 
 Production Setup
 ----------------

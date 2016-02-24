@@ -29,7 +29,6 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -69,10 +68,41 @@ ROOT_URLCONF = 'analysis_service.urls'
 
 WSGI_APPLICATION = 'analysis_service.wsgi.application'
 
+# AWS configuration
+
+AWS_CONFIG = {
+    # AWS EC2 configuration
+    'AWS_REGION':             'us-west-2',
+    'INSTANCE_TYPE':          'c3.4xlarge',
+    'WORKER_AMI':             'ami-0057b733', # -> telemetry-worker-hvm-20151019 (Ubuntu 15.04)
+    'WORKER_PRIVATE_PROFILE': 'telemetry-example-profile',
+    'WORKER_PUBLIC_PROFILE':  'telemetry-example-profile',
+
+    # EMR configuration
+    # Master and slave instance types should be the same as the telemetry
+    # setup bootstrap action depends on it to autotune the cluster.
+    'MASTER_INSTANCE_TYPE':   'c3.4xlarge',
+    'SLAVE_INSTANCE_TYPE':    'c3.4xlarge',
+    'EMR_RELEASE':            'emr-4.2.0',
+    'SPARK_INSTANCE_PROFILE': 'telemetry-spark-cloudformation-TelemetrySparkInstanceProfile-1SATUBVEXG7E3',
+    'SPARK_EMR_BUCKET':       'telemetry-spark-emr-2',
+
+    # Make sure the ephemeral map matches the instance type above.
+    'EPHEMERAL_MAP':    { "/dev/xvdb": "ephemeral0", "/dev/xvdc": "ephemeral1" },
+    'SECURITY_GROUPS':  [],
+    'INSTANCE_PROFILE': 'telemetry-analysis-profile',
+    'INSTANCE_APP_TAG': 'telemetry-analysis-worker-instance',
+    'EMAIL_SOURCE':     'telemetry-alerts@mozilla.com',
+
+    # Buckets for storing S3 data
+    'TEMPORARY_BUCKET':    'bucket-for-ssh-keys',
+    'CODE_BUCKET':         'telemetry-analysis-code-2',
+    'PUBLIC_DATA_BUCKET':  'telemetry-public-analysis-2',
+    'PRIVATE_DATA_BUCKET': 'telemetry-private-analysis-2',
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
 DATABASES = {
     'default': config(
         'DATABASE_URL',
@@ -89,15 +119,10 @@ LOGIN_URL = "/login/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
-
 LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
-
 TIME_ZONE = config('TIME_ZONE', default='UTC')
-
 USE_I18N = config('USE_I18N', default=True, cast=bool)
-
 USE_L10N = config('USE_L10N', default=True, cast=bool)
-
 USE_TZ = config('USE_TZ', default=True, cast=bool)
 
 STATIC_ROOT = config('STATIC_ROOT', default=os.path.join(BASE_DIR, 'static'))

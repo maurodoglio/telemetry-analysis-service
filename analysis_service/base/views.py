@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -7,6 +8,9 @@ from session_csrf import anonymous_csrf
 
 from analysis_service.base.forms import NewClusterForm
 from analysis_service.base.util import cluster
+
+
+logger = logging.getLogger("django")
 
 
 @login_required
@@ -29,7 +33,14 @@ def login(request):
 @require_POST
 def new_cluster(request):
     form = NewClusterForm(request.POST, request.FILES)
-    if form.is_valid():
-        with open("/app/aaaaaaaaa.txt", "w") as f: f.write(str(form.cleaned_data))
-        return HttpResponseRedirect("/")
-    return HttpResponseBadRequest("Invalid form submission")
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+
+    cluster.spawn(
+        request.user.email,
+        form.cleaned_data["identifier"],
+        form.cleaned_data["size"],
+        form.cleaned_data["public_key"]
+    )
+    form.save(request.user)
+    return HttpResponseRedirect("/")

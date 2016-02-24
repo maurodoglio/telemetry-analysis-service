@@ -7,23 +7,30 @@
       {% csrf_token %}
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Launch a Spark cluster</h4>
+        <h4 class="modal-title">Launch a Spark cluster</h4>
       </div>
       <div class="modal-body">
         <div class="form-group">
           <label>Cluster identifier</label>
-          {{ new_cluster_form.identifier }}
+          <div class="control-group">
+            {{ new_cluster_form.identifier }}
+            <p class="help-block"></p>
+          </div>
         </div>
         <div class="form-group">
           <label>Cluster size</label>
-          {{ new_cluster_form.size }}
+          <div class="control-group">
+            {{ new_cluster_form.size }}
+            <p class="help-block"></p>
+          </div>
         </div>
         <div class="form-group">
           <label>SSH public key</label>
-          <select name="new-cluster-public-key">
-            
-          </select>
-          {{ new_cluster_form.public_key }}
+          <div class="control-group">
+            {{ new_cluster_form.public_key }}
+            <p class="help-block"></p>
+          </div>
+          <p class="help-block"></p>
         </div>
         <div class="alert alert-warning">Upload your SSH <strong>public key</strong>, not private key! This will generally be found in places like <code>~/.ssh/id_rsa.pub</code>.</div>
       </div>
