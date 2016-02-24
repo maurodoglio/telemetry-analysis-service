@@ -4,8 +4,8 @@ from django.test import TestCase
 
 class HomeTests(TestCase):
 
-    def test_base(self):
-        response = self.client.get(reverse('dashboard'))
+    def test_login(self):
+        response = self.client.get(reverse('login'))
         assert b'csrfmiddlewaretoken' in response.content
 
 
