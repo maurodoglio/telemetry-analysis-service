@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
+
 
 class Cluster(models.Model):
     identifier = models.CharField(max_length=100)
@@ -11,6 +12,7 @@ class Cluster(models.Model):
 
     def __str__(self):
         return "<Cluster {}>".format(self.identifier)
+
     def __repr__(self):
         return "<Cluster {} {}>".format(self.identifier)
 

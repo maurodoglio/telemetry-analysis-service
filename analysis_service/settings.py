@@ -74,7 +74,7 @@ AWS_CONFIG = {
     # AWS EC2 configuration
     'AWS_REGION':             'us-west-2',
     'INSTANCE_TYPE':          'c3.4xlarge',
-    'WORKER_AMI':             'ami-0057b733', # -> telemetry-worker-hvm-20151019 (Ubuntu 15.04)
+    'WORKER_AMI':             'ami-0057b733',  # -> telemetry-worker-hvm-20151019 (Ubuntu 15.04)
     'WORKER_PRIVATE_PROFILE': 'telemetry-example-profile',
     'WORKER_PUBLIC_PROFILE':  'telemetry-example-profile',
 
@@ -84,11 +84,12 @@ AWS_CONFIG = {
     'MASTER_INSTANCE_TYPE':   'c3.4xlarge',
     'SLAVE_INSTANCE_TYPE':    'c3.4xlarge',
     'EMR_RELEASE':            'emr-4.2.0',
-    'SPARK_INSTANCE_PROFILE': 'telemetry-spark-cloudformation-TelemetrySparkInstanceProfile-1SATUBVEXG7E3',
+    'SPARK_INSTANCE_PROFILE': 'telemetry-spark-cloudformation-'
+                              'TelemetrySparkInstanceProfile-1SATUBVEXG7E3',
     'SPARK_EMR_BUCKET':       'telemetry-spark-emr-2',
 
     # Make sure the ephemeral map matches the instance type above.
-    'EPHEMERAL_MAP':    { "/dev/xvdb": "ephemeral0", "/dev/xvdc": "ephemeral1" },
+    'EPHEMERAL_MAP':    {"/dev/xvdb": "ephemeral0", "/dev/xvdc": "ephemeral1"},
     'SECURITY_GROUPS':  [],
     'INSTANCE_PROFILE': 'telemetry-analysis-profile',
     'INSTANCE_APP_TAG': 'telemetry-analysis-worker-instance',

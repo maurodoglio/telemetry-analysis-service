@@ -17,7 +17,10 @@ logger = logging.getLogger("django")
 def dashboard(request):
     username = request.user.email.split("@")[0]
     return render(request, 'analysis_service/dashboard.jinja', context={
-        "new_cluster_form": NewClusterForm(initial={"identifier": "{}-telemetry-analysis".format(username), "size": 1})
+        "new_cluster_form": NewClusterForm(initial={
+            "identifier": "{}-telemetry-analysis".format(username),
+            "size": 1,
+        })
     })
 
 
