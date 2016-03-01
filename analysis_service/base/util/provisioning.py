@@ -2,6 +2,7 @@ from uuid import uuid4
 
 from datetime import timedelta
 from django.conf import settings
+from django.template.loader import render_to_string
 import boto3
 import requests
 from dateutil.parser import parse as parse_date
@@ -12,7 +13,7 @@ ses = boto3.client("ses", region_name=settings.AWS_CONFIG['AWS_REGION'])
 s3 = boto3.client("s3", region_name=settings.AWS_CONFIG['AWS_REGION'])
 
 
-def spawn(user_email, identifier, size, public_key):
+def cluster_start(user_email, identifier, size, public_key):
     """Given a user's email, a cluster identifier, a worker count, and a user public key,
     spawns a cluster with the desired properties and returns the jobflow ID."""
     # if the cluster is of size 1, we don't need to have a separate worker
@@ -65,19 +66,91 @@ def spawn(user_email, identifier, size, public_key):
     return jobflow_id
 
 
-def monitor(jobflow_id):
+def cluster_info(jobflow_id):
     cluster = emr.describe_cluster(ClusterId=jobflow_id)['Cluster']
     creation_time = cluster['Status']['Timeline']['CreationDateTime']
     return {
-        "spawn_time": creation_time,
+        "start_time": creation_time,
         "state":      cluster['Status']['State'],
         "public_dns": cluster['MasterPublicDnsName'],
-        "kill_time":  get_termination_time(creation_time),
+        "stop_time":  get_termination_time(creation_time),
     }
 
 
-def kill(jobflow_id):
+def cluster_stop(jobflow_id):
     emr.terminate_job_flows(JobFlowIds=[jobflow_id])
+
+
+def worker_start(user_email, identifier, public_key):
+    # upload the public key to S3
+    bucket = s3.get_bucket(settings.AWS_CONFIG['TEMPORARY_BUCKET'], validate=False)
+    token = str(uuid4())
+    ssh_s3_key = bucket.new_key('keys/{}.pub'.format(token))
+    ssh_s3_key.set_contents_from_string(public_key)
+
+    # generate the boot script for the worker
+    ephemeral_map = settings.AWS_CONFIG['EPHEMERAL_MAP']
+    boot_script = render_to_string('boot-script.sh', context={
+        'aws_region':       settings.AWS_CONFIG['AWS_REGION'],
+        'temporary_bucket': settings.AWS_CONFIG['TEMPORARY_BUCKET'],
+        'ssh_key':          ssh_s3_key.key,
+        'ephemeral_map':    ephemeral_map,
+    })
+
+    # generate the ephemeral storage mapping
+    mapping = [
+        {'DeviceName': device, 'VirtualName': ephemeral_name}
+        for device, ephemeral_name in ephemeral_map.iteritems()
+    ]
+
+    # create a new worker EC2 instance with the
+    # "ubuntu/images/hvm/ubuntu-vivid-15.04-amd64-server-20151006" image
+    reservation = ec2.run_instances(
+        ImageId                           = 'ami-2cfe1a1f',
+        SecurityGroups                    = settings.AWS_CONFIG['SECURITY_GROUPS'],
+        UserData                          = boot_script,
+        BlockDeviceMappings               = mapping,
+        InstanceType                      = settings.AWS_CONFIG['INSTANCE_TYPE'],
+        InstanceInitiatedShutdownBehavior = 'terminate',
+        ClientToken                       = token,
+        IamInstanceProfile                = {'Name': settings.AWS_CONFIG['INSTANCE_PROFILE']}
+    )
+    instance_id = reservation['Instances'][0]['InstanceId']
+
+    # associate the EC2 instance with the user who launched it, the instance identifier,
+    # and the Telemetry Analysis tag
+    ec2.create_tags(
+        DryRun=False,
+        Resources=[instance_id],
+        Tags=[
+            {'Key': 'Owner', 'Value': user_email},
+            {'Key': 'Name', 'Value': identifier},
+            {'Key': 'Application', 'Value': settings.AWS_CONFIG['INSTANCE_APP_TAG']},
+        ]
+    )
+
+    return instance_id
+
+
+def worker_info(instance_id):
+    worker = ec2.describe_instances(
+        DryRun=False,
+        InstanceIds=[instance_id]
+    )['Reservations'][0]["Instances"][0]
+    creation_time = worker['LaunchTime']
+    return {
+        'start_time': creation_time,
+        'state':      worker['State']['Name'],
+        'public_dns': worker['PublicDnsName'],
+        'stop_time':  get_termination_time(creation_time),
+    }
+
+
+def worker_stop(instance_id):
+    ec2.terminate_instances(
+        DryRun=False,
+        InstanceIds=[instance_id]
+    )
 
 
 def get_tag_value(tags, key):
@@ -85,5 +158,4 @@ def get_tag_value(tags, key):
 
 
 def get_termination_time(start_time):
-    # Instance gets killed by terminate-expired-instances.py, 1 day after the creation time
     return parse_date(start_time, ignoretz=True) + timedelta(days=1)

@@ -36,6 +36,26 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6">
+      <h2>Launch a Spark Cluster</h2>
+      <p>Launch a Spark cluster in the cloud and use it for custom data analysis. The cluster will be available for 24 hours, then it will be automatically terminated.</p>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Identifier</th>
+            <th>Number of workers</th>
+            <th>Created on</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cluster in active_clusters %}
+          <tr>
+            <td>{{ cluster.identifier }}</td>
+            <td>{{ cluster.size }}</td>
+            <td>{{ cluster.creation_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       {% include 'analysis_service/new-cluster.jinja' %}
     </div>
     <div class="col-md-6 dashboard-action">
@@ -51,6 +71,24 @@
   </div>
   <div class="row">
     <div class="col-md-6">
+      <h2>Launch a Worker</h2>
+      <p>Launch a server in the cloud and use it for custom map-reduce data analysis. The machine will be available for 24 hours, then it will be automatically terminated.</p>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Identifier</th>
+            <th>Created on</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for worker in active_workers %}
+          <tr>
+            <td>{{ worker.identifier }}</td>
+            <td>{{ worker.creation_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       {% include 'analysis_service/new-worker.jinja' %}
     </div>
     <div class="col-md-6">

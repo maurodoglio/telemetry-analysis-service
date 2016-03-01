@@ -30,7 +30,9 @@ class PublicKeyFileField(forms.FileField):
 
 class NewClusterForm(forms.ModelForm):
     identifier = forms.RegexField(
-        required=True, regex="^[\w-]{1,100}$", widget=forms.TextInput(attrs={
+        required=True,
+        regex="^[\w-]{1,100}$",
+        widget=forms.TextInput(attrs={
             'class': 'form-control',
             'pattern': '[\w-]+',
             'data-toggle': 'popover',
@@ -44,7 +46,9 @@ class NewClusterForm(forms.ModelForm):
         })
     )
     size = forms.IntegerField(
-        required=True, min_value=1, max_value=20, widget=forms.NumberInput(attrs={
+        required=True,
+        min_value=1, max_value=20,
+        widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'required': 'required',
             'min': '1', 'max': '20',
@@ -56,14 +60,53 @@ class NewClusterForm(forms.ModelForm):
                             '(1 is recommended for testing or development).',
         })
     )
-    public_key = PublicKeyFileField(required=True, widget=forms.FileInput(attrs={
-        'required': 'required',
-    }))
+    public_key = PublicKeyFileField(
+        required=True,
+        widget=forms.FileInput(attrs={'required': 'required'})
+    )
 
     def save(self, user):
         # create the model without committing, since we haven't
-        # set the required createrd_by field yet
+        # set the required created_by field yet
         new_cluster = super(NewClusterForm, self).save(commit=False)
+
+        # set the field to the user that created the cluster
+        new_cluster.created_by = models.User.objects.get(email=user.email)
+
+        # the new model is complete, so now we can save it
+        return new_cluster.save()
+
+    class Meta:
+        model = models.Cluster
+        fields = ['identifier', 'size', 'public_key']
+
+
+class NewWorkerForm(forms.ModelForm):
+    identifier = forms.RegexField(
+        required=True,
+        regex="^[\w-]{1,100}$",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': '[\w-]+',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'A brief description of the cluster\'s purpose, '
+                            'visible in the AWS management console.',
+            'data-validation-pattern-message': 'Valid names are strings of alphanumeric '
+                                               'characters, \'_\', and \'-\'.',
+        })
+    )
+    public_key = PublicKeyFileField(
+        required=True,
+        widget=forms.FileInput(attrs={'required': 'required'})
+    )
+
+    def save(self, user):
+        # create the model without committing, since we haven't
+        # set the required created_by field yet
+        new_cluster = super(NewWorkerForm, self).save(commit=False)
 
         # set the field to the user that created the cluster
         new_cluster.created_by.queryset = models.User.objects.filter(email=user.email)
@@ -73,4 +116,4 @@ class NewClusterForm(forms.ModelForm):
 
     class Meta:
         model = models.Cluster
-        fields = ['identifier', 'size', 'public_key']
+        fields = ['identifier', 'public_key']
