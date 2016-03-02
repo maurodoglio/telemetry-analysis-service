@@ -47,7 +47,7 @@ Quick troubleshooting guide:
     * Ensure that the DNS configuration is sane: see if `docker-compose run web ping security.debian.org` can connect successfully.
 * Django gives an error message similar to `OperationalError: SOME_TABLE doesn't exist`
     * The database likely isn't set up correctly.
-    * Run `docker-compose run web ./manage.py migrate --syncdb` to update it.
+    * Run `docker-compose run web ./manage.py migrate --run-syncdb` to update it.
 * Database errors are usually caused by an improper database configuration. For development purposes, recreating the database will often solve the issue.
 * Django gives an error message similar to `'NoneType' object has no attribute 'get_frozen_credentials'`.
     * The AWS credentials on the current machine are likely not correctly set.

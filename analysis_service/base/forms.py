@@ -73,7 +73,7 @@ class NewClusterForm(forms.ModelForm):
         # set the field to the user that created the cluster
         new_cluster.created_by = models.User.objects.get(email=user.email)
 
-        # the new model is complete, so now we can save it
+        # actually start the real cluster, and return the model object
         return new_cluster.save()
 
     class Meta:
@@ -92,7 +92,7 @@ class NewWorkerForm(forms.ModelForm):
             'data-trigger': 'focus',
             'data-placement': 'top',
             'data-container': 'body',
-            'data-content': 'A brief description of the cluster\'s purpose, '
+            'data-content': 'A brief description of the worker\'s purpose, '
                             'visible in the AWS management console.',
             'data-validation-pattern-message': 'Valid names are strings of alphanumeric '
                                                'characters, \'_\', and \'-\'.',
@@ -106,14 +106,14 @@ class NewWorkerForm(forms.ModelForm):
     def save(self, user):
         # create the model without committing, since we haven't
         # set the required created_by field yet
-        new_cluster = super(NewWorkerForm, self).save(commit=False)
+        new_worker = super(NewWorkerForm, self).save(commit=False)
 
-        # set the field to the user that created the cluster
-        new_cluster.created_by.queryset = models.User.objects.filter(email=user.email)
+        # set the field to the user that created the worker
+        new_worker.created_by.queryset = models.User.objects.get(email=user.email)
 
-        # the new model is complete, so now we can save it
-        return new_cluster.save()
+        # actually start the real worker, and return the model object
+        return new_worker.save()
 
     class Meta:
-        model = models.Cluster
+        model = models.Worker
         fields = ['identifier', 'public_key']

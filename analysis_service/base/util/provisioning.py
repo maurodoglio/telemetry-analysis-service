@@ -1,15 +1,12 @@
 from uuid import uuid4
 
-from datetime import timedelta
 from django.conf import settings
 from django.template.loader import render_to_string
 import boto3
 import requests
-from dateutil.parser import parse as parse_date
 
 emr = boto3.client("emr", region_name=settings.AWS_CONFIG['AWS_REGION'])
 ec2 = boto3.client("ec2", region_name=settings.AWS_CONFIG['AWS_REGION'])
-ses = boto3.client("ses", region_name=settings.AWS_CONFIG['AWS_REGION'])
 s3 = boto3.client("s3", region_name=settings.AWS_CONFIG['AWS_REGION'])
 
 
@@ -73,7 +70,6 @@ def cluster_info(jobflow_id):
         "start_time": creation_time,
         "state":      cluster['Status']['State'],
         "public_dns": cluster['MasterPublicDnsName'],
-        "stop_time":  get_termination_time(creation_time),
     }
 
 
@@ -142,7 +138,6 @@ def worker_info(instance_id):
         'start_time': creation_time,
         'state':      worker['State']['Name'],
         'public_dns': worker['PublicDnsName'],
-        'stop_time':  get_termination_time(creation_time),
     }
 
 
@@ -155,7 +150,3 @@ def worker_stop(instance_id):
 
 def get_tag_value(tags, key):
     return next((tag.value for tag in tags if tag.key == key), None)
-
-
-def get_termination_time(start_time):
-    return parse_date(start_time, ignoretz=True) + timedelta(days=1)

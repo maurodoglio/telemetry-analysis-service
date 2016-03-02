@@ -51,7 +51,7 @@
           <tr>
             <td>{{ cluster.identifier }}</td>
             <td>{{ cluster.size }}</td>
-            <td>{{ cluster.creation_date }}</td>
+            <td>{{ cluster.start_date }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -84,7 +84,7 @@
           {% for worker in active_workers %}
           <tr>
             <td>{{ worker.identifier }}</td>
-            <td>{{ worker.creation_date }}</td>
+            <td>{{ worker.start_date }}</td>
           </tr>
           {% endfor %}
         </tbody>
