@@ -44,6 +44,7 @@
             <th>Identifier</th>
             <th>Number of workers</th>
             <th>Created on</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
@@ -52,8 +53,12 @@
             <td>{{ cluster.identifier }}</td>
             <td>{{ cluster.size }}</td>
             <td>{{ cluster.start_date }}</td>
+            <td>{{ cluster.most_recent_status }}</td>
           </tr>
           {% endfor %}
+          {% if not active_clusters %}
+          <tr><td colspan="4">No active clusters to show.</td></tr>
+          {% endif %}
         </tbody>
       </table>
       {% include 'analysis_service/new-cluster.jinja' %}
@@ -87,6 +92,9 @@
             <td>{{ worker.start_date }}</td>
           </tr>
           {% endfor %}
+          {% if not active_workers %}
+          <tr><td colspan="3">No active workers to show.</td></tr>
+          {% endif %}
         </tbody>
       </table>
       {% include 'analysis_service/new-worker.jinja' %}
