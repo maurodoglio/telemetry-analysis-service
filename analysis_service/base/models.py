@@ -29,7 +29,7 @@ class Cluster(models.Model):
         """Returns true if the cluster is expiring in the next hour."""
         return self.end_date <= datetime.now() + timedelta(hours=1)
 
-    def update_status(self):
+    def refresh_status(self):
         info = provisioning.cluster_info(self.jobflow_id)
         self.most_recent_status = info["state"]
         return self.most_recent_status
@@ -96,5 +96,36 @@ class Worker(models.Model):
 
     def delete(self, *args, **kwargs):
         provisioning.worker_stop(self.worker_id)
+
+        super(Cluster, self).delete(*args, **kwargs)
+
+class ScheduledSpark(models.Model):
+    identifier = models.CharField(max_length=100)
+    size = models.IntegerField()
+    interval_in_hours = models.IntegerField()
+    start_date = models.DateField()
+    end_date = models.DateField(blank=True, null=True)
+    created_by = models.ForeignKey(User, related_name='scheduled_spark_created_by')
+
+    def __str__(self):
+        return "<ScheduledSpark {}>".format(self.identifier)
+
+    def __repr__(self):
+        return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
+
+    def save(self, *args, **kwargs):
+        """Insert the cluster into the database or update it if already present, spawning the cluster if it's not already spawned."""
+        # set the dates
+        if not self.start_date:
+            self.start_date = datetime.now()
+        if not self.end_date:
+            self.end_date = self.start_date + timedelta(days=1)  # clusters expire after 1 day
+
+        super(Cluster, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        """Remove the cluster from the database, shutting down the actual cluster."""
+        if not self.jobflow_id:
+            provisioning.cluster_stop(self.jobflow_id)
 
         super(Cluster, self).delete(*args, **kwargs)

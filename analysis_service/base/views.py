@@ -32,6 +32,14 @@ def dashboard(request):
         "new_worker_form": forms.NewWorkerForm(initial={
             "identifier": "{}-telemetry-worker".format(username),
         }),
+        "active_scheduled_spark": models.ScheduledSpark.objects.filter(created_by=request.user)
+                                                               .order_by("start_date"),
+        "new_scheduled_spark_form": forms.NewScheduledSparkForm(initial={
+            "identifier": "{}-telemetry-scheduled-task".format(username),
+            "size": 1,
+            "start_date": datetime.now(),
+            "interval_in_hours": 24 * 7,
+        }),
     })
 
 

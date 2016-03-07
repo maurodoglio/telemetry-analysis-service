@@ -63,21 +63,39 @@
       </table>
       {% include 'analysis_service/new-cluster.jinja' %}
     </div>
-    <div class="col-md-6 dashboard-action">
+    <div class="col-md-6">
       <h2>Schedule a Spark Job</h2>
-      <p>Run a Spark analysis on a scheduled basis. The output of the analysis will be published in Amazon S3.</p>
-      <p class="lead">
-        <a href="">
-          <img width="48" src="{{ static("img/schedule.png") }}" />
-          Schedule a Spark analysis job
-        </a>
-      </p>
+      <p>Set up a Spark analysis to run regularly in the cloud and upload the results automatically to Amazon S3.</p>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Identifier</th>
+            <th>Number of workers</th>
+            <th>Created on</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for spark_job in scheduled_spark_jobs %}
+          <tr>
+            <td>{{ spark_job.identifier }}</td>
+            <td>{{ spark_job.size }}</td>
+            <td>{{ spark_job.visibility }}</td>
+            <td>{{ spark_job.most_recent_status }}</td>
+          </tr>
+          {% endfor %}
+          {% if not active_clusters %}
+          <tr><td colspan="4">No scheduled jobs to show.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+      {% include 'analysis_service/new-scheduled-spark.jinja' %}
     </div>
   </div>
   <div class="row">
     <div class="col-md-6">
       <h2>Launch a Worker</h2>
-      <p>Launch a server in the cloud and use it for custom map-reduce data analysis. The machine will be available for 24 hours, then it will be automatically terminated.</p>
+      <p>Launch a server in the cloud and use it for custom data analysis. The machine will be available for 24 hours, then it will be automatically terminated.</p>
       <table class="table table-hover">
         <thead>
           <tr>
