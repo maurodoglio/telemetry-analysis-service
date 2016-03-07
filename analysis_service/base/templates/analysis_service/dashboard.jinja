@@ -17,15 +17,13 @@
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        <li><a href="//github.com/mozilla/telemetry-server" target="_blank">Contribute</a></li>
+        <li><a href="https://github.com/mozilla/telemetry-analysis-service" target="_blank">Contribute</a></li>
         <li><a href="#">Documentation</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.email }} <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Profile</a></li>
-            <li role="separator" class="divider"></li>
             <li>{{ browserid_logout(text='Log Out', next='/login') }}</li>
           </ul>
         </li>
@@ -118,24 +116,12 @@
       {% include 'analysis_service/new-worker.jinja' %}
     </div>
     <div class="col-md-6">
-      <h2>Schedule a Job</h2>
-      <p>Run a map-reduce telemetry analysis on a scheduled basis. The output of the analysis will be published in Amazon S3.</p>
-      <p class="lead">
-        <a href="">
-          <img width="48" src="{{ static("img/schedule.png") }}" /> Schedule an analysis job
-        </a>
-      </p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6">
       <h2>View aggregated data</h2>
       <p>Open the telemetry dashboards hub to view aggregate data.</p>
-      <p class="lead">
-        <a href="https://telemetry.mozilla.org/">
-          <img width="48" src="{{ static("img/dashboards.png") }}" /> Go to telemetry dashboards
-        </a>
-      </p>
+      <button type="button" class="btn btn-lg btn-primary">
+        <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
+        Telemetry Dashboards
+      </button>
     </div>
   </div>
 </div>

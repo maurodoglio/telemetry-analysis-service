@@ -35,7 +35,10 @@ class Cluster(models.Model):
         return self.most_recent_status
 
     def save(self, *args, **kwargs):
-        """Insert the cluster into the database or update it if already present, spawning the cluster if it's not already spawned."""
+        """
+        Insert the cluster into the database or update it if already present,
+        spawning the cluster if it's not already spawned.
+        """
         # actually start the cluster
         if not self.jobflow_id:
             self.jobflow_id = provisioning.cluster_start(
@@ -99,12 +102,17 @@ class Worker(models.Model):
 
         super(Cluster, self).delete(*args, **kwargs)
 
+
 class ScheduledSpark(models.Model):
     identifier = models.CharField(max_length=100)
+    result_visibility = models.CharField(max_length=50)
     size = models.IntegerField()
     interval_in_hours = models.IntegerField()
+    job_timeout = models.IntegerField()
     start_date = models.DateField()
     end_date = models.DateField(blank=True, null=True)
+    is_enabled = models.BooleanField(default=True)
+    last_run_date = models.DateField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='scheduled_spark_created_by')
 
     def __str__(self):
@@ -114,7 +122,7 @@ class ScheduledSpark(models.Model):
         return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
 
     def save(self, *args, **kwargs):
-        """Insert the cluster into the database or update it if already present, spawning the cluster if it's not already spawned."""
+        """Insert the scheduled Spark job into the database or update it if already present."""
         # set the dates
         if not self.start_date:
             self.start_date = datetime.now()

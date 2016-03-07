@@ -148,8 +148,14 @@ TEMPLATES = [
                 'session_csrf.context_processor',
                 'analysis_service.base.context_processors.settings',
                 'analysis_service.base.context_processors.i18n',
-                'django_browserid.context_processors.browserid',
             ],
+            'globals': {
+                'browserid_info':   'django_browserid.helpers.browserid_info',
+                'browserid_css':    'django_browserid.helpers.browserid_css',
+                'browserid_js':     'django_browserid.helpers.browserid_js',
+                'browserid_login':  'django_browserid.helpers.browserid_login',
+                'browserid_logout': 'django_browserid.helpers.browserid_logout',
+            }
         }
     },
     {

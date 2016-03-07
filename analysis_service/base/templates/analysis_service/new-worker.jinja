@@ -1,4 +1,6 @@
-<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#new-worker-dialog"><img width="24" src="{{ static("img/worker.png") }}" />Launch analysis worker</button>
+<button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#new-worker-dialog" title="Launch analysis worker">
+  <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Launch
+</button>
 <div class="modal fade" id="new-worker-dialog" tabindex="-1" role="dialog" aria-labelledby="new-worker-dialog">
   <div class="modal-dialog" role="document">
     <form class="modal-content" action="/new-worker/" method="POST" enctype="multipart/form-data">

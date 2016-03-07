@@ -118,6 +118,7 @@ class NewWorkerForm(forms.ModelForm):
         model = models.Worker
         fields = ['identifier', 'public_key']
 
+
 class NewScheduledSparkForm(forms.ModelForm):
     identifier = forms.RegexField(
         required=True,
@@ -135,20 +136,16 @@ class NewScheduledSparkForm(forms.ModelForm):
                                                'characters, \'_\', and \'-\'.',
         })
     )
-    notebook=forms.FileField(
+    notebook = forms.FileField(
         required=True,
         widget=forms.FileInput(attrs={'required': 'required'})
     )
-    result_visibility=forms.ChoiceField(
+    result_visibility = forms.ChoiceField(
         choices=[
-            ("private", "Private"),
-            ("public", "Public"),
+            ('private', 'Private: results output to an S3 bucket, viewable with AWS credentials'),
+            ('public', 'Public: results output to a public S3 bucket, viewable by anyone'),
         ],
         widget=forms.Select(
-            choices=[
-                ("private", "Private"),
-                ("public", "Public"),
-            ],
             attrs={'class': 'form-control', 'required': 'required'}
         )
     )
@@ -174,11 +171,6 @@ class NewScheduledSparkForm(forms.ModelForm):
             (24 * 7, "Weekly"),
         ],
         widget=forms.Select(
-            choices=[
-                (1, "Hourly"),
-                (24, "Daily"),
-                (24 * 7, "Weekly"),
-            ],
             attrs={'class': 'form-control', 'required': 'required'}
         )
     )
@@ -226,10 +218,10 @@ class NewScheduledSparkForm(forms.ModelForm):
         # set the required created_by field yet
         new_scheduled_spark = super(NewScheduledSparkForm, self).save(commit=False)
 
-        # set the field to the user that created the worker
+        # set the field to the user that created the scheduled Spark job
         new_scheduled_spark.created_by = models.User.objects.get(email=user.email)
 
-        # actually start the real worker, and return the model object
+        # actually save the scheduled Spark job, and return the model object
         return new_scheduled_spark.save()
 
     class Meta:

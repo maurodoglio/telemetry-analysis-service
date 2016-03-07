@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^new-cluster/', views.new_cluster),
+    url(r'^new-worker/', views.new_worker),
+    url(r'^new-scheduled-spark/', views.new_scheduled_spark),
 
     # contribute.json url
     url(r'^(?P<path>contribute\.json)$', static.serve, {'document_root': settings.ROOT}),

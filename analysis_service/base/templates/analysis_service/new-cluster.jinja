@@ -1,4 +1,6 @@
-<button type="button" class="btn btn-lg" data-toggle="modal" data-target="#new-cluster-dialog"><img width="24" src="{{ static("img/cluster.png") }}" /> Launch Spark cluster</button>
+<button type="button" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#new-cluster-dialog" title="Launch Spark cluster">
+  <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Launch
+</button>
 <div class="modal fade" id="new-cluster-dialog" tabindex="-1" role="dialog" aria-labelledby="new-cluster-dialog">
   <div class="modal-dialog" role="document">
     <form class="modal-content" action="/new-cluster/" method="POST" enctype="multipart/form-data">

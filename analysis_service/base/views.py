@@ -74,10 +74,24 @@ def new_worker(request):
     return HttpResponseRedirect("/")
 
 
+@login_required
+@anonymous_csrf
+@require_POST
+def new_scheduled_spark(request):
+    form = forms.NewScheduledSparkForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+
+    form.save(request.user)
+    return HttpResponseRedirect("/")
+
+
 # this function is called every hour
 @kronos.register('0 * * * *')
-def clean_up_stragglers():
+def periodic_task():
     now = datetime.now()
+
+    # go through clusters to kill or warn about ones that are expiring
     for cluster in models.Cluster.objects.all():
         if cluster.end_date >= now:  # the cluster is expired
             cluster.delete()
@@ -86,10 +100,28 @@ def clean_up_stragglers():
                 email_address = cluster.created_by.email,
                 subject = "Cluster {} is expiring soon!".format(cluster.identifier),
                 body = (
-                    "Your cluster {} will be terminated in roughly one hour, as of {}. "
+                    "Your cluster {} will be terminated in roughly one hour, around {}. "
                     "Please save all unsaved work before the machine is shut down.\n"
                     "\n"
                     "This is an automated message from the Telemetry Analysis service. "
                     "See https://analysis.telemetry.mozilla.org/ for more details."
-                ).format(cluster.identifier, now)
+                ).format(cluster.identifier, now + timedelta(hours=1))
             )
+
+    # kill expired clusters
+    for worker in models.Worker.objects.all():
+        if worker.end_date >= now:  # the worker is expired
+            worker.delete()
+
+    # launch scheduled jobs if necessary
+    for scheduled_spark in models.ScheduledSpark.objects.all():
+        active = scheduled_spark.start_date <= now <= scheduled_spark.end_date
+        hours_since_last_run = (
+            float("inf")
+            if scheduled_spark.last_run_date is None else
+            (now - scheduled_spark.last_run_date).total_seconds() / 3600
+        )
+        can_run_now = hours_since_last_run >= scheduled_spark.interval_in_hours
+        # wip: check if the job is already running; if it is, then warn that it shouldn't be by email
+        if scheduled_spark.enabled and active and can_run_now:
+            pass #wip: start the job
