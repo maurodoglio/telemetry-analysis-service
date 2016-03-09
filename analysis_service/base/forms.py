@@ -166,9 +166,9 @@ class NewScheduledSparkForm(forms.ModelForm):
     )
     interval_in_hours = forms.ChoiceField(
         choices=[
-            (1, "Hourly"),
             (24, "Daily"),
             (24 * 7, "Weekly"),
+            (24 * 30, "Monthly"),
         ],
         widget=forms.Select(
             attrs={'class': 'form-control', 'required': 'required'}

@@ -1,4 +1,5 @@
 from uuid import uuid4
+from io import BytesIO
 
 from django.conf import settings
 from django.template.loader import render_to_string
@@ -31,7 +32,7 @@ def cluster_start(user_email, identifier, size, public_key):
             'SlaveInstanceType': settings.AWS_CONFIG['INSTANCE_TYPE'],
             'InstanceCount': num_instances,
             'Ec2KeyName': 'mozilla_vitillo',
-            'KeepJobFlowAliveWhenNoSteps': True,
+            'KeepJobFlowAliveWhenNoSteps': True,  # same as no-auto-terminate
         },
         JobFlowRole=settings.AWS_CONFIG["SPARK_INSTANCE_PROFILE"],
         ServiceRole='EMR_DefaultRole',
@@ -45,14 +46,7 @@ def cluster_start(user_email, identifier, size, public_key):
                 ),
                 'Args': ["--public-key", public_key]
             }
-        }]
-    )
-    jobflow_id = cluster["JobFlowId"]
-
-    # associate the jobflow with the user who launched it, the jobflow identifier,
-    # and the Telemetry Analysis tag
-    emr.add_tags(
-        ResourceId=jobflow_id,
+        }],
         Tags=[
             {'Key': 'Owner', 'Value': user_email},
             {'Key': 'Name', 'Value': identifier},
@@ -60,7 +54,7 @@ def cluster_start(user_email, identifier, size, public_key):
         ]
     )
 
-    return jobflow_id
+    return cluster["JobFlowId"]
 
 
 def cluster_info(jobflow_id):
@@ -79,17 +73,20 @@ def cluster_stop(jobflow_id):
 
 def worker_start(user_email, identifier, public_key):
     # upload the public key to S3
-    bucket = s3.get_bucket(settings.AWS_CONFIG['TEMPORARY_BUCKET'], validate=False)
     token = str(uuid4())
-    ssh_s3_key = bucket.new_key('keys/{}.pub'.format(token))
-    ssh_s3_key.set_contents_from_string(public_key)
+    s3_key = 'keys/{}.pub'.format(token)
+    s3.put_object(
+        Bucket = settings.AWS_CONFIG['CODE_BUCKET'],
+        Key = s3_key,
+        Body = BytesIO(public_key)
+    )
 
     # generate the boot script for the worker
     ephemeral_map = settings.AWS_CONFIG['EPHEMERAL_MAP']
     boot_script = render_to_string('boot-script.sh', context={
         'aws_region':       settings.AWS_CONFIG['AWS_REGION'],
         'temporary_bucket': settings.AWS_CONFIG['TEMPORARY_BUCKET'],
-        'ssh_key':          ssh_s3_key.key,
+        'ssh_key':          s3_key,
         'ephemeral_map':    ephemeral_map,
     })
 

@@ -40,7 +40,7 @@
         <thead>
           <tr>
             <th>Identifier</th>
-            <th>Number of workers</th>
+            <th>Size</th>
             <th>Created on</th>
             <th>Status</th>
           </tr>
@@ -60,6 +60,7 @@
         </tbody>
       </table>
       {% include 'analysis_service/new-cluster.jinja' %}
+      <button type="button" class="btn btn-lg" data-toggle="modal" title="Kill the selected Spark cluster">
     </div>
     <div class="col-md-6">
       <h2>Schedule a Spark Job</h2>
@@ -68,7 +69,7 @@
         <thead>
           <tr>
             <th>Identifier</th>
-            <th>Number of workers</th>
+            <th>Size</th>
             <th>Created on</th>
             <th>Status</th>
           </tr>

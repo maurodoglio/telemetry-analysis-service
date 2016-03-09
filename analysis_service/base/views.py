@@ -115,13 +115,5 @@ def periodic_task():
 
     # launch scheduled jobs if necessary
     for scheduled_spark in models.ScheduledSpark.objects.all():
-        active = scheduled_spark.start_date <= now <= scheduled_spark.end_date
-        hours_since_last_run = (
-            float("inf")
-            if scheduled_spark.last_run_date is None else
-            (now - scheduled_spark.last_run_date).total_seconds() / 3600
-        )
-        can_run_now = hours_since_last_run >= scheduled_spark.interval_in_hours
-        # wip: check if the job is already running; if it is, then warn that it shouldn't be by email
-        if scheduled_spark.enabled and active and can_run_now:
-            pass #wip: start the job
+        if scheduled_spark.should_run():
+            scheduled_spark.run()

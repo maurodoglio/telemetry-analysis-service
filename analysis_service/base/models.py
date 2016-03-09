@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from django.db import models
 from django.contrib.auth.models import User
 
-from analysis_service.base.util import provisioning
+from analysis_service.base.util import provisioning, scheduling
 
 
 class Cluster(models.Model):
@@ -105,6 +105,7 @@ class Worker(models.Model):
 
 class ScheduledSpark(models.Model):
     identifier = models.CharField(max_length=100)
+    notebook_s3_key = models.CharField(max_length=800)
     result_visibility = models.CharField(max_length=50)
     size = models.IntegerField()
     interval_in_hours = models.IntegerField()
@@ -121,19 +122,32 @@ class ScheduledSpark(models.Model):
     def __repr__(self):
         return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
 
-    def save(self, *args, **kwargs):
-        """Insert the scheduled Spark job into the database or update it if already present."""
-        # set the dates
-        if not self.start_date:
-            self.start_date = datetime.now()
-        if not self.end_date:
-            self.end_date = self.start_date + timedelta(days=1)  # clusters expire after 1 day
+    def should_run(self):
+        """Return True if the scheduled Spark job should run, False otherwise."""
+        active = scheduled_spark.start_date <= now <= scheduled_spark.end_date
+        hours_since_last_run = (
+            float("inf")
+            if scheduled_spark.last_run_date is None else
+            (now - scheduled_spark.last_run_date).total_seconds() / 3600
+        )
+        can_run_now = hours_since_last_run >= scheduled_spark.interval_in_hours
+        return self.enabled and active and can_run_now
 
+    def run(self):
+        """Actually run the scheduled Spark job."""
+        scheduling.scheduled_spark_run(
+            self.created_by.email,
+            self.identifier,
+            self.notebook_s3_key,
+            data_bucket,
+            self.size,
+            self.job_timeout
+        )
+
+    def save(self, *args, **kwargs):
         super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        """Remove the cluster from the database, shutting down the actual cluster."""
-        if not self.jobflow_id:
-            provisioning.cluster_stop(self.jobflow_id)
+        scheduling.scheduled_spark_remove(self.jobflow_id)
 
         super(Cluster, self).delete(*args, **kwargs)
