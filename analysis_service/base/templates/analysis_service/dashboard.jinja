@@ -33,12 +33,13 @@
 </nav>
 <div class="container">
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h2>Launch a Spark Cluster</h2>
       <p>Launch a Spark cluster in the cloud and use it for custom data analysis. The cluster will be available for 24 hours, then it will be automatically terminated.</p>
-      <table class="table table-hover">
+      <table class="table table-hover editable-table cluster-table">
         <thead>
           <tr>
+            <th>cluster_id</th>{# this column is hidden using CSS #}
             <th>Identifier</th>
             <th>Size</th>
             <th>Created on</th>
@@ -48,46 +49,50 @@
         <tbody>
           {% for cluster in active_clusters %}
           <tr>
+            <td>{{ cluster.id }}</td>
             <td>{{ cluster.identifier }}</td>
             <td>{{ cluster.size }}</td>
             <td>{{ cluster.start_date }}</td>
             <td>{{ cluster.most_recent_status }}</td>
           </tr>
           {% endfor %}
-          {% if not active_clusters %}
-          <tr><td colspan="4">No active clusters to show.</td></tr>
-          {% endif %}
         </tbody>
       </table>
+      {% if not active_clusters %}<p class="text-center">No active clusters to show.</p>{% endif %}
       {% include 'analysis_service/new-cluster.jinja' %}
-      <button type="button" class="btn btn-lg" data-toggle="modal" title="Kill the selected Spark cluster">
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h2>Schedule a Spark Job</h2>
       <p>Set up a Spark analysis to run regularly in the cloud and upload the results automatically to Amazon S3.</p>
-      <table class="table table-hover">
+      <table class="table table-hover editable-table scheduled-spark-table">
         <thead>
           <tr>
+            <th>scheduled_spark_id</th>{# this column is hidden using CSS #}
             <th>Identifier</th>
+            <th>Visibility</th>
             <th>Size</th>
-            <th>Created on</th>
-            <th>Status</th>
+            <th>Interval</th>
+            <th>Timeout</th>
+            <th>Starts</th>
+            <th>Ends</th>
           </tr>
         </thead>
         <tbody>
-          {% for spark_job in scheduled_spark_jobs %}
+          {% for spark_job in active_scheduled_spark %}
           <tr>
+            <td>{{ spark_job.id }}</td>
             <td>{{ spark_job.identifier }}</td>
+            <td>{{ spark_job.result_visibility }}</td>
             <td>{{ spark_job.size }}</td>
-            <td>{{ spark_job.visibility }}</td>
-            <td>{{ spark_job.most_recent_status }}</td>
+            <td>{{ spark_job.interval_in_hours }}</td>
+            <td>{{ spark_job.job_timeout }}</td>
+            <td>{{ spark_job.start_date }}</td>
+            <td>{{ spark_job.end_date }}</td>
           </tr>
           {% endfor %}
-          {% if not active_clusters %}
-          <tr><td colspan="4">No scheduled jobs to show.</td></tr>
-          {% endif %}
         </tbody>
       </table>
+      {% if not active_scheduled_spark %}<p class="text-center">No scheduled jobs to show.</p>{% endif %}
       {% include 'analysis_service/new-scheduled-spark.jinja' %}
     </div>
   </div>

@@ -34,6 +34,10 @@ class Cluster(models.Model):
         self.most_recent_status = info["state"]
         return self.most_recent_status
 
+    def rename(self, new_identifier):
+        #provisioning.cluster_rename(self.jobflow_id, new_identifier)
+        self.identifier = new_identifier
+
     def save(self, *args, **kwargs):
         """
         Insert the cluster into the database or update it if already present,
@@ -54,14 +58,14 @@ class Cluster(models.Model):
         if not self.end_date:
             self.end_date = self.start_date + timedelta(days=1)  # clusters expire after 1 day
 
-        super(Cluster, self).save(*args, **kwargs)
+        return super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         """Remove the cluster from the database, shutting down the actual cluster."""
-        if not self.jobflow_id:
+        if self.jobflow_id:
             provisioning.cluster_stop(self.jobflow_id)
 
-        super(Cluster, self).delete(*args, **kwargs)
+        return super(Cluster, self).delete(*args, **kwargs)
 
 
 class Worker(models.Model):
@@ -95,12 +99,12 @@ class Worker(models.Model):
             self.start_date = datetime.now()
         if not self.end_date:
             self.end_date = datetime.now() + timedelta(days=1)  # workers expire after 1 day
-        super(Cluster, self).save(*args, **kwargs)
+        return super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         provisioning.worker_stop(self.worker_id)
 
-        super(Cluster, self).delete(*args, **kwargs)
+        return super(Cluster, self).delete(*args, **kwargs)
 
 
 class ScheduledSpark(models.Model):
@@ -145,9 +149,10 @@ class ScheduledSpark(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        super(Cluster, self).save(*args, **kwargs)
+        #wip: upload notebook to S3
+        return super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        scheduling.scheduled_spark_remove(self.jobflow_id)
+        scheduling.scheduled_spark_remove(self.notebook_s3_key)
 
-        super(Cluster, self).delete(*args, **kwargs)
+        super(ScheduledSpark, self).delete(*args, **kwargs)

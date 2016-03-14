@@ -226,4 +226,4 @@ class NewScheduledSparkForm(forms.ModelForm):
 
     class Meta:
         model = models.ScheduledSpark
-        fields = ['identifier', 'size', 'interval_in_hours', 'start_date', 'end_date']
+        fields = ['identifier', 'size', 'interval_in_hours', 'job_timeout', 'start_date', 'end_date']

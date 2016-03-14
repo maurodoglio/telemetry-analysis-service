@@ -1,9 +1,10 @@
 import logging
+import re
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
 
 from session_csrf import anonymous_csrf
 
@@ -37,8 +38,9 @@ def dashboard(request):
         "new_scheduled_spark_form": forms.NewScheduledSparkForm(initial={
             "identifier": "{}-telemetry-scheduled-task".format(username),
             "size": 1,
-            "start_date": datetime.now(),
             "interval_in_hours": 24 * 7,
+            "job_timeout": 24,
+            "start_date": datetime.now(),
         }),
     })
 
@@ -65,6 +67,27 @@ def new_cluster(request):
 @login_required
 @anonymous_csrf
 @require_POST
+def edit_cluster(request):
+    action, cluster_id = request.POST.get("action"), request.POST.get("id")
+    try:
+        cluster = models.Cluster.objects.get(id=cluster_id)
+    except models.Cluster.DoesNotExist:
+        return HttpResponseBadRequest("Invalid cluster ID")
+    if action == "edit":
+        identifier = request.POST.get("identifier")
+        if isinstance(identifier, str) and re.match(r"^[\w-]{1,100}$", identifier):
+            cluster.rename(identifier)
+            cluster.save()
+        return JsonResponse({"status": "success"})
+    elif action == "delete":
+        cluster.delete() # this will automatically shut down the cluster as well
+        return JsonResponse({"status": "success"})
+    return HttpResponseBadRequest("Invalid action")
+
+
+@login_required
+@anonymous_csrf
+@require_POST
 def new_worker(request):
     form = forms.NewWorkerForm(request.POST, request.FILES)
     if not form.is_valid():
@@ -84,6 +107,27 @@ def new_scheduled_spark(request):
 
     form.save(request.user)
     return HttpResponseRedirect("/")
+
+
+@login_required
+@anonymous_csrf
+@require_POST
+def edit_scheduled_spark(request):
+    action, scheduled_spark_id = request.POST.get("action"), request.POST.get("id")
+    try:
+        scheduled_spark = models.ScheduledSpark.objects.get(id=scheduled_spark_id)
+    except models.ScheduledSpark.DoesNotExist:
+        return HttpResponseBadRequest("Invalid scheduled spark ID")
+    if action == "edit":
+        identifier = request.POST.get("identifier")
+        if isinstance(identifier, str) and re.match(r"^[\w-]{1,100}$", identifier):
+            scheduled_spark.rename(identifier)
+            scheduled_spark.save()
+        return JsonResponse({"status": "success"})
+    elif action == "delete":
+        scheduled_spark.delete() # this will automatically shut down the cluster as well
+        return JsonResponse({"status": "success"})
+    return HttpResponseBadRequest("Invalid action")
 
 
 # this function is called every hour

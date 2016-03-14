@@ -14,6 +14,8 @@
     <script type="text/javascript" src="{{ static("lib/moment.min.js")}}"></script>
     <script type="text/javascript" src="{{ static("lib/bootstrap-datetimepicker.min.js")}}"></script>
     <link rel="stylesheet" href="{{ static("lib/bootstrap-datetimepicker.min.css")}}">
+    <!-- jQuery Tabledit -->
+    <script type="text/javascript" src="{{ static("lib/jquery.tabledit.min.js")}}"></script>
 
     <link href="{{ static("css/base.css") }}" rel="stylesheet" />
 
@@ -32,5 +34,19 @@
     {% endblock %}
 
     {% csrf_token %}
+    <script>
+    (function() {
+      // Ensure that all AJAX requests sent with jQuery have CSRF tokens
+      var csrfToken = jQuery("input[name=csrfmiddlewaretoken]").val()
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          // non-CSRF-safe method that isn't cross domain
+          if (["GET", "HEAD", "OPTIONS", "TRACE"].indexOf(settings.Type) < 0 && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrfToken);
+          }
+        }
+      });
+    })();
+    </script>
   </body>
 </html>
