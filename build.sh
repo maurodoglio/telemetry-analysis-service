@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+set -e
+
 # the Docker and Docker Compose packages in the repositories are too old to work with this project - install the latest versions instead
-sudo apt-get install curl
-sudo apt-get purge lxc-docker
+sudo apt-get install --yes -qq curl
+sudo apt-get purge --yes -qq lxc-docker docker.io docker-compose # remove old packages that can cause conflicts
 curl -fsSL https://get.docker.com/ | sh # install Docker
 curl -L https://github.com/docker/compose/releases/download/1.6.0/docker-compose-`uname -s`-`uname -m` | sudo tee /usr/local/bin/docker-compose > /dev/null
 sudo chmod +x /usr/local/bin/docker-compose # install Docker Compose
