@@ -35,7 +35,7 @@ class Cluster(models.Model):
         return self.most_recent_status
 
     def rename(self, new_identifier):
-        #provisioning.cluster_rename(self.jobflow_id, new_identifier)
+        provisioning.cluster_rename(self.jobflow_id, new_identifier)
         self.identifier = new_identifier
 
     def save(self, *args, **kwargs):
@@ -110,7 +110,7 @@ class Worker(models.Model):
 class ScheduledSpark(models.Model):
     identifier = models.CharField(max_length=100)
     notebook_s3_key = models.CharField(max_length=800)
-    result_visibility = models.CharField(max_length=50)
+    result_visibility = models.CharField(max_length=50)  # can currently be "private" or "public"
     size = models.IntegerField()
     interval_in_hours = models.IntegerField()
     job_timeout = models.IntegerField()
@@ -126,15 +126,17 @@ class ScheduledSpark(models.Model):
     def __repr__(self):
         return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
 
-    def should_run(self):
+    def should_run(self, at_time = None):
         """Return True if the scheduled Spark job should run, False otherwise."""
-        active = scheduled_spark.start_date <= now <= scheduled_spark.end_date
+        if at_time is None:
+            at_time = datetime.now()
+        active = self.start_date <= at_time <= self.end_date
         hours_since_last_run = (
             float("inf")
-            if scheduled_spark.last_run_date is None else
-            (now - scheduled_spark.last_run_date).total_seconds() / 3600
+            if self.last_run_date is None else
+            (at_time - self.last_run_date).total_seconds() / 3600
         )
-        can_run_now = hours_since_last_run >= scheduled_spark.interval_in_hours
+        can_run_now = hours_since_last_run >= self.interval_in_hours
         return self.enabled and active and can_run_now
 
     def run(self):
@@ -143,13 +145,17 @@ class ScheduledSpark(models.Model):
             self.created_by.email,
             self.identifier,
             self.notebook_s3_key,
-            data_bucket,
+            self.result_visibility == "public",
             self.size,
             self.job_timeout
         )
 
-    def save(self, *args, **kwargs):
-        #wip: upload notebook to S3
+    def save(self, notebook_uploadedfile = None, *args, **kwargs):
+        if notebook_uploadedfile is not None:  # notebook specified, replace current notebook
+            self.notebook_s3_key = scheduling.scheduled_spark_add(
+                self.identifier,
+                notebook_uploadedfile
+            )
         return super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):

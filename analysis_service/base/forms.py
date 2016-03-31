@@ -222,8 +222,10 @@ class NewScheduledSparkForm(forms.ModelForm):
         new_scheduled_spark.created_by = models.User.objects.get(email=user.email)
 
         # actually save the scheduled Spark job, and return the model object
-        return new_scheduled_spark.save()
+        return new_scheduled_spark.save(self.cleaned_data["notebook"])
 
     class Meta:
         model = models.ScheduledSpark
-        fields = ['identifier', 'size', 'interval_in_hours', 'job_timeout', 'start_date', 'end_date']
+        fields = [
+            'identifier', 'size', 'interval_in_hours', 'job_timeout', 'start_date', 'end_date'
+        ]

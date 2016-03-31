@@ -39,7 +39,7 @@
       <table class="table table-hover editable-table cluster-table">
         <thead>
           <tr>
-            <th>cluster_id</th>{# this column is hidden using CSS #}
+            <th class="hidden">cluster_id</th>{# this column is hidden using CSS #}
             <th>Identifier</th>
             <th>Size</th>
             <th>Created on</th>
@@ -49,7 +49,7 @@
         <tbody>
           {% for cluster in active_clusters %}
           <tr>
-            <td>{{ cluster.id }}</td>
+            <td class="hidden">{{ cluster.id }}</td>
             <td>{{ cluster.identifier }}</td>
             <td>{{ cluster.size }}</td>
             <td>{{ cluster.start_date }}</td>
@@ -67,7 +67,7 @@
       <table class="table table-hover editable-table scheduled-spark-table">
         <thead>
           <tr>
-            <th>scheduled_spark_id</th>{# this column is hidden using CSS #}
+            <th class="hidden">scheduled_spark_id</th>
             <th>Identifier</th>
             <th>Visibility</th>
             <th>Size</th>
@@ -80,7 +80,7 @@
         <tbody>
           {% for spark_job in active_scheduled_spark %}
           <tr>
-            <td>{{ spark_job.id }}</td>
+            <td class="hidden">{{ spark_job.id }}</td>
             <td>{{ spark_job.identifier }}</td>
             <td>{{ spark_job.result_visibility }}</td>
             <td>{{ spark_job.size }}</td>

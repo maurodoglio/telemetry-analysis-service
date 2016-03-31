@@ -1,7 +1,6 @@
 from uuid import uuid4
 
 from django.conf import settings
-from django.template.loader import render_to_string
 import boto3
 import requests
 
@@ -20,19 +19,25 @@ def scheduled_spark_add(identifier, notebook_uploadedfile):
     )
     return key
 
+
 def scheduled_spark_remove(notebook_s3_key):
     s3.delete_object(
         Bucket = settings.AWS_CONFIG['CODE_BUCKET'],
         Key = notebook_s3_key,
     )
 
-def scheduled_spark_run(user_email, identifier, notebook_uri, data_bucket, size, job_timeout):
+
+def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, size, job_timeout):
     configurations = requests.get(
         "https://s3-{}.amazonaws.com/{}/configuration/configuration.json".format(
             settings.AWS_CONFIG["AWS_REGION"],
             settings.AWS_CONFIG["SPARK_EMR_BUCKET"]
         )
     ).json()
+    if result_is_public:
+        data_bucket = settings.AWS_CONFIG["PUBLIC_DATA_BUCKET"]
+    else:
+        data_bucket = settings.AWS_CONFIG["PRIVATE_DATA_BUCKET"]
     cluster = emr.run_job_flow(
         Name=str(uuid4()),
         ReleaseLabel=settings.AWS_CONFIG['EMR_RELEASE'],
@@ -76,6 +81,8 @@ def scheduled_spark_run(user_email, identifier, notebook_uri, data_bucket, size,
             {'Key': 'Application', 'Value': settings.AWS_CONFIG['INSTANCE_APP_TAG']},
         ]
     )
+    return cluster["JobFlowId"]
+
 
 def get_tag_value(tags, key):
     return next((tag.value for tag in tags if tag.key == key), None)

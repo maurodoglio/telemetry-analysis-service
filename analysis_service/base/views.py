@@ -80,7 +80,7 @@ def edit_cluster(request):
             cluster.save()
         return JsonResponse({"status": "success"})
     elif action == "delete":
-        cluster.delete() # this will automatically shut down the cluster as well
+        cluster.delete()  # this will automatically shut down the cluster as well
         return JsonResponse({"status": "success"})
     return HttpResponseBadRequest("Invalid action")
 
@@ -125,7 +125,7 @@ def edit_scheduled_spark(request):
             scheduled_spark.save()
         return JsonResponse({"status": "success"})
     elif action == "delete":
-        scheduled_spark.delete() # this will automatically shut down the cluster as well
+        scheduled_spark.delete()  # this will automatically shut down the cluster as well
         return JsonResponse({"status": "success"})
     return HttpResponseBadRequest("Invalid action")
 
@@ -159,5 +159,5 @@ def periodic_task():
 
     # launch scheduled jobs if necessary
     for scheduled_spark in models.ScheduledSpark.objects.all():
-        if scheduled_spark.should_run():
+        if scheduled_spark.should_run(now):
             scheduled_spark.run()
