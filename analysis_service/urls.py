@@ -6,8 +6,8 @@ from django.views import static
 from analysis_service.base import views
 
 urlpatterns = [
-    url(r'^$', views.dashboard, name='dashboard'),
-    url(r'^login/', views.login, name='login'),
+    url(r'^$', views.dashboard),
+    url(r'^login/', views.login),
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^new-cluster/', views.new_cluster),

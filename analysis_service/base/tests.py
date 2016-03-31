@@ -1,11 +1,9 @@
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 
 class HomeTests(TestCase):
-
     def test_login(self):
-        response = self.client.get(reverse('login'))
+        response = self.client.get('/login/')
         assert b'csrfmiddlewaretoken' in response.content
 
 
