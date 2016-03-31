@@ -24,9 +24,8 @@ MarkupSafe==0.23 \
 gunicorn==19.3.0 \
     --hash=sha256:a5179cde922d2b4e045ee5b11e87323ee77d363ae40294fc8252f25d6a0eaf06 \
     --hash=sha256:8bc835082882ad9a012cd790c460011e4d96bf3512d98a04d3dabbe45393a089
-whitenoise==2.0.6 \
-    --hash=sha256:826ffe5d608c9dc8daebef1b0b43d01f7958f17c2fce36e75c80e26160172c4f \
-    --hash=sha256:5aea935dfc09ef2beeb76960b4a808b0bbe65e85fb0b0312434b9c365ca02a41
+whitenoise==3.0 \
+    --hash=sha256:2537cf2b0c12e1c8beaa23605076344a89d08b686592abffddb6ba13b284a8c6
 django-csp==2.0.3 \
     --hash=sha256:d32576baad77fdd9e6859be97c2b6a3c17a6f484364389db731f0697b7a19661
 pytz==2015.7 \
