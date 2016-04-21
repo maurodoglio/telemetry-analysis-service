@@ -42,6 +42,8 @@ Quick troubleshooting guide:
 * Docker gives an error message similar to `ERROR: Couldn't connect to Docker daemon at http+docker://localunixsocket - is it running?`
     * Run the command as administrator/superuser (for testing purposes, that is).
     * Make sure the user is in the `docker` group (use the `sudo usermod -aG docker ${USER}` command to do this). This allows the user to use Docker without superuser privileges. Note that this does not take effect until the user logs out and logs in again.
+* Docker-Compose gives an error message similar to `ERROR: client and server don't have same version (client : 1.21, server: 1.18)`
+    * Make sure to install the latest versions of both Docker and Docker-Compose. The current versions of these in the Debian repositories might not be mutually compatible.
 * Docker gives an error message similar to `Err http://security.debian.org jessie/updates InRelease`
     * The installed Docker version is possibly too old. Make sure to use the latest available stable version.
     * Ensure that the DNS configuration is sane: see if `docker-compose run web ping security.debian.org` can connect successfully.

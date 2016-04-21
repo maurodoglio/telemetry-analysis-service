@@ -8,4 +8,5 @@ MANIFEST
 *.db
 static/
 !static/.gitkeep
+dist/
 
