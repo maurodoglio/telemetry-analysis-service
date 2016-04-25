@@ -13,7 +13,10 @@ $(function() {
     format: 'YYYY-MM-DD h:mm',
   });
 
-  $(".editable-table").click(function() {
+  $(".editable-table").each(function(i, e) {
+    $(e).find("tr:has(td)").first().addClass("selected");
+  })
+  $(".editable-table tr:has(td)").click(function() {
     // allow selecting individual rows
     $(this).parents("table").first().find("tr").removeClass("selected");
     $(this).addClass("selected");

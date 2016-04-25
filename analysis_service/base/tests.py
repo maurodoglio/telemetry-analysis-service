@@ -1,14 +1,13 @@
 from django.test import TestCase
 
 
-class HomeTests(TestCase):
+class TestAuthentication(TestCase):
     def test_login(self):
         response = self.client.get('/login/')
         assert b'csrfmiddlewaretoken' in response.content
 
 
 class TestContribute(TestCase):
-
     def test_contribute_json(self):
         response = self.client.get('/contribute.json')
         self.assertEqual(response.status_code, 200)

@@ -12,8 +12,8 @@ class PublicKeyFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         super(PublicKeyFileField, self).__init__(*args, **kwargs)
 
-    def clean(self, data, initial=None):
-        uploaded_file = super(PublicKeyFileField, self).clean(data, initial)
+    def clean(self, data):
+        uploaded_file = super(PublicKeyFileField, self).clean(data)
         if uploaded_file.size > 100000:
             raise ValidationError(
                 'File size must be at most 100kB, actual size is {}'.format(
@@ -26,6 +26,28 @@ class PublicKeyFileField(forms.FileField):
                 'Invalid public key (a public key should start with \'ssh-rsa AAAAB3\')'
             )
         return contents
+
+
+class ClusterIdField(forms.IntegerField):
+    def __init__(self, *args, **kwargs):
+        super(ClusterIdField, self).__init__(*args, **kwargs)
+
+    def clean(self, data):
+        cluster_id = super(ClusterIdField, self).clean(data)
+        if not models.Cluster.objects.filter(id=cluster_id).exists():
+            raise ValidationError('Cluster {} does not exist'.format(cluster_id))
+        return cluster_id
+
+
+class ScheduledSparkIdField(forms.IntegerField):
+    def __init__(self, *args, **kwargs):
+        super(ScheduledSparkIdField, self).__init__(*args, **kwargs)
+
+    def clean(self, data):
+        scheduled_spark_id = super(ScheduledSparkIdField, self).clean(data)
+        if not models.ScheduledSpark.objects.filter(id=scheduled_spark_id).exists():
+            raise ValidationError('Scheduled Spark job {} does not exist'.format(scheduled_spark_id))
+        return scheduled_spark_id
 
 
 class NewClusterForm(forms.ModelForm):
@@ -80,6 +102,39 @@ class NewClusterForm(forms.ModelForm):
         model = models.Cluster
         fields = ['identifier', 'size', 'public_key']
 
+
+class EditClusterForm(forms.ModelForm):
+    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput())
+
+    identifier = forms.RegexField(
+        required=True,
+        regex="^[\w-]{1,100}$",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': r'[\w-]+',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'A brief description of the cluster\'s purpose, '
+                            'visible in the AWS management console.',
+            'data-validation-pattern-message': 'Valid cluster names are strings of alphanumeric '
+                                               'characters, \'_\', and \'-\'.',
+        })
+    )
+
+    def save(self, user):
+        cleaned_data = super(EditClusterForm, self).clean()
+        cluster = models.Cluster.objects.get(id=cleaned_data["cluster_id"])
+        if user != cluster.created_by: # only allow user to edit clusters that are created by that user
+            raise ValueError("Disallowed attempt to edit another user's cluster")
+        cluster.identifier = cleaned_data["identifier"]
+        cluster.update_identifier()
+        return cluster.save()
+
+    class Meta:
+        model = models.Cluster
+        fields = ['identifier']
 
 class NewWorkerForm(forms.ModelForm):
     identifier = forms.RegexField(
@@ -228,4 +283,117 @@ class NewScheduledSparkForm(forms.ModelForm):
         model = models.ScheduledSpark
         fields = [
             'identifier', 'size', 'interval_in_hours', 'job_timeout', 'start_date', 'end_date'
+        ]
+
+class EditScheduledSparkForm(forms.ModelForm):
+    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput())
+
+    identifier = forms.RegexField(
+        required=True,
+        regex="^[\w-]{1,100}$",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'pattern': r'[\w-]+',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'A brief description of the scheduled Spark job\'s purpose, '
+                            'visible in the AWS management console.',
+            'data-validation-pattern-message': 'Valid job names are strings of alphanumeric '
+                                               'characters, \'_\', and \'-\'.',
+        })
+    )
+    result_visibility = forms.ChoiceField(
+        choices=[
+            ('private', 'Private: results output to an S3 bucket, viewable with AWS credentials'),
+            ('public', 'Public: results output to a public S3 bucket, viewable by anyone'),
+        ],
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'required': 'required'}
+        )
+    )
+    size = forms.IntegerField(
+        required=True,
+        min_value=1, max_value=20,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': 'required',
+            'min': '1', 'max': '20',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'Number of workers to use when running the Spark job '
+                            '(1 is recommended for testing or development).',
+        })
+    )
+    interval_in_hours = forms.ChoiceField(
+        choices=[
+            (24, "Daily"),
+            (24 * 7, "Weekly"),
+            (24 * 30, "Monthly"),
+        ],
+        widget=forms.Select(
+            attrs={'class': 'form-control', 'required': 'required'}
+        )
+    )
+    job_timeout = forms.IntegerField(
+        required=True,
+        min_value=1, max_value=24,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'required': 'required',
+            'min': '1', 'max': '24',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'Number of hours that a single run of the job can run '
+                            'for before timing out and being terminated.',
+        })
+    )
+    start_date = forms.DateTimeField(
+        required=True,
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control datetimepicker',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'Date/time on which to enable the scheduled Spark job.',
+        })
+    )
+    end_date = forms.DateTimeField(
+        required=False,
+        widget=forms.DateTimeInput(attrs={
+            'class': 'form-control datetimepicker',
+            'data-toggle': 'popover',
+            'data-trigger': 'focus',
+            'data-placement': 'top',
+            'data-container': 'body',
+            'data-content': 'Date/time on which to disable the scheduled Spark job '
+                            '- leave this blank if the job should not be disabled.',
+        })
+    )
+
+    def save(self, user):
+        cleaned_data = super(EditClusterForm, self).clean()
+        job = models.ScheduledSpark.objects.get(id=cleaned_data["job_id"])
+        if user != job.created_by: # only allow user to edit jobs that are created by that user
+            raise ValueError("Disallowed attempt to edit another user's scheduled job")
+        job.identifier = cleaned_data["identifier"]
+        job.result_visibility = cleaned_data["result_visibility"]
+        job.size = cleaned_data["size"]
+        job.interval_in_hours = cleaned_data["interval_in_hours"]
+        job.job_timeout = cleaned_data["job_timeout"]
+        job.start_date = cleaned_data["start_date"]
+        job.end_date = cleaned_data["end_date"]
+        return job.save()
+
+    class Meta:
+        model = models.ScheduledSpark
+        fields = [
+            'identifier', 'result_visibility', 'size', 'interval_in_hours',
+            'job_timeout', 'start_date', 'end_date'
         ]

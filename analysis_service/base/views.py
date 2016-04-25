@@ -28,11 +28,14 @@ def dashboard(request):
             "identifier": "{}-telemetry-analysis".format(username),
             "size": 1,
         }),
+        "edit_cluster_form": forms.EditClusterForm(),
+
         "active_workers": models.Worker.objects.filter(created_by=request.user)
                                                .order_by("start_date"),
         "new_worker_form": forms.NewWorkerForm(initial={
             "identifier": "{}-telemetry-worker".format(username),
         }),
+
         "active_scheduled_spark": models.ScheduledSpark.objects.filter(created_by=request.user)
                                                                .order_by("start_date"),
         "new_scheduled_spark_form": forms.NewScheduledSparkForm(initial={
@@ -42,6 +45,7 @@ def dashboard(request):
             "job_timeout": 24,
             "start_date": datetime.now(),
         }),
+        "edit_scheduled_spark_form": forms.EditScheduledSparkForm(),
     })
 
 
@@ -68,21 +72,12 @@ def new_cluster(request):
 @anonymous_csrf
 @require_POST
 def edit_cluster(request):
-    action, cluster_id = request.POST.get("action"), request.POST.get("id")
-    try:
-        cluster = models.Cluster.objects.get(id=cluster_id)
-    except models.Cluster.DoesNotExist:
-        return HttpResponseBadRequest("Invalid cluster ID")
-    if action == "edit":
-        identifier = request.POST.get("identifier")
-        if isinstance(identifier, str) and re.match(r"^[\w-]{1,100}$", identifier):
-            cluster.rename(identifier)
-            cluster.save()
-        return JsonResponse({"status": "success"})
-    elif action == "delete":
-        cluster.delete()  # this will automatically shut down the cluster as well
-        return JsonResponse({"status": "success"})
-    return HttpResponseBadRequest("Invalid action")
+    form = forms.EditClusterForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+
+    form.save(request.user)  # this will also magically spawn the cluster for us
+    return HttpResponseRedirect("/")
 
 
 @login_required
@@ -113,21 +108,12 @@ def new_scheduled_spark(request):
 @anonymous_csrf
 @require_POST
 def edit_scheduled_spark(request):
-    action, scheduled_spark_id = request.POST.get("action"), request.POST.get("id")
-    try:
-        scheduled_spark = models.ScheduledSpark.objects.get(id=scheduled_spark_id)
-    except models.ScheduledSpark.DoesNotExist:
-        return HttpResponseBadRequest("Invalid scheduled spark ID")
-    if action == "edit":
-        identifier = request.POST.get("identifier")
-        if isinstance(identifier, str) and re.match(r"^[\w-]{1,100}$", identifier):
-            scheduled_spark.rename(identifier)
-            scheduled_spark.save()
-        return JsonResponse({"status": "success"})
-    elif action == "delete":
-        scheduled_spark.delete()  # this will automatically shut down the cluster as well
-        return JsonResponse({"status": "success"})
-    return HttpResponseBadRequest("Invalid action")
+    form = forms.EditScheduledSparkForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+
+    form.save(request.user)  # this will also magically spawn the cluster for us
+    return HttpResponseRedirect("/")
 
 
 # this function is called every hour

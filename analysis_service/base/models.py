@@ -9,8 +9,8 @@ class Cluster(models.Model):
     identifier = models.CharField(max_length=100)
     size = models.IntegerField()
     public_key = models.CharField(max_length=100000)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='cluster_created_by')
     jobflow_id = models.CharField(max_length=50, blank=True, null=True)
 
@@ -29,14 +29,16 @@ class Cluster(models.Model):
         """Returns true if the cluster is expiring in the next hour."""
         return self.end_date <= datetime.now() + timedelta(hours=1)
 
-    def refresh_status(self):
-        info = provisioning.cluster_info(self.jobflow_id)
+    def update_status(self):
+        """Should be called when the latest cluster status is needed, updating `self.most_recent_status` to the status."""
+        info = self.get_info()
         self.most_recent_status = info["state"]
         return self.most_recent_status
 
-    def rename(self, new_identifier):
-        provisioning.cluster_rename(self.jobflow_id, new_identifier)
-        self.identifier = new_identifier
+    def update_identifier(self):
+        """Should be called after changing the cluster's identifier, in order to update the name on AWS."""
+        #provisioning.cluster_rename(self.jobflow_id, self.identifier)
+        return self.identifier
 
     def save(self, *args, **kwargs):
         """
@@ -45,12 +47,12 @@ class Cluster(models.Model):
         """
         # actually start the cluster
         if not self.jobflow_id:
-            self.jobflow_id = provisioning.cluster_start(
+            """self.jobflow_id = provisioning.cluster_start(
                 self.created_by.email,
                 self.identifier,
                 self.size,
                 self.public_key
-            )
+            )""" #wip: debug
 
         # set the dates
         if not self.start_date:
@@ -71,8 +73,8 @@ class Cluster(models.Model):
 class Worker(models.Model):
     identifier = models.CharField(max_length=100)
     public_key = models.CharField(max_length=100000)
-    start_date = models.DateField(blank=True, null=True)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='worker_created_by')
     instance_id = models.CharField(max_length=50, blank=True, null=True)
 
@@ -114,10 +116,10 @@ class ScheduledSpark(models.Model):
     size = models.IntegerField()
     interval_in_hours = models.IntegerField()
     job_timeout = models.IntegerField()
-    start_date = models.DateField()
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField(blank=True, null=True)
     is_enabled = models.BooleanField(default=True)
-    last_run_date = models.DateField(blank=True, null=True)
+    last_run_date = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='scheduled_spark_created_by')
 
     def __str__(self):
@@ -141,6 +143,7 @@ class ScheduledSpark(models.Model):
 
     def run(self):
         """Actually run the scheduled Spark job."""
+        return #wip: debug
         scheduling.scheduled_spark_run(
             self.created_by.email,
             self.identifier,
@@ -152,11 +155,11 @@ class ScheduledSpark(models.Model):
 
     def save(self, notebook_uploadedfile = None, *args, **kwargs):
         if notebook_uploadedfile is not None:  # notebook specified, replace current notebook
-            self.notebook_s3_key = scheduling.scheduled_spark_add(
+            """self.notebook_s3_key = scheduling.scheduled_spark_add(
                 self.identifier,
                 notebook_uploadedfile
-            )
-        return super(Cluster, self).save(*args, **kwargs)
+            )""" #wip: debug
+        return super(ScheduledSpark, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         scheduling.scheduled_spark_remove(self.notebook_s3_key)

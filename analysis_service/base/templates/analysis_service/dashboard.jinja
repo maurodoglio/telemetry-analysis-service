@@ -36,7 +36,7 @@
     <div class="col-md-12">
       <h2>Launch a Spark Cluster</h2>
       <p>Launch a Spark cluster in the cloud and use it for custom data analysis. The cluster will be available for 24 hours, then it will be automatically terminated.</p>
-      <table class="table table-hover editable-table cluster-table">
+      <table class="table table-hover editable-table" id="cluster-table">
         <thead>
           <tr>
             <th class="hidden">cluster_id</th>{# this column is hidden using CSS #}
@@ -60,11 +60,12 @@
       </table>
       {% if not active_clusters %}<p class="text-center">No active clusters to show.</p>{% endif %}
       {% include 'analysis_service/new-cluster.jinja' %}
+      {% if active_clusters %}{% include 'analysis_service/edit-cluster.jinja' %}{% endif %}
     </div>
     <div class="col-md-12">
       <h2>Schedule a Spark Job</h2>
       <p>Set up a Spark analysis to run regularly in the cloud and upload the results automatically to Amazon S3.</p>
-      <table class="table table-hover editable-table scheduled-spark-table">
+      <table class="table table-hover editable-table" id="scheduled-spark-table">
         <thead>
           <tr>
             <th class="hidden">scheduled_spark_id</th>
@@ -94,6 +95,7 @@
       </table>
       {% if not active_scheduled_spark %}<p class="text-center">No scheduled jobs to show.</p>{% endif %}
       {% include 'analysis_service/new-scheduled-spark.jinja' %}
+      {% if active_scheduled_spark %}{% include 'analysis_service/edit-scheduled-spark.jinja' %}{% endif %}
     </div>
   </div>
   <div class="row">
@@ -123,7 +125,7 @@
     </div>
     <div class="col-md-6">
       <h2>View aggregated data</h2>
-      <p>Open the telemetry dashboards hub to view aggregate data.</p>
+      <p>Open the telemetry dashboards hub to view aggregate data, as well as many other dashboards and resources.</p>
       <button type="button" class="btn btn-lg btn-primary">
         <span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span>
         Telemetry Dashboards
