@@ -378,7 +378,7 @@ class EditScheduledSparkForm(forms.ModelForm):
     )
 
     def save(self, user):
-        cleaned_data = super(EditClusterForm, self).clean()
+        cleaned_data = super(EditScheduledSparkForm, self).clean()
         job = models.ScheduledSpark.objects.get(id=cleaned_data["job_id"])
         if user != job.created_by: # only allow user to edit jobs that are created by that user
             raise ValueError("Disallowed attempt to edit another user's scheduled job")
