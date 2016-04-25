@@ -1,10 +1,9 @@
 import logging
-import re
 from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponseRedirect
 
 from session_csrf import anonymous_csrf
 

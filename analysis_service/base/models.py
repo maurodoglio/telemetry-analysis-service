@@ -30,14 +30,14 @@ class Cluster(models.Model):
         return self.end_date <= datetime.now() + timedelta(hours=1)
 
     def update_status(self):
-        """Should be called when the latest cluster status is needed, updating `self.most_recent_status` to the status."""
+        """Should be called to update latest cluster status in `self.most_recent_status`."""
         info = self.get_info()
         self.most_recent_status = info["state"]
         return self.most_recent_status
 
     def update_identifier(self):
-        """Should be called after changing the cluster's identifier, in order to update the name on AWS."""
-        #provisioning.cluster_rename(self.jobflow_id, self.identifier)
+        """Should be called after changing the cluster's identifier, to update the name on AWS."""
+        provisioning.cluster_rename(self.jobflow_id, self.identifier)
         return self.identifier
 
     def save(self, *args, **kwargs):
@@ -47,12 +47,12 @@ class Cluster(models.Model):
         """
         # actually start the cluster
         if not self.jobflow_id:
-            """self.jobflow_id = provisioning.cluster_start(
+            self.jobflow_id = provisioning.cluster_start(
                 self.created_by.email,
                 self.identifier,
                 self.size,
                 self.public_key
-            )""" #wip: debug
+            )
 
         # set the dates
         if not self.start_date:
@@ -143,7 +143,6 @@ class ScheduledSpark(models.Model):
 
     def run(self):
         """Actually run the scheduled Spark job."""
-        return #wip: debug
         scheduling.scheduled_spark_run(
             self.created_by.email,
             self.identifier,
@@ -155,10 +154,10 @@ class ScheduledSpark(models.Model):
 
     def save(self, notebook_uploadedfile = None, *args, **kwargs):
         if notebook_uploadedfile is not None:  # notebook specified, replace current notebook
-            """self.notebook_s3_key = scheduling.scheduled_spark_add(
+            self.notebook_s3_key = scheduling.scheduled_spark_add(
                 self.identifier,
                 notebook_uploadedfile
-            )""" #wip: debug
+            )
         return super(ScheduledSpark, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
