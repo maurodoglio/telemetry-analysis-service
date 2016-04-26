@@ -27,9 +27,9 @@
 </div>
 <script type="text/javascript">
 $("#edit-cluster-dialog").on("shown.bs.modal", function() {
-  var selectedClusterId = $("#cluster-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the cluster ID
-  var selectedClusterIdentifier = $("#cluster-table tr:selected td:nth-child(2)").text(); // the second column of the table is the cluster identifier
-  $(this).find("input[name=cluster_id]").val(selectedClusterId); // set a hidden field of the edit form so submitting it also submits the cluster ID
-  $(this).find(".cluster-name").val(selectedClusterIdentifier);
+  var selectedId = $("#cluster-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the cluster ID
+  var selectedIdentifier = $("#cluster-table tr:selected td:nth-child(2)").text(); // the second column of the table is the cluster identifier
+  $(this).find("input[name=cluster_id]").val(selectedId); // set a hidden field of the edit form so submitting it also submits the cluster ID
+  $(this).find(".cluster-name").val(selectedIdentifier);
 })
 </script>

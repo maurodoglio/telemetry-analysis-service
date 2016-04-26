@@ -98,7 +98,10 @@
       </table>
       {% if not active_scheduled_spark %}<p class="text-center">No scheduled jobs to show.</p>{% endif %}
       {% include 'analysis_service/new-scheduled-spark.jinja' %}
-      {% if active_scheduled_spark %}{% include 'analysis_service/edit-scheduled-spark.jinja' %}{% endif %}
+      {% if active_scheduled_spark %}
+        {% include 'analysis_service/edit-scheduled-spark.jinja' %}
+        {% include 'analysis_service/delete-scheduled-spark.jinja' %}
+      {% endif %}
     </div>
   </div>
   <div class="row">

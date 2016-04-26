@@ -7,11 +7,9 @@
   </button>
 <script type="text/javascript">
 function deleteCluster() {
-  var selectedClusterId = $("#cluster-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the cluster ID
-  var selectedClusterIdentifier = $("#cluster-table tr:selected td:nth-child(2)").text(); // the second column of the table is the cluster identifier
+  var selectedId = $("#cluster-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the cluster ID
   var form = $("#delete-cluster-form");
-  form.find("input[name=cluster_id]").val(selectedClusterId); // set a hidden field of the edit form so submitting it also submits the cluster ID
-  form.find(".cluster-name").val(selectedClusterIdentifier);
+  form.find("input[name=cluster_id]").val(selectedId); // set a hidden field of the edit form so submitting it also submits the cluster ID
 
   form.submit();
 }

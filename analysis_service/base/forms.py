@@ -96,7 +96,7 @@ class NewClusterForm(forms.ModelForm):
         new_cluster.created_by = models.User.objects.get(email=user.email)
 
         # actually start the real cluster, and return the model object
-        return new_cluster.save()
+        new_cluster.save()
 
     class Meta:
         model = models.Cluster
@@ -130,7 +130,7 @@ class EditClusterForm(forms.ModelForm):
             raise ValueError("Disallowed attempt to edit another user's cluster")
         cluster.identifier = cleaned_data["identifier"]
         cluster.update_identifier()
-        return cluster.save()
+        cluster.save()
 
     class Meta:
         model = models.Cluster
@@ -145,7 +145,7 @@ class DeleteClusterForm(forms.ModelForm):
         cluster = models.Cluster.objects.get(id=cleaned_data["cluster_id"])
         if user != cluster.created_by:  # only allow user to delete clusters created by that user
             raise ValueError("Disallowed attempt to delete another user's cluster")
-        return cluster.delete()
+        cluster.delete()
 
     class Meta:
         model = models.Cluster
@@ -183,7 +183,7 @@ class NewWorkerForm(forms.ModelForm):
         new_worker.created_by = models.User.objects.get(email=user.email)
 
         # actually start the real worker, and return the model object
-        return new_worker.save()
+        new_worker.save()
 
     class Meta:
         model = models.Worker
@@ -293,12 +293,13 @@ class NewScheduledSparkForm(forms.ModelForm):
         new_scheduled_spark.created_by = models.User.objects.get(email=user.email)
 
         # actually save the scheduled Spark job, and return the model object
-        return new_scheduled_spark.save(self.cleaned_data["notebook"])
+        new_scheduled_spark.save(self.cleaned_data["notebook"])
 
     class Meta:
         model = models.ScheduledSpark
         fields = [
-            'identifier', 'size', 'interval_in_hours', 'job_timeout', 'start_date', 'end_date'
+            'identifier', 'result_visibility', 'size', 'interval_in_hours',
+            'job_timeout', 'start_date', 'end_date'
         ]
 
 
@@ -406,7 +407,7 @@ class EditScheduledSparkForm(forms.ModelForm):
         job.job_timeout = cleaned_data["job_timeout"]
         job.start_date = cleaned_data["start_date"]
         job.end_date = cleaned_data["end_date"]
-        return job.save()
+        job.save()
 
     class Meta:
         model = models.ScheduledSpark
@@ -414,3 +415,18 @@ class EditScheduledSparkForm(forms.ModelForm):
             'identifier', 'result_visibility', 'size', 'interval_in_hours',
             'job_timeout', 'start_date', 'end_date'
         ]
+
+
+class DeleteScheduledSparkForm(forms.ModelForm):
+    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput())
+
+    def save(self, user):
+        cleaned_data = super(DeleteScheduledSparkForm, self).clean()
+        job = models.ScheduledSpark.objects.get(id=cleaned_data["job_id"])
+        if user != job.created_by:  # only allow user to delete jobs that are created by that user
+            raise ValueError("Disallowed attempt to delete another user's scheduled job")
+        job.delete()
+
+    class Meta:
+        model = models.ScheduledSpark
+        fields = []

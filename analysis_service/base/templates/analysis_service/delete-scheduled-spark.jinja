@@ -1,0 +1,17 @@
+<form action="/delete-scheduled-spark/" method="POST" enctype="multipart/form-data" id="delete-scheduled-spark-form" class="hidden">
+  {% csrf_token %}
+  {{ delete_scheduled_spark_form.job_id }}
+</form>
+<button type="button" class="btn btn-md btn-danger" title="Delete selected scheduled Spark job" onclick="deleteScheduledSpark()">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+  </button>
+<script type="text/javascript">
+function deleteScheduledSpark() {
+  var selectedId = $("#scheduled-spark-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the job ID
+  var selectedIdentifier = $("#scheduled-spark-table tr:selected td:nth-child(2)").text(); // the second column of the table is the job identifier
+  var form = $("#delete-scheduled-spark-form");
+  form.find("input[name=job_id]").val(selectedId); // set a hidden field of the edit form so submitting it also submits the job ID
+
+  form.submit();
+}
+</script>

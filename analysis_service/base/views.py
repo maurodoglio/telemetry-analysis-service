@@ -46,6 +46,7 @@ def dashboard(request):
             "start_date": datetime.now(),
         }),
         "edit_scheduled_spark_form": forms.EditScheduledSparkForm(),
+        "delete_scheduled_spark_form": forms.DeleteScheduledSparkForm(),
     })
 
 
@@ -74,7 +75,7 @@ def edit_cluster(request):
     form = forms.EditClusterForm(request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also do the renaming for us
+    form.save(request.user)  # this will also update the cluster for us
     return HttpResponseRedirect("/")
 
 
@@ -96,7 +97,6 @@ def new_worker(request):
     form = forms.NewWorkerForm(request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-
     form.save(request.user)  # this will also magically create the worker for us
     return HttpResponseRedirect("/")
 
@@ -108,8 +108,7 @@ def new_scheduled_spark(request):
     form = forms.NewScheduledSparkForm(request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-
-    form.save(request.user)
+    form.save(request.user)  # this will also magically create the job for us
     return HttpResponseRedirect("/")
 
 
@@ -120,8 +119,18 @@ def edit_scheduled_spark(request):
     form = forms.EditScheduledSparkForm(request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+    form.save(request.user)  # this will also update the job for us
+    return HttpResponseRedirect("/")
 
-    form.save(request.user)  # this will also magically spawn the cluster for us
+
+@login_required
+@anonymous_csrf
+@require_POST
+def delete_scheduled_spark(request):
+    form = forms.DeleteScheduledSparkForm(request.POST)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+    form.save(request.user)  # this will also delete the job for us
     return HttpResponseRedirect("/")
 
 
@@ -147,7 +156,7 @@ def periodic_task():
                 ).format(cluster.identifier, now + timedelta(hours=1))
             )
 
-    # kill expired clusters
+    # kill expired workers
     for worker in models.Worker.objects.all():
         if worker.end_date >= now:  # the worker is expired
             worker.delete()
