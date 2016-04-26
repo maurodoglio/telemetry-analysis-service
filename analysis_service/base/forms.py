@@ -137,6 +137,21 @@ class EditClusterForm(forms.ModelForm):
         fields = ['identifier']
 
 
+class DeleteClusterForm(forms.ModelForm):
+    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput())
+
+    def save(self, user):
+        cleaned_data = super(DeleteClusterForm, self).clean()
+        cluster = models.Cluster.objects.get(id=cleaned_data["cluster_id"])
+        if user != cluster.created_by:  # only allow user to delete clusters created by that user
+            raise ValueError("Disallowed attempt to delete another user's cluster")
+        return cluster.delete()
+
+    class Meta:
+        model = models.Cluster
+        fields = []
+
+
 class NewWorkerForm(forms.ModelForm):
     identifier = forms.RegexField(
         required=True,

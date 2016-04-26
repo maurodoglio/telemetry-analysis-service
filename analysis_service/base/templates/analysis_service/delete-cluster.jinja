@@ -1,0 +1,18 @@
+<form action="/delete-cluster/" method="POST" enctype="multipart/form-data" id="delete-cluster-form" class="hidden">
+  {% csrf_token %}
+  {{ delete_cluster_form.cluster_id }}
+</form>
+<button type="button" class="btn btn-md btn-danger" title="Delete selected Spark cluster" onclick="deleteCluster()">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+  </button>
+<script type="text/javascript">
+function deleteCluster() {
+  var selectedClusterId = $("#cluster-table tr.selected td:first").text(); // the first column of the table is a hidden one containing the cluster ID
+  var selectedClusterIdentifier = $("#cluster-table tr:selected td:nth-child(2)").text(); // the second column of the table is the cluster identifier
+  var form = $("#delete-cluster-form");
+  form.find("input[name=cluster_id]").val(selectedClusterId); // set a hidden field of the edit form so submitting it also submits the cluster ID
+  form.find(".cluster-name").val(selectedClusterIdentifier);
+
+  form.submit();
+}
+</script>

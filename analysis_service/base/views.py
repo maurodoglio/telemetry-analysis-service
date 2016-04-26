@@ -28,6 +28,7 @@ def dashboard(request):
             "size": 1,
         }),
         "edit_cluster_form": forms.EditClusterForm(),
+        "delete_cluster_form": forms.DeleteClusterForm(),
 
         "active_workers": models.Worker.objects.filter(created_by=request.user)
                                                .order_by("start_date"),
@@ -62,7 +63,6 @@ def new_cluster(request):
     form = forms.NewClusterForm(request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-
     form.save(request.user)  # this will also magically spawn the cluster for us
     return HttpResponseRedirect("/")
 
@@ -71,11 +71,21 @@ def new_cluster(request):
 @anonymous_csrf
 @require_POST
 def edit_cluster(request):
-    form = forms.EditClusterForm(request.POST, request.FILES)
+    form = forms.EditClusterForm(request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+    form.save(request.user)  # this will also do the renaming for us
+    return HttpResponseRedirect("/")
 
-    form.save(request.user)  # this will also magically spawn the cluster for us
+
+@login_required
+@anonymous_csrf
+@require_POST
+def delete_cluster(request):
+    form = forms.DeleteClusterForm(request.POST)
+    if not form.is_valid():
+        return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
+    form.save(request.user)  # this will also delete the cluster for us
     return HttpResponseRedirect("/")
 
 

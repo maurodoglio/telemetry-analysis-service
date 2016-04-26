@@ -61,6 +61,7 @@ class TestCreateCluster(TestCase):
             self.start_date <= self.cluster.start_date <= self.start_date + timedelta(seconds=10)
         )
         self.assertEqual(self.cluster.created_by, self.test_user)
+        self.assertTrue(User.objects.filter(username='john.smith').exists())
 
     def test_that_deleting_the_cluster_kills_the_cluster(self):
         self.assertEqual(self.cluster_stop.call_count, 1)
@@ -112,3 +113,42 @@ class TestEditCluster(TestCase):
             self.start_date <= self.cluster.start_date <= self.start_date + timedelta(seconds=10)
         )
         self.assertEqual(self.cluster.created_by, self.test_user)
+        self.assertTrue(User.objects.filter(username='john.smith').exists())
+
+
+class TestDeleteCluster(TestCase):
+    @mock.patch('analysis_service.base.util.provisioning.cluster_stop', return_value=None)
+    def setUp(self, cluster_stop):
+        self.start_date = datetime.now().replace(tzinfo=UTC)
+
+        # create a test cluster to edit later
+        self.test_user = User.objects.create_user('john.smith', 'john@smith.com', 'hunter2')
+        self.cluster = models.Cluster()
+        self.cluster.identifier = 'test-cluster'
+        self.cluster.size = 5
+        self.cluster.public_key = 'ssh-rsa AAAAB3'
+        self.cluster.created_by = self.test_user
+        self.cluster.jobflow_id = u'12345'
+        self.cluster.save()
+
+        # request that the test cluster be edited
+        self.client.force_login(self.test_user)
+        self.response = self.client.post('/delete-cluster/', {
+            'cluster_id': self.cluster.id,
+            'identifier': 'new-cluster-name',
+        }, follow=True)
+
+        self.cluster_stop = cluster_stop
+
+    def test_that_request_succeeded(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertEqual(self.response.redirect_chain[-1], ('/', 302))
+
+    def test_that_cluster_is_correctly_deleted(self):
+        self.assertEqual(self.cluster_stop.call_count, 1)
+        (jobflow_id,) = self.cluster_stop.call_args[0]
+        self.assertEqual(jobflow_id, u'12345')
+
+    def test_that_the_model_was_deleted_correctly(self):
+        self.assertFalse(models.Cluster.objects.filter(jobflow_id=u'12345').exists())
+        self.assertTrue(User.objects.filter(username='john.smith').exists())

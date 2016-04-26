@@ -60,7 +60,10 @@
       </table>
       {% if not active_clusters %}<p class="text-center">No active clusters to show.</p>{% endif %}
       {% include 'analysis_service/new-cluster.jinja' %}
-      {% if active_clusters %}{% include 'analysis_service/edit-cluster.jinja' %}{% endif %}
+      {% if active_clusters %}
+        {% include 'analysis_service/edit-cluster.jinja' %}
+        {% include 'analysis_service/delete-cluster.jinja' %}
+      {% endif %}
     </div>
     <div class="col-md-12">
       <h2>Schedule a Spark Job</h2>
