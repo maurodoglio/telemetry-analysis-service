@@ -84,3 +84,9 @@ django-kronos==0.9 \
     --hash=sha256:dc14d8be9c3b7b87c96462fd791a87c4add9f1395febf88aa130c59df48e9543
 python-crontab==2.0.1 \
     --hash=sha256:16a729779f945ee5a98e7eace55233ff5322fe78a97735c154e3a6afeae4e7ee
+mock==2.0.0 \
+    --hash=sha256:5ce3c71c5545b472da17b72268978914d0252980348636840bd34a00b5cc96c1
+funcsigs==1.0.2 \
+    --hash=sha256:330cc27ccbf7f1e992e69fef78261dc7c6569012cf397db8d3de0234e6c937ca
+pbr==1.9.1 \
+    --hash=sha256:fdfda7175428e7527635dfef42d0eda5b609b2d5b1ac707045dbaed7a7307c7f

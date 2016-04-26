@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from pytz import UTC
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -27,7 +28,7 @@ class Cluster(models.Model):
 
     def is_expiring_soon(self):
         """Returns true if the cluster is expiring in the next hour."""
-        return self.end_date <= datetime.now() + timedelta(hours=1)
+        return self.end_date <= datetime.now().replace(tzinfo=UTC) + timedelta(hours=1)
 
     def update_status(self):
         """Should be called to update latest cluster status in `self.most_recent_status`."""
@@ -56,9 +57,10 @@ class Cluster(models.Model):
 
         # set the dates
         if not self.start_date:
-            self.start_date = datetime.now()
+            self.start_date = datetime.now().replace(tzinfo=UTC)
         if not self.end_date:
-            self.end_date = self.start_date + timedelta(days=1)  # clusters expire after 1 day
+            # clusters should expire after 1 day
+            self.end_date = datetime.now().replace(tzinfo=UTC) + timedelta(days=1)
 
         return super(Cluster, self).save(*args, **kwargs)
 
@@ -98,9 +100,9 @@ class Worker(models.Model):
 
         # set the dates
         if not self.start_date:
-            self.start_date = datetime.now()
+            self.start_date = datetime.now().replace(tzinfo=UTC)
         if not self.end_date:
-            self.end_date = datetime.now() + timedelta(days=1)  # workers expire after 1 day
+            self.end_date = self.start_date + timedelta(days=1)  # workers expire after 1 day
         return super(Cluster, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -131,7 +133,7 @@ class ScheduledSpark(models.Model):
     def should_run(self, at_time = None):
         """Return True if the scheduled Spark job should run, False otherwise."""
         if at_time is None:
-            at_time = datetime.now()
+            at_time = datetime.now().replace(tzinfo=UTC)
         active = self.start_date <= at_time <= self.end_date
         hours_since_last_run = (
             float("inf")

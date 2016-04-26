@@ -12,8 +12,8 @@ class PublicKeyFileField(forms.FileField):
     def __init__(self, *args, **kwargs):
         super(PublicKeyFileField, self).__init__(*args, **kwargs)
 
-    def clean(self, data):
-        uploaded_file = super(PublicKeyFileField, self).clean(data)
+    def clean(self, data, initial=None):
+        uploaded_file = super(PublicKeyFileField, self).clean(data, initial)
         if uploaded_file.size > 100000:
             raise ValidationError(
                 'File size must be at most 100kB, actual size is {}'.format(
