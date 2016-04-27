@@ -104,7 +104,11 @@ class NewClusterForm(forms.ModelForm):
 
 
 class EditClusterForm(forms.ModelForm):
-    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput())
+    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput(attrs={
+        # fields with the `selected-cluster` class get their value automatically set to the
+        # cluster ID of the selected cluster in `updateSelectedIdClasses()` in the frontend
+        'class': 'selected-cluster',
+    }))
 
     identifier = forms.RegexField(
         required=True,
@@ -138,7 +142,11 @@ class EditClusterForm(forms.ModelForm):
 
 
 class DeleteClusterForm(forms.ModelForm):
-    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput())
+    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput(attrs={
+        # fields with the `selected-cluster` class get their value automatically set to the
+        # cluster ID of the selected cluster in `updateSelectedIdClasses()` in the frontend
+        'class': 'selected-cluster',
+    }))
 
     def save(self, user):
         cleaned_data = super(DeleteClusterForm, self).clean()
@@ -304,7 +312,11 @@ class NewScheduledSparkForm(forms.ModelForm):
 
 
 class EditScheduledSparkForm(forms.ModelForm):
-    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput())
+    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput(attrs={
+        # fields with the `selected-scheduled-spark` class get their value automatically set to the
+        # job ID of the selected scheduled Spark job in `updateSelectedIdClasses()` in the frontend
+        'class': 'selected-scheduled-spark',
+    }))
 
     identifier = forms.RegexField(
         required=True,
@@ -418,7 +430,11 @@ class EditScheduledSparkForm(forms.ModelForm):
 
 
 class DeleteScheduledSparkForm(forms.ModelForm):
-    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput())
+    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput(attrs={
+        # fields with the `selected-scheduled-spark` class get their value automatically set to the
+        # job ID of the selected scheduled Spark job in `updateSelectedIdClasses()` in the frontend
+        'class': 'selected-scheduled-spark',
+    }))
 
     def save(self, user):
         cleaned_data = super(DeleteScheduledSparkForm, self).clean()

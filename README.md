@@ -50,6 +50,8 @@ Quick troubleshooting guide:
 * Django gives an error message similar to `OperationalError: SOME_TABLE doesn't exist`
     * The database likely isn't set up correctly.
     * Run `docker-compose run web ./manage.py migrate --run-syncdb` to update it.
+* Django gives some other form of `OperationalError`, and we don't really care about the data that's already in the database (e.g., while developing or testing)
+    * Most database issues can be resolved by just deleting the database, `telemetry_analysis.db`. It will be recreated on the next run.
 * Database errors are usually caused by an improper database configuration. For development purposes, recreating the database will often solve the issue.
 * Django gives an error message similar to `'NoneType' object has no attribute 'get_frozen_credentials'`.
     * The AWS credentials on the current machine are likely not correctly set.

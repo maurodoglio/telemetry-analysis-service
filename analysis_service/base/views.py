@@ -162,6 +162,4 @@ def periodic_task():
             worker.delete()
 
     # launch scheduled jobs if necessary
-    for scheduled_spark in models.ScheduledSpark.objects.all():
-        if scheduled_spark.should_run(now):
-            scheduled_spark.run()
+    models.ScheduledSpark.step_all()

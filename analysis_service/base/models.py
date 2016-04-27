@@ -13,8 +13,8 @@ class Cluster(models.Model):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='cluster_created_by')
-    jobflow_id = models.CharField(max_length=50, blank=True, null=True)
 
+    jobflow_id = models.CharField(max_length=50, blank=True, null=True)
     most_recent_status = models.CharField(max_length=50, default="UNKNOWN")
 
     def __str__(self):
@@ -47,7 +47,7 @@ class Cluster(models.Model):
         spawning the cluster if it's not already spawned.
         """
         # actually start the cluster
-        if not self.jobflow_id:
+        if self.jobflow_id is None:
             self.jobflow_id = provisioning.cluster_start(
                 self.created_by.email,
                 self.identifier,
@@ -66,7 +66,7 @@ class Cluster(models.Model):
 
     def delete(self, *args, **kwargs):
         """Remove the cluster from the database, shutting down the actual cluster."""
-        if self.jobflow_id:
+        if self.jobflow_id is not None:
             provisioning.cluster_stop(self.jobflow_id)
 
         return super(Cluster, self).delete(*args, **kwargs)
@@ -124,14 +124,34 @@ class ScheduledSpark(models.Model):
     last_run_date = models.DateTimeField(blank=True, null=True)
     created_by = models.ForeignKey(User, related_name='scheduled_spark_created_by')
 
+    current_run_jobflow_id = models.CharField(max_length=50, blank=True, null=True)
+    most_recent_status = models.CharField(max_length=50, default="NOT RUNNING")
+
     def __str__(self):
         return "<ScheduledSpark {}>".format(self.identifier)
 
     def __repr__(self):
         return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
 
+    def get_info(self):
+        if self.current_run_jobflow_id is None:
+            return None
+        return provisioning.cluster_info(self.current_run_jobflow_id)
+
+    def update_status(self):
+        """Should be called to update latest cluster status in `self.most_recent_status`."""
+        info = self.get_info()
+        if info is None:
+            self.most_recent_status = "NOT RUNNING"
+        else:
+            self.most_recent_status = info["state"]
+        return self.most_recent_status
+
     def should_run(self, at_time = None):
+        return False
         """Return True if the scheduled Spark job should run, False otherwise."""
+        if self.current_run_jobflow_id is not None:
+            return False  # the job is still running, don't start it again
         if at_time is None:
             at_time = datetime.now().replace(tzinfo=UTC)
         active = self.start_date <= at_time <= self.end_date
@@ -145,7 +165,9 @@ class ScheduledSpark(models.Model):
 
     def run(self):
         """Actually run the scheduled Spark job."""
-        scheduling.scheduled_spark_run(
+        if self.current_run_jobflow_id is not None:
+            return  # the job is still running, don't start it again
+        self.current_run_jobflow_id = scheduling.scheduled_spark_run(
             self.created_by.email,
             self.identifier,
             self.notebook_s3_key,
@@ -153,6 +175,12 @@ class ScheduledSpark(models.Model):
             self.size,
             self.job_timeout
         )
+        self.update_status()
+
+    def terminate(self):
+        """Stop the currently running scheduled Spark job."""
+        if self.current_run_jobflow_id:
+            provisioning.cluster_stop(self.current_run_jobflow_id)
 
     def save(self, notebook_uploadedfile = None, *args, **kwargs):
         if notebook_uploadedfile is not None:  # notebook specified, replace current notebook
@@ -163,6 +191,16 @@ class ScheduledSpark(models.Model):
         return super(ScheduledSpark, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
+        self.terminate()  # make sure to shut down the cluster if it's currently running
         scheduling.scheduled_spark_remove(self.notebook_s3_key)
 
         super(ScheduledSpark, self).delete(*args, **kwargs)
+
+    @classmethod
+    def step_all(cls):
+        """Run all the scheduled tasks that are supposed to run."""
+        now = datetime.now()
+        for scheduled_spark in cls.objects.all():
+            if scheduled_spark.should_run(now):
+                scheduled_spark.run()
+                scheduled_spark.save()
