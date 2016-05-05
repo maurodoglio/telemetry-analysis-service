@@ -7,15 +7,38 @@ from analysis_service.base.util import provisioning, scheduling
 
 
 class Cluster(models.Model):
-    identifier = models.CharField(max_length=100)
-    size = models.IntegerField()
-    public_key = models.CharField(max_length=100000)
-    start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey(User, related_name='cluster_created_by')
+    identifier = models.CharField(
+        max_length=100,
+        help_text="Cluster name, used to non-uniqely identify individual clusters."
+    )
+    size = models.IntegerField(
+        help_text="Number of computers  used in the cluster."
+    )
+    public_key = models.CharField(
+        max_length=100000,
+        help_text="Public key that should be authorized for SSH access to the cluster."
+    )
+    start_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the cluster was started, or null if the cluster isn't started yet."
+    )
+    end_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the cluster will expire and automatically be killed."
+    )
+    created_by = models.ForeignKey(
+        User, related_name='cluster_created_by',
+        help_text="User that created the cluster instance."
+    )
 
-    jobflow_id = models.CharField(max_length=50, blank=True, null=True)
-    most_recent_status = models.CharField(max_length=50, default="UNKNOWN")
+    jobflow_id = models.CharField(
+        max_length=50, blank=True, null=True,
+        help_text="AWS cluster/jobflow ID for the cluster, used for cluster management."
+    )
+    most_recent_status = models.CharField(
+        max_length=50, default="UNKNOWN",
+        help_text="Most recently retrieved AWS status for the cluster."
+    )
 
     def __str__(self):
         return self.identifier
@@ -73,12 +96,30 @@ class Cluster(models.Model):
 
 
 class Worker(models.Model):
-    identifier = models.CharField(max_length=100)
-    public_key = models.CharField(max_length=100000)
-    start_date = models.DateTimeField(blank=True, null=True)
-    end_date = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey(User, related_name='worker_created_by')
-    instance_id = models.CharField(max_length=50, blank=True, null=True)
+    identifier = models.CharField(
+        max_length=100,
+        help_text="Worker name, used to non-uniqely identify individual workers."
+    )
+    public_key = models.CharField(
+        max_length=100000,
+        help_text="Public key that should be authorized for SSH access to the worker."
+    )
+    start_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the worker was started, or null if the worker isn't started yet."
+    )
+    end_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the worker will expire and automatically be killed."
+    )
+    created_by = models.ForeignKey(
+        User, related_name='worker_created_by',
+        help_text="User that created the worker instance."
+    )
+    instance_id = models.CharField(
+        max_length=50, blank=True, null=True,
+        help_text="AWS EC2 instance ID for the cluster, used for worker management."
+    )
 
     def __str__(self):
         return self.identifier
@@ -112,17 +153,46 @@ class Worker(models.Model):
 
 
 class ScheduledSpark(models.Model):
-    identifier = models.CharField(max_length=100)
-    notebook_s3_key = models.CharField(max_length=800)
-    result_visibility = models.CharField(max_length=50)  # can currently be "private" or "public"
-    size = models.IntegerField()
-    interval_in_hours = models.IntegerField()
-    job_timeout = models.IntegerField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField(blank=True, null=True)
-    is_enabled = models.BooleanField(default=True)
-    last_run_date = models.DateTimeField(blank=True, null=True)
-    created_by = models.ForeignKey(User, related_name='scheduled_spark_created_by')
+    identifier = models.CharField(
+        max_length=100,
+        help_text="Job name, used to non-uniqely identify individual jobs."
+    )
+    notebook_s3_key = models.CharField(
+        max_length=800,
+        help_text="S3 key of the notebook after uploading it to the Spark code bucket."
+    )
+    result_visibility = models.CharField(  # can currently be "public" or "private"
+        max_length=50,
+        help_text="Whether notebook results are uploaded to a public or private bucket"
+    )
+    size = models.IntegerField(
+        help_text="Number of computers to use to run the job."
+    )
+    interval_in_hours = models.IntegerField(
+        help_text="Interval at which the job should run, in hours."
+    )
+    job_timeout = models.IntegerField(
+        help_text="Number of hours before the job times out."
+    )
+    start_date = models.DateTimeField(
+        help_text="Date/time that the job should start being scheduled to run."
+    )
+    end_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the job should stop being scheduled to run, null if no end date."
+    )
+    is_enabled = models.BooleanField(
+        default=True,
+        help_text="Whether the job should run or not."
+    )
+    last_run_date = models.DateTimeField(
+        blank=True, null=True,
+        help_text="Date/time that the job was last started, null if never."
+    )
+    created_by = models.ForeignKey(
+        User, related_name='scheduled_spark_created_by',
+        help_text="User that created the scheduled job instance."
+    )
 
     current_run_jobflow_id = models.CharField(max_length=50, blank=True, null=True)
     most_recent_status = models.CharField(max_length=50, default="NOT RUNNING")
@@ -147,8 +217,16 @@ class ScheduledSpark(models.Model):
             self.most_recent_status = info["state"]
         return self.most_recent_status
 
-    def should_run(self, at_time = None):
+    def is_expired(self, at_time = None):
+        if self.current_run_jobflow_id is None:
+            return False  # job isn't even running at the moment
+        if at_time is None:
+            at_time = datetime.now().replace(tzinfo=UTC)
+        if self.last_run_date + timedelta(hours=self.job_timeout) >= at_time:
+            return True  # current job run expired
         return False
+
+    def should_run(self, at_time = None):
         """Return True if the scheduled Spark job should run, False otherwise."""
         if self.current_run_jobflow_id is not None:
             return False  # the job is still running, don't start it again
@@ -156,12 +234,12 @@ class ScheduledSpark(models.Model):
             at_time = datetime.now().replace(tzinfo=UTC)
         active = self.start_date <= at_time <= self.end_date
         hours_since_last_run = (
-            float("inf")
+            float("inf")  # job was never run before
             if self.last_run_date is None else
             (at_time - self.last_run_date).total_seconds() / 3600
         )
         can_run_now = hours_since_last_run >= self.interval_in_hours
-        return self.enabled and active and can_run_now
+        return self.is_enabled and active and can_run_now
 
     def run(self):
         """Actually run the scheduled Spark job."""
@@ -204,3 +282,5 @@ class ScheduledSpark(models.Model):
             if scheduled_spark.should_run(now):
                 scheduled_spark.run()
                 scheduled_spark.save()
+            if scheduled_spark.is_expired(now):
+                scheduled_spark.delete()
