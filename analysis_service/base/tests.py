@@ -81,7 +81,7 @@ class TestEditCluster(TestCase):
         # request that the test cluster be edited
         self.client.force_login(self.test_user)
         self.response = self.client.post('/edit-cluster/', {
-            'cluster_id': cluster.id,
+            'cluster': cluster.id,
             'identifier': 'new-cluster-name',
         }, follow=True)
 
@@ -125,7 +125,7 @@ class TestDeleteCluster(TestCase):
 
         # request that the test cluster be deleted
         self.response = self.client.post('/delete-cluster/', {
-            'cluster_id': cluster.id,
+            'cluster': cluster.id,
         }, follow=True)
 
         self.cluster_stop = cluster_stop
@@ -214,7 +214,7 @@ class TestEditScheduledSpark(TestCase):
 
         # request that a new scheduled Spark job be created
         self.response = self.client.post('/edit-scheduled-spark/', {
-            'job_id': scheduled_spark.id,
+            'job': scheduled_spark.id,
             'identifier': 'new-scheduled-spark-name',
             'result_visibility': 'public',
             'size': 3,
@@ -263,7 +263,7 @@ class TestDeleteScheduledSpark(TestCase):
 
         # request that the test job be deleted
         self.response = self.client.post('/delete-scheduled-spark/', {
-            'job_id': scheduled_spark.id,
+            'job': scheduled_spark.id,
         }, follow=True)
 
         self.scheduled_spark_remove = scheduled_spark_remove

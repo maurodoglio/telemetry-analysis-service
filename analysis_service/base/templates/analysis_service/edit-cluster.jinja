@@ -5,7 +5,7 @@
   <div class="modal-dialog" role="document">
     <form class="modal-content" action="/edit-cluster/" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ edit_cluster_form.cluster_id }}
+      {{ edit_cluster_form.cluster }}
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Edit Spark cluster <span class="selected-cluster-name"></span></h4>

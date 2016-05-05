@@ -5,7 +5,7 @@
   <div class="modal-dialog" role="document">
     <form class="modal-content" action="/edit-scheduled-spark/" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ edit_scheduled_spark_form.job_id }}
+      {{ edit_scheduled_spark_form.job }}
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Edit scheduled Spark job <span class="selected-scheduled-spark-name"></span></h4>

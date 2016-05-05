@@ -23,30 +23,30 @@ def dashboard(request):
     return render(request, 'analysis_service/dashboard.jinja', context={
         "active_clusters": models.Cluster.objects.filter(created_by=request.user)
                                                  .order_by("start_date"),
-        "new_cluster_form": forms.NewClusterForm(initial={
+        "new_cluster_form": forms.NewClusterForm(request.user, initial={
             "identifier": "{}-telemetry-analysis".format(username),
             "size": 1,
         }),
-        "edit_cluster_form": forms.EditClusterForm(),
-        "delete_cluster_form": forms.DeleteClusterForm(),
+        "edit_cluster_form": forms.EditClusterForm(request.user),
+        "delete_cluster_form": forms.DeleteClusterForm(request.user),
 
         "active_workers": models.Worker.objects.filter(created_by=request.user)
                                                .order_by("start_date"),
-        "new_worker_form": forms.NewWorkerForm(initial={
+        "new_worker_form": forms.NewWorkerForm(request.user, initial={
             "identifier": "{}-telemetry-worker".format(username),
         }),
 
         "active_scheduled_spark": models.ScheduledSpark.objects.filter(created_by=request.user)
                                                                .order_by("start_date"),
-        "new_scheduled_spark_form": forms.NewScheduledSparkForm(initial={
+        "new_scheduled_spark_form": forms.NewScheduledSparkForm(request.user, initial={
             "identifier": "{}-telemetry-scheduled-task".format(username),
             "size": 1,
             "interval_in_hours": 24 * 7,
             "job_timeout": 24,
             "start_date": datetime.now(),
         }),
-        "edit_scheduled_spark_form": forms.EditScheduledSparkForm(),
-        "delete_scheduled_spark_form": forms.DeleteScheduledSparkForm(),
+        "edit_scheduled_spark_form": forms.EditScheduledSparkForm(request.user),
+        "delete_scheduled_spark_form": forms.DeleteScheduledSparkForm(request.user),
     })
 
 
@@ -61,10 +61,10 @@ def login(request):
 @anonymous_csrf
 @require_POST
 def new_cluster(request):
-    form = forms.NewClusterForm(request.POST, request.FILES)
+    form = forms.NewClusterForm(request.user, request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also magically spawn the cluster for us
+    form.save()  # this will also magically spawn the cluster for us
     return HttpResponseRedirect("/")
 
 
@@ -72,10 +72,10 @@ def new_cluster(request):
 @anonymous_csrf
 @require_POST
 def edit_cluster(request):
-    form = forms.EditClusterForm(request.POST)
+    form = forms.EditClusterForm(request.user, request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also update the cluster for us
+    form.save()  # this will also update the cluster for us
     return HttpResponseRedirect("/")
 
 
@@ -83,10 +83,10 @@ def edit_cluster(request):
 @anonymous_csrf
 @require_POST
 def delete_cluster(request):
-    form = forms.DeleteClusterForm(request.POST)
+    form = forms.DeleteClusterForm(request.user, request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also delete the cluster for us
+    form.save()  # this will also delete the cluster for us
     return HttpResponseRedirect("/")
 
 
@@ -94,10 +94,10 @@ def delete_cluster(request):
 @anonymous_csrf
 @require_POST
 def new_worker(request):
-    form = forms.NewWorkerForm(request.POST, request.FILES)
+    form = forms.NewWorkerForm(request.user, request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also magically create the worker for us
+    form.save()  # this will also magically create the worker for us
     return HttpResponseRedirect("/")
 
 
@@ -105,10 +105,10 @@ def new_worker(request):
 @anonymous_csrf
 @require_POST
 def new_scheduled_spark(request):
-    form = forms.NewScheduledSparkForm(request.POST, request.FILES)
+    form = forms.NewScheduledSparkForm(request.user, request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also magically create the job for us
+    form.save()  # this will also magically create the job for us
     return HttpResponseRedirect("/")
 
 
@@ -116,10 +116,10 @@ def new_scheduled_spark(request):
 @anonymous_csrf
 @require_POST
 def edit_scheduled_spark(request):
-    form = forms.EditScheduledSparkForm(request.POST, request.FILES)
+    form = forms.EditScheduledSparkForm(request.user, request.POST, request.FILES)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also update the job for us
+    form.save()  # this will also update the job for us
     return HttpResponseRedirect("/")
 
 
@@ -127,10 +127,10 @@ def edit_scheduled_spark(request):
 @anonymous_csrf
 @require_POST
 def delete_scheduled_spark(request):
-    form = forms.DeleteScheduledSparkForm(request.POST)
+    form = forms.DeleteScheduledSparkForm(request.user, request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(form.errors.as_json(escape_html=True))
-    form.save(request.user)  # this will also delete the job for us
+    form.save()  # this will also delete the job for us
     return HttpResponseRedirect("/")
 
 

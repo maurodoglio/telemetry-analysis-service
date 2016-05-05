@@ -1,14 +1,15 @@
-import logging
 from django import forms
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
 from analysis_service.base import models
 
 
-logger = logging.getLogger("django")
-
-
 class PublicKeyFileField(forms.FileField):
+    """
+    Custom Django file field that only accepts SSH public keys.
+
+    The cleaned data is the public key as a string.
+    """
     def __init__(self, *args, **kwargs):
         super(PublicKeyFileField, self).__init__(*args, **kwargs)
 
@@ -26,28 +27,6 @@ class PublicKeyFileField(forms.FileField):
                 'Invalid public key (a public key should start with \'ssh-rsa AAAAB3\')'
             )
         return contents
-
-
-class ClusterIdField(forms.IntegerField):
-    def __init__(self, *args, **kwargs):
-        super(ClusterIdField, self).__init__(*args, **kwargs)
-
-    def clean(self, data):
-        cluster_id = super(ClusterIdField, self).clean(data)
-        if not models.Cluster.objects.filter(id=cluster_id).exists():
-            raise ValidationError('Cluster {} not found'.format(cluster_id))
-        return cluster_id
-
-
-class ScheduledSparkIdField(forms.IntegerField):
-    def __init__(self, *args, **kwargs):
-        super(ScheduledSparkIdField, self).__init__(*args, **kwargs)
-
-    def clean(self, data):
-        scheduled_spark_id = super(ScheduledSparkIdField, self).clean(data)
-        if not models.ScheduledSpark.objects.filter(id=scheduled_spark_id).exists():
-            raise ValidationError('Scheduled Spark job {} not found'.format(scheduled_spark_id))
-        return scheduled_spark_id
 
 
 class NewClusterForm(forms.ModelForm):
@@ -87,13 +66,17 @@ class NewClusterForm(forms.ModelForm):
         widget=forms.FileInput(attrs={'required': 'required'})
     )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(NewClusterForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         # create the model without committing, since we haven't
         # set the required created_by field yet
         new_cluster = super(NewClusterForm, self).save(commit=False)
 
         # set the field to the user that created the cluster
-        new_cluster.created_by = models.User.objects.get(email=user.email)
+        new_cluster.created_by = self.created_by
 
         # actually start the real cluster, and return the model object
         new_cluster.save()
@@ -104,11 +87,15 @@ class NewClusterForm(forms.ModelForm):
 
 
 class EditClusterForm(forms.ModelForm):
-    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput(attrs={
-        # fields with the `selected-cluster` class get their value automatically set to the
-        # cluster ID of the selected cluster in `updateSelectedIdClasses()` in the frontend
-        'class': 'selected-cluster',
-    }))
+    cluster = forms.ModelChoiceField(
+        queryset=models.Cluster.objects.all(),
+        required=True,
+        widget=forms.HiddenInput(attrs={
+            # fields with the `selected-cluster` class get their value automatically
+            # set to the cluster ID of the selected cluster
+            'class': 'selected-cluster',
+        })
+    )
 
     identifier = forms.RegexField(
         required=True,
@@ -127,10 +114,14 @@ class EditClusterForm(forms.ModelForm):
         })
     )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(EditClusterForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         cleaned_data = super(EditClusterForm, self).clean()
-        cluster = models.Cluster.objects.get(id=cleaned_data["cluster_id"])
-        if user != cluster.created_by:  # only allow user to edit clusters created by that user
+        cluster = cleaned_data["cluster"]
+        if self.created_by != cluster.created_by:  # only allow editing clusters that one created
             raise ValueError("Disallowed attempt to edit another user's cluster")
         cluster.identifier = cleaned_data["identifier"]
         cluster.update_identifier()
@@ -142,16 +133,24 @@ class EditClusterForm(forms.ModelForm):
 
 
 class DeleteClusterForm(forms.ModelForm):
-    cluster_id = ClusterIdField(required=True, widget=forms.HiddenInput(attrs={
-        # fields with the `selected-cluster` class get their value automatically set to the
-        # cluster ID of the selected cluster in `updateSelectedIdClasses()` in the frontend
-        'class': 'selected-cluster',
-    }))
+    cluster = forms.ModelChoiceField(
+        queryset=models.Cluster.objects.all(),
+        required=True,
+        widget=forms.HiddenInput(attrs={
+            # fields with the `selected-cluster` class get their value automatically
+            # set to the cluster ID of the selected cluster
+            'class': 'selected-cluster',
+        })
+    )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(DeleteClusterForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         cleaned_data = super(DeleteClusterForm, self).clean()
-        cluster = models.Cluster.objects.get(id=cleaned_data["cluster_id"])
-        if user != cluster.created_by:  # only allow user to delete clusters created by that user
+        cluster = cleaned_data["cluster"]
+        if self.created_by != cluster.created_by:  # only allow deleting clusters that one created
             raise ValueError("Disallowed attempt to delete another user's cluster")
         cluster.delete()
 
@@ -182,13 +181,17 @@ class NewWorkerForm(forms.ModelForm):
         widget=forms.FileInput(attrs={'required': 'required'})
     )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(NewWorkerForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         # create the model without committing, since we haven't
         # set the required created_by field yet
         new_worker = super(NewWorkerForm, self).save(commit=False)
 
         # set the field to the user that created the worker
-        new_worker.created_by = models.User.objects.get(email=user.email)
+        new_worker.created_by = self.created_by
 
         # actually start the real worker, and return the model object
         new_worker.save()
@@ -292,13 +295,17 @@ class NewScheduledSparkForm(forms.ModelForm):
         })
     )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(NewScheduledSparkForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         # create the model without committing, since we haven't
         # set the required created_by field yet
         new_scheduled_spark = super(NewScheduledSparkForm, self).save(commit=False)
 
         # set the field to the user that created the scheduled Spark job
-        new_scheduled_spark.created_by = models.User.objects.get(email=user.email)
+        new_scheduled_spark.created_by = self.created_by
 
         # actually save the scheduled Spark job, and return the model object
         new_scheduled_spark.save(self.cleaned_data["notebook"])
@@ -312,11 +319,15 @@ class NewScheduledSparkForm(forms.ModelForm):
 
 
 class EditScheduledSparkForm(forms.ModelForm):
-    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput(attrs={
-        # fields with the `selected-scheduled-spark` class get their value automatically set to the
-        # job ID of the selected scheduled Spark job in `updateSelectedIdClasses()` in the frontend
-        'class': 'selected-scheduled-spark',
-    }))
+    job = forms.ModelChoiceField(
+        queryset=models.ScheduledSpark.objects.all(),
+        required=True,
+        widget=forms.HiddenInput(attrs={
+            # fields with the `selected-scheduled-spark` class get their value
+            # automatically set to the job ID of the selected scheduled Spark job
+            'class': 'selected-scheduled-spark',
+        })
+    )
 
     identifier = forms.RegexField(
         required=True,
@@ -407,10 +418,14 @@ class EditScheduledSparkForm(forms.ModelForm):
         })
     )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(EditScheduledSparkForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         cleaned_data = super(EditScheduledSparkForm, self).clean()
-        job = models.ScheduledSpark.objects.get(id=cleaned_data["job_id"])
-        if user != job.created_by:  # only allow user to edit jobs that are created by that user
+        job = cleaned_data["job"]
+        if self.created_by != job.created_by:  # only allow editing jobs that one creates
             raise ValueError("Disallowed attempt to edit another user's scheduled job")
         job.identifier = cleaned_data["identifier"]
         job.result_visibility = cleaned_data["result_visibility"]
@@ -430,16 +445,24 @@ class EditScheduledSparkForm(forms.ModelForm):
 
 
 class DeleteScheduledSparkForm(forms.ModelForm):
-    job_id = ScheduledSparkIdField(required=True, widget=forms.HiddenInput(attrs={
-        # fields with the `selected-scheduled-spark` class get their value automatically set to the
-        # job ID of the selected scheduled Spark job in `updateSelectedIdClasses()` in the frontend
-        'class': 'selected-scheduled-spark',
-    }))
+    job = forms.ModelChoiceField(
+        queryset=models.ScheduledSpark.objects.all(),
+        required=True,
+        widget=forms.HiddenInput(attrs={
+            # fields with the `selected-scheduled-spark` class get their value
+            # automatically set to the job ID of the selected scheduled Spark job
+            'class': 'selected-scheduled-spark',
+        })
+    )
 
-    def save(self, user):
+    def __init__(self, user, *args, **kwargs):
+        self.created_by = user
+        super(DeleteScheduledSparkForm, self).__init__(*args, **kwargs)
+
+    def save(self):
         cleaned_data = super(DeleteScheduledSparkForm, self).clean()
-        job = models.ScheduledSpark.objects.get(id=cleaned_data["job_id"])
-        if user != job.created_by:  # only allow user to delete jobs that are created by that user
+        job = cleaned_data["job"]
+        if self.created_by != job.created_by:  # only allow deleting jobs that one creates
             raise ValueError("Disallowed attempt to delete another user's scheduled job")
         job.delete()
 
