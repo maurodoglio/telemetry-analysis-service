@@ -20,7 +20,7 @@ class Cluster(models.Model):
     )
     start_date = models.DateTimeField(
         blank=True, null=True,
-        help_text="Date/time that the cluster was started, or null if the cluster isn't started yet."
+        help_text="Date/time that the cluster was started, or null if it isn't started yet."
     )
     end_date = models.DateTimeField(
         blank=True, null=True,
