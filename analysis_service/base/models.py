@@ -18,10 +18,10 @@ class Cluster(models.Model):
     most_recent_status = models.CharField(max_length=50, default="UNKNOWN")
 
     def __str__(self):
-        return "<Cluster {}>".format(self.identifier)
+        return self.identifier
 
     def __repr__(self):
-        return "<Cluster {} {}>".format(self.identifier, self.size)
+        return "<Cluster {} of size {}>".format(self.identifier, self.size)
 
     def get_info(self):
         return provisioning.cluster_info(self.jobflow_id)
@@ -81,7 +81,7 @@ class Worker(models.Model):
     instance_id = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
-        return "<Worker {}>".format(self.identifier)
+        return self.identifier
 
     def __repr__(self):
         return "<Worker {}>".format(self.identifier)
@@ -128,10 +128,10 @@ class ScheduledSpark(models.Model):
     most_recent_status = models.CharField(max_length=50, default="NOT RUNNING")
 
     def __str__(self):
-        return "<ScheduledSpark {}>".format(self.identifier)
+        return self.identifier
 
     def __repr__(self):
-        return "<ScheduledSpark {} {}>".format(self.identifier, self.size)
+        return "<ScheduledSpark {} with {} nodes>".format(self.identifier, self.size)
 
     def get_info(self):
         if self.current_run_jobflow_id is None:
