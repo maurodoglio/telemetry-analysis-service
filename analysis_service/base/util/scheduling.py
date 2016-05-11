@@ -49,7 +49,7 @@ def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, 
         },
         JobFlowRole=settings.AWS_CONFIG["SPARK_INSTANCE_PROFILE"],
         ServiceRole='EMR_DefaultRole',
-        Applications=[{'Name': 'Spark'}],
+        Applications=[{'Name': 'Spark'}, {'Name': 'Hive'}],
         Configurations=configurations,
         Steps=[{
             'Name': 'RunNotebookStep',

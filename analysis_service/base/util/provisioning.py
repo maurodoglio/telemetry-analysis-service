@@ -36,7 +36,7 @@ def cluster_start(user_email, identifier, size, public_key):
         },
         JobFlowRole=settings.AWS_CONFIG["SPARK_INSTANCE_PROFILE"],
         ServiceRole='EMR_DefaultRole',
-        Applications=[{'Name': 'Spark'}],
+        Applications=[{'Name': 'Spark'}, {'Name': 'Hive'}],
         Configurations=configurations,
         BootstrapActions=[{
             'Name': 'setup-telemetry-cluster',

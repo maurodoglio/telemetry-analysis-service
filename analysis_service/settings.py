@@ -84,7 +84,7 @@ AWS_CONFIG = {
     # setup bootstrap action depends on it to autotune the cluster.
     'MASTER_INSTANCE_TYPE':   'c3.4xlarge',
     'SLAVE_INSTANCE_TYPE':    'c3.4xlarge',
-    'EMR_RELEASE':            'emr-4.2.0',
+    'EMR_RELEASE':            'emr-4.3.0',
     'SPARK_INSTANCE_PROFILE': 'telemetry-spark-cloudformation-'
                               'TelemetrySparkInstanceProfile-1SATUBVEXG7E3',
     'SPARK_EMR_BUCKET':       'telemetry-spark-emr-2',
