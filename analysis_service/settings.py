@@ -97,7 +97,6 @@ AWS_CONFIG = {
     'EMAIL_SOURCE':     'telemetry-alerts@mozilla.com',
 
     # Buckets for storing S3 data
-    'TEMPORARY_BUCKET':    'bucket-for-ssh-keys',
     'CODE_BUCKET':         'telemetry-analysis-code-2',
     'PUBLIC_DATA_BUCKET':  'telemetry-public-analysis-2',
     'PRIVATE_DATA_BUCKET': 'telemetry-private-analysis-2',

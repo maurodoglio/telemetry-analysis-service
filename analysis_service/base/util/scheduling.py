@@ -3,10 +3,11 @@ from uuid import uuid4
 from django.conf import settings
 import boto3
 import requests
+from provisioning import get_tag_value
 
-emr = boto3.client("emr", region_name=settings.AWS_CONFIG['AWS_REGION'])
-ec2 = boto3.client("ec2", region_name=settings.AWS_CONFIG['AWS_REGION'])
-s3 = boto3.client("s3", region_name=settings.AWS_CONFIG['AWS_REGION'])
+emr = boto3.client('emr', region_name=settings.AWS_CONFIG['AWS_REGION'])
+ec2 = boto3.client('ec2', region_name=settings.AWS_CONFIG['AWS_REGION'])
+s3 = boto3.client('s3', region_name=settings.AWS_CONFIG['AWS_REGION'])
 
 
 def scheduled_spark_add(identifier, notebook_uploadedfile):
@@ -29,15 +30,15 @@ def scheduled_spark_remove(notebook_s3_key):
 
 def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, size, job_timeout):
     configurations = requests.get(
-        "https://s3-{}.amazonaws.com/{}/configuration/configuration.json".format(
-            settings.AWS_CONFIG["AWS_REGION"],
-            settings.AWS_CONFIG["SPARK_EMR_BUCKET"]
+        'https://s3-{}.amazonaws.com/{}/configuration/configuration.json'.format(
+            settings.AWS_CONFIG['AWS_REGION'],
+            settings.AWS_CONFIG['SPARK_EMR_BUCKET']
         )
     ).json()
     if result_is_public:
-        data_bucket = settings.AWS_CONFIG["PUBLIC_DATA_BUCKET"]
+        data_bucket = settings.AWS_CONFIG['PUBLIC_DATA_BUCKET']
     else:
-        data_bucket = settings.AWS_CONFIG["PRIVATE_DATA_BUCKET"]
+        data_bucket = settings.AWS_CONFIG['PRIVATE_DATA_BUCKET']
     cluster = emr.run_job_flow(
         Name=str(uuid4()),
         ReleaseLabel=settings.AWS_CONFIG['EMR_RELEASE'],
@@ -47,7 +48,7 @@ def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, 
             'InstanceCount': size,
             'Ec2KeyName': 'mozilla_vitillo',
         },
-        JobFlowRole=settings.AWS_CONFIG["SPARK_INSTANCE_PROFILE"],
+        JobFlowRole=settings.AWS_CONFIG['SPARK_INSTANCE_PROFILE'],
         ServiceRole='EMR_DefaultRole',
         Applications=[{'Name': 'Spark'}, {'Name': 'Hive'}],
         Configurations=configurations,
@@ -59,20 +60,20 @@ def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, 
                     settings.AWS_CONFIG['AWS_REGION']
                 ),
                 'Args': [
-                    "s3://{}/steps/batch.sh".format(settings.AWS_CONFIG["SPARK_EMR_BUCKET"]),
-                    "--job-name", identifier,
-                    "--notebook", notebook_uri,
-                    "--data-bucket", data_bucket
+                    's3://{}/steps/batch.sh'.format(settings.AWS_CONFIG['SPARK_EMR_BUCKET']),
+                    '--job-name', identifier,
+                    '--notebook', notebook_uri,
+                    '--data-bucket', data_bucket
                 ]
             }
         }],
         BootstrapActions=[{
             'Name': 'setup-telemetry-scheduled-spark',
             'ScriptBootstrapAction': {
-                'Path': "s3://{}/bootstrap/telemetry.sh".format(
-                    settings.AWS_CONFIG["SPARK_EMR_BUCKET"]
+                'Path': 's3://{}/bootstrap/telemetry.sh'.format(
+                    settings.AWS_CONFIG['SPARK_EMR_BUCKET']
                 ),
-                'Args': ["--timeout", job_timeout]
+                'Args': ['--timeout', job_timeout]
             }
         }],
         Tags=[
@@ -81,8 +82,5 @@ def scheduled_spark_run(user_email, identifier, notebook_uri, result_is_public, 
             {'Key': 'Application', 'Value': settings.AWS_CONFIG['INSTANCE_APP_TAG']},
         ]
     )
-    return cluster["JobFlowId"]
+    return cluster['JobFlowId']
 
-
-def get_tag_value(tags, key):
-    return next((tag.value for tag in tags if tag.key == key), None)
