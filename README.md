@@ -10,6 +10,7 @@ Run the tests
 
 There's a sample test in `analysis_service/base/tests.py` for your convenience, that you can run using the following command:
 
+    docker-compose run web ./manage.py collectstatic # this is only necessary after adding/removing/editing static files
     docker-compose run web ./manage.py test
 
 If you want to run the full suite, with flake8 and coverage, you may use
