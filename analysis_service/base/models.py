@@ -64,6 +64,24 @@ class Cluster(models.Model):
         provisioning.cluster_rename(self.jobflow_id, self.identifier)
         return self.identifier
 
+    def get_idle_duration(self):
+        """
+        Obtain the amount of time (in minutes) that the cluster has been idle
+        (no jobs are running in Spark) with a granularity of 5 minutes, up to 6 hours.
+        """
+        now = datetime.now()
+        idle_metrics = provisioning.cluster_metrics(
+            self.jobflow_id, now, now - timedelta(hours=6)  # metrics for past 6 hours
+        )['IsIdle']
+        try:
+            last_non_idle_time = max(
+                point['Timestamp'] for point in idle_metrics
+                if point['Average'] == 0  # cluster was working and not idle
+            )
+            return (datetime.now() - last_non_idle_time).total_seconds() / 60
+        except ValueError:  # no data points - monitoring disabled or just started
+            return 0  # the cluster isn't actually idle
+
     def save(self, *args, **kwargs):
         """
         Insert the cluster into the database or update it if already present,

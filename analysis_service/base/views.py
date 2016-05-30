@@ -155,6 +155,20 @@ def periodic_task():
                     "See https://analysis.telemetry.mozilla.org/ for more details."
                 ).format(cluster.identifier, now + timedelta(hours=1))
             )
+        else:
+            idle_duration = cluster.get_idle_duration()
+            if idle_duration > 60:  # cluster has been idle for an hour
+                email.send_email(
+                    email_address = cluster.created_by.email,
+                    subject = "Cluster {} is idle!".format(cluster.identifier),
+                    body = (
+                        "Your cluster {} has been idle for {} minutes. "
+                        "It is likely that the cluster jobs have either completed or failed.\n"
+                        "\n"
+                        "This is an automated message from the Telemetry Analysis service. "
+                        "See https://analysis.telemetry.mozilla.org/ for more details."
+                    ).format(cluster.identifier, now + timedelta(hours=1))
+                )
 
     # kill expired workers
     for worker in models.Worker.objects.all():

@@ -1,4 +1,5 @@
 from uuid import uuid4
+from datetime import datetime, timedelta
 from io import BytesIO
 
 from django.conf import settings
@@ -9,6 +10,7 @@ import requests
 emr = boto3.client('emr', region_name=settings.AWS_CONFIG['AWS_REGION'])
 ec2 = boto3.client('ec2', region_name=settings.AWS_CONFIG['AWS_REGION'])
 s3 = boto3.client('s3', region_name=settings.AWS_CONFIG['AWS_REGION'])
+cloudwatch = boto3.client('cloudwatch', region_name=settings.AWS_CONFIG['AWS_REGION'])
 
 
 def cluster_start(user_email, identifier, size, public_key):
@@ -74,6 +76,21 @@ def cluster_info(jobflow_id):
         'state':      cluster['Status']['State'],
         'public_dns': cluster['MasterPublicDnsName'],
     }
+
+
+def cluster_metrics(jobflow_id, start_time = None, end_time = None, interval_minutes = 5):
+    if start_time is None:
+        start_time = datetime.now()
+    if end_time is None:
+        end_time = start_time - timedelta(hours=12)
+    results = {}
+    for metric in ['CapacityRemainingGB', 'JobsFailed', 'JobsRunning', 'IsIdle']:
+        results[metric] = cloudwatch.get_metric_statistics(
+            Namespace = jobflow_id, MetricName = metric,
+            StartTime = start_time, EndTime = end_time,
+            Period = interval_minutes * 60, Statistics = 'Average'
+        )['Datapoints']
+    return results
 
 
 def cluster_stop(jobflow_id):
