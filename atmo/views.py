@@ -20,6 +20,8 @@ logger = logging.getLogger("django")
 def dashboard(request):
     username = request.user.email.split("@")[0]
     clusters = Cluster.objects.filter(created_by=request.user).order_by("start_date")
+    for cluster in clusters:
+        cluster.update_status()
     workers = Worker.objects.filter(created_by=request.user).order_by("start_date")
     jobs = SparkJob.objects.filter(created_by=request.user).order_by("start_date")
     context = {
