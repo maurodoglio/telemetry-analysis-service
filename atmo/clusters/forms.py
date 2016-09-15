@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 from . import models
 from ..utils.fields import PublicKeyFileField
@@ -58,7 +59,7 @@ class NewClusterForm(forms.ModelForm):
 
     class Meta:
         model = models.Cluster
-        fields = ['identifier', 'size', 'public_key']
+        fields = ['identifier', 'size', 'public_key', 'emr_release']
 
 
 class EditClusterForm(forms.ModelForm):
