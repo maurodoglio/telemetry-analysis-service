@@ -17,5 +17,6 @@ urlpatterns = [
     # contribute.json url
     url(r'^(?P<path>contribute\.json)$', static.serve, {'document_root': settings.ROOT}),
 
+    url(r'^django-rq/', include('django_rq.urls')),
     url(r'', include('django_browserid.urls')),
 ]
