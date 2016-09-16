@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'atmo.users',
 
     # Django apps
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
