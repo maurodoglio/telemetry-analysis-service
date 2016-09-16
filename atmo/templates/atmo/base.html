@@ -18,16 +18,12 @@
     <link href="{% static "css/base.css" %}" rel="stylesheet" />
 
     <title>Telemetry Self-Serve Data Analysis</title>
-    {% browserid_css %}
-    {% browserid_js %}
     {% endblock %}
     {% block head_extra %}
     <!-- ADDITIONAL HEAD CONTENT USED BY EACH PAGE -->
     {% endblock %}
   </head>
   <body role="document">
-    {% browserid_info %}
-
     {% block content %}
     {% endblock %}
 

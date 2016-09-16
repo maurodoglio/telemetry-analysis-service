@@ -27,7 +27,13 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ request.user.email }} <span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li>{% browserid_logout text='Log Out' next='/login' %}</li>
+            {% if request.user.is_authenticated() %}
+            <li><a href="{{ url('account_email') }}">Emails</a></li>
+            <li><a href="{{ url('socialaccount_connections') }}">Accounts</a></li>
+            <li><a href="{{ url('account_logout') }}">Log out</a></li>
+            {% else %}
+            <li><a href="{{ url('account_login') }}">Log in</a></li>
+            {% endif %}
           </ul>
         </li>
       </ul>
