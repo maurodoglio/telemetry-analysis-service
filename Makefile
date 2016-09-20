@@ -8,7 +8,7 @@ clean:
 	rm -rf static/
 
 migrate:
-	docker-compose run web ./manage.py migrate --run-syncdb
+	docker-compose run web ./manage.py migrate
 
 shell:
 	docker-compose run web bash

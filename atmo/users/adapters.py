@@ -16,6 +16,12 @@ class AtmoAccountAdapter(DefaultAccountAdapter):
 
 class AtmoSocialAccountAdapter(DefaultSocialAccountAdapter):
 
+    def is_open_for_signup(self, request, sociallogin):
+        """
+        Specifically enable social account login.
+        """
+        return True
+
     def validate_disconnect(self, account, accounts):
         """
         Validate whether or not the socialaccount account can be

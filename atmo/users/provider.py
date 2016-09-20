@@ -15,6 +15,9 @@ class AtmoGoogleAccount(GoogleAccount):
 
 class AtmoGoogleProvider(GoogleProvider):
 
+    def extract_uid(self, data):
+        return str(data['sub'])
+
     def get_default_scope(self):
         "Override the default method to prepend 'openid' and add specific order"
         scope = ['openid']

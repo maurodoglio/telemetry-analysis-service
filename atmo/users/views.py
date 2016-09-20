@@ -51,7 +51,7 @@ class AtmoGoogleOAuth2Adapter(GoogleOAuth2Adapter):
         GoogleOAuth2Adapter.profile_url,
     )
 
-    def complete_login(self, request, app, token, response, **kwargs):
+    def complete_login(self, request, app, token, **kwargs):
         """
         Extends the default login completion by verification of response data
         as documented on:
@@ -59,19 +59,23 @@ class AtmoGoogleOAuth2Adapter(GoogleOAuth2Adapter):
           https://developers.google.com/identity/protocols/OpenIDConnect
 
         """
+        response = kwargs.get('response', None)
+        if response is None:
+            raise PermissionDenied('Something went wrong during the login')
+
         # response contains data from the access token URL request
         id_token = response.get('id_token', None)
         if id_token is None:
             raise PermissionDenied('No ID received from Google')
 
         # verify the ID token using Google's endpoint
-        response = requests.get(TOKENINFO_ENDPOINT, id_token=id_token)
+        response = requests.post(TOKENINFO_ENDPOINT, data={'id_token': id_token})
         response.raise_for_status()
         id_token_data = response.json()
 
         # verify the received audience token with the client ID we have
         provider = self.get_provider()
-        if provider.get_app().client_id != id_token_data.get('aud', None):
+        if provider.get_app(request).client_id != id_token_data.get('aud', None):
             raise PermissionDenied('Invalid client ID received')
 
         # if configured, check if the return hosted domain matches what we have
@@ -80,8 +84,8 @@ class AtmoGoogleOAuth2Adapter(GoogleOAuth2Adapter):
             raise PermissionDenied('Access restricted to users of '
                                    'the domain %s' % hosted_domain)
 
-        return super(AtmoGoogleProvider, self).complete_login(
-            request, app, token, response, **kwargs
+        return super(AtmoGoogleOAuth2Adapter, self).complete_login(
+            request, app, token, **kwargs
         )
 
 
