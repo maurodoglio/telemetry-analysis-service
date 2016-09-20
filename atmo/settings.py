@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'atmo',
     'atmo.clusters',
     'atmo.jobs',
+    'atmo.users',
     'atmo.workers',
 
     # Third party apps
@@ -49,7 +50,6 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'atmo.users',
 
     # Django apps
     'django.contrib.sites',
@@ -60,10 +60,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-
-for app in config('EXTRA_APPS', default='', cast=Csv()):
-    INSTALLED_APPS.append(app)
-
 
 MIDDLEWARE_CLASSES = (
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -243,3 +239,5 @@ CSP_STYLE_SRC = (
 
 # This is needed to get a CRSF token in /admin
 ANON_ALWAYS = True
+
+SITE_ID = 1
