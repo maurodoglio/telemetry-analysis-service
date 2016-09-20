@@ -1,5 +1,7 @@
-{% extends "atmo/base.html" %}
-{% load browserid staticfiles %}
+{% extends "account/base.html" %}
+{% load socialaccount static %}
+
+{% block head_title %}Login{% endblock %}
 
 {% block head_extra %}
 <link href="{% static "css/login.css" %}" rel="stylesheet" />
@@ -12,6 +14,7 @@
       <div class="jumbotron text-center">
         <h1>Telemetry Data Analysis</h1>
         <p>To get started, log in with an <code>@mozilla.com</code> email!</p>
+        <a class="btn btn-lg btn-primary login-button" href="{% provider_login_url "google" next= redirect_field_value %}">Login with Google</a>
       </div>
     </div>
   </div>
