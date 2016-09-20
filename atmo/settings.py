@@ -203,10 +203,6 @@ TEMPLATES = [
         }
     },
 ]
-if not DEBUG:
-    TEMPLATES[0]['OPTIONS']['loaders'] = [
-        ('django.template.loaders.cached.Loader', TEMPLATES[0]['OPTIONS']['loaders']),
-    ]
 
 # Django-CSP
 CSP_DEFAULT_SRC = (
