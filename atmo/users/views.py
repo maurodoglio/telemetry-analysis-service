@@ -4,7 +4,7 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (OAuth2LoginView,
                                                           OAuth2CallbackView)
 from cachecontrol import CacheControl
-from cachecontrol.caches import RedisCache
+from cachecontrol.caches.redis_cache import RedisCache
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 
@@ -16,7 +16,10 @@ TOKENINFO_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/tokeninfo'
 CACHE_CONTROL_REDIS_DB = 1
 
 # respects HTTP cache headers here to not fetch this every time
-redis_client = redis.Redis.from_url(settings.REDIS_URL, db=CACHE_CONTROL_REDIS_DB)
+redis_client = redis.Redis.from_url(
+    settings.REDIS_URL.geturl(),
+    db=CACHE_CONTROL_REDIS_DB,
+)
 session = CacheControl(requests.session(), RedisCache(redis_client))
 
 
