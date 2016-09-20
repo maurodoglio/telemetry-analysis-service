@@ -145,7 +145,8 @@ LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
 # django-allauth configuration
 ACCOUNT_LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+if not DEBUG:
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
 ACCOUNT_EMAIL_SUBJECT_PREFIX = "[ATMO] "
 ACCOUNT_EMAIL_REQUIRED = True
@@ -188,6 +189,7 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
+                'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
                 'session_csrf.context_processor',
                 'atmo.utils.context_processors.settings',
