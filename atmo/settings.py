@@ -159,6 +159,15 @@ SOCIALACCOUNT_ADAPTER = 'atmo.users.adapters.AtmoSocialAccountAdapter'
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'  # no extra verification needed
 SOCIALACCOUNT_QUERY_EMAIL = True  # needed by the Google provider
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'HOSTED_DOMAIN': 'mozilla.com',
+        'AUTH_PARAMS': {
+            'prompt': 'select_account',
+        }
+    }
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 LANGUAGE_CODE = config('LANGUAGE_CODE', default='en-us')
