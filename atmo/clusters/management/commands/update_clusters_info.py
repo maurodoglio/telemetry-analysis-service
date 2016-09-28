@@ -12,3 +12,4 @@ class Command(BaseCommand):
 
         for cluster in Cluster.objects.exclude(most_recent_status__in=Cluster.FINAL_STATUS_LIST):
             cluster.update_status()
+            cluster.save()
