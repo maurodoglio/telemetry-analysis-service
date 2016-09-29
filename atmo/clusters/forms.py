@@ -54,7 +54,7 @@ class NewClusterForm(forms.ModelForm):
         new_cluster.created_by = self.created_by
 
         # actually start the real cluster, and return the model object
-        new_cluster.save()
+        return new_cluster.save()
 
     class Meta:
         model = models.Cluster
@@ -100,7 +100,7 @@ class EditClusterForm(forms.ModelForm):
             raise ValueError("Disallowed attempt to edit another user's cluster")
         cluster.identifier = cleaned_data["identifier"]
         cluster.update_identifier()
-        cluster.save()
+        return cluster.save()
 
     class Meta:
         model = models.Cluster
@@ -128,6 +128,7 @@ class DeleteClusterForm(forms.ModelForm):
         if self.created_by != cluster.created_by:  # only allow deleting clusters that one created
             raise ValueError("Disallowed attempt to delete another user's cluster")
         cluster.deactivate()
+        return cluster
 
     class Meta:
         model = models.Cluster
