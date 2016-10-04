@@ -10,11 +10,6 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 
-try:
-    import urlparse as parse
-except ImportError:
-    from urllib import parse
-
 import dj_database_url
 from django.core.urlresolvers import reverse_lazy
 from decouple import Csv, config
