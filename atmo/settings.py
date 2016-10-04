@@ -118,18 +118,22 @@ DATABASES = {
     )
 }
 
-REDIS_URL = config(
-    'REDIS_URL',
-    cast=parse.urlparse
-)
+REDIS_URL = config('REDIS_URL')
 
 RQ_QUEUES = {
     'default': {
-        'HOST': REDIS_URL.hostname,
-        'PORT': REDIS_URL.port,
-        'DB': 0,
-        'PASSWORD': REDIS_URL.password,
+        'URL': REDIS_URL,
         'DEFAULT_TIMEOUT': 600,
+    }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': REDIS_URL,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
     }
 }
 
@@ -184,6 +188,9 @@ MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = config('MEDIA_URL', '/media/')
 
 SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=bool)
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
 SECURE_SSL_REDIRECT = True
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
