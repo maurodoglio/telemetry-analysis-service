@@ -1,4 +1,3 @@
-import redis
 import requests
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.views import (OAuth2LoginView,
@@ -6,7 +5,6 @@ from allauth.socialaccount.providers.oauth2.views import (OAuth2LoginView,
 from cachecontrol import CacheControl
 from cachecontrol.caches.redis_cache import RedisCache
 from django.core.exceptions import PermissionDenied
-from django.conf import settings
 from django_redis import get_redis_connection
 
 from .provider import AtmoGoogleProvider
