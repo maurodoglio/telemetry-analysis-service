@@ -97,7 +97,7 @@ AWS_CONFIG = {
     'SPARK_EMR_BUCKET':       'telemetry-spark-emr-2',
 
     # Make sure the ephemeral map matches the instance type above.
-    'EPHEMERAL_MAP':    {"/dev/xvdb": "ephemeral0", "/dev/xvdc": "ephemeral1"},
+    'EPHEMERAL_MAP':    {'/dev/xvdb': 'ephemeral0', '/dev/xvdc': 'ephemeral1'},
     'SECURITY_GROUPS':  [],
     'INSTANCE_PROFILE': 'telemetry-analysis-profile',
     'INSTANCE_APP_TAG': 'telemetry-analysis-worker-instance',
@@ -152,7 +152,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
 if not DEBUG:
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
-ACCOUNT_EMAIL_SUBJECT_PREFIX = "[ATMO] "
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[ATMO] '
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_LOGOUT_ON_GET = True
