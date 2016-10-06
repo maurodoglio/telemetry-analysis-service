@@ -26,6 +26,9 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
+# Whether or not this runs on Heroku right now
+IS_HEROKU = config('IS_HEROKU', default=False, cast=bool)
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 # Application definition
@@ -144,10 +147,10 @@ LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
 # django-allauth configuration
 ACCOUNT_LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
-if not DEBUG:
+if IS_HEROKU:
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
-ACCOUNT_EMAIL_SUBJECT_PREFIX = '[ATMO] '
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Telemetry Analysis Service] '
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 ACCOUNT_LOGOUT_ON_GET = True
@@ -182,11 +185,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = config('MEDIA_URL', '/media/')
 
-SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=bool)
+SESSION_COOKIE_SECURE = config(
+    'SESSION_COOKIE_SECURE', default=IS_HEROKU, cast=bool
+)
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
-if not DEBUG:
+if IS_HEROKU:
     SECURE_SSL_REDIRECT = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
