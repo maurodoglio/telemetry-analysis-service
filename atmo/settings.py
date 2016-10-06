@@ -252,3 +252,5 @@ CSP_STYLE_SRC = (
 ANON_ALWAYS = True
 
 SITE_ID = 1
+
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
