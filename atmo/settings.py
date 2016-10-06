@@ -207,6 +207,7 @@ SILENCED_SYSTEM_CHECKS = [
     # We can't set SECURE_HSTS_INCLUDE_SUBDOMAINS since this runs under a
     # mozilla.org subdomain
     'security.W005',
+    'security.W009',  # we know the SECRET_KEY is strong
 ]
 
 
