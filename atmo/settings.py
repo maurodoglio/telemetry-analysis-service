@@ -119,6 +119,7 @@ AWS_CONFIG = {
     'CODE_BUCKET': 'telemetry-analysis-code-2',
     'PUBLIC_DATA_BUCKET': 'telemetry-public-analysis-2',
     'PRIVATE_DATA_BUCKET': 'telemetry-private-analysis-2',
+    'LOG_BUCKET':          'telemetry-analysis-logs-2'
 }
 
 for aws_cred in ('AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'AWS_DEFAULT_REGION'):
