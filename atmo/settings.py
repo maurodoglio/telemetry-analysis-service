@@ -26,10 +26,12 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-# Whether or not this runs on Heroku right now
-IS_HEROKU = config('IS_HEROKU', default=False, cast=bool)
-
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+
+SITE_ID = 1
+
+# The URL under which this instance is running
+SITE_URL = config('SITE_URL', default='http://localhost:8000')
 
 # Application definition
 
@@ -191,7 +193,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 X_FRAME_OPTIONS = 'DENY'
 
-if IS_HEROKU:
+if SITE_URL.startswith('https://'):
     ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
     SECURE_SSL_REDIRECT = True
     SECURE_HSTS_SECONDS = int(timedelta(days=365).total_seconds())
@@ -271,7 +273,3 @@ CSP_STYLE_SRC = (
 
 # This is needed to get a CRSF token in /admin
 ANON_ALWAYS = True
-
-SITE_ID = 1
-
-SITE_URL = config('SITE_URL', default='http://localhost:8000')
