@@ -7,7 +7,7 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-
+from datetime import timedelta
 import os
 
 import dj_database_url
@@ -147,8 +147,6 @@ LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 
 # django-allauth configuration
 ACCOUNT_LOGOUT_REDIRECT_URL = LOGIN_REDIRECT_URL
-if IS_HEROKU:
-    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 7
 ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Telemetry Analysis Service] '
 ACCOUNT_EMAIL_REQUIRED = True
@@ -185,18 +183,30 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'media'))
 MEDIA_URL = config('MEDIA_URL', '/media/')
 
-SESSION_COOKIE_SECURE = config(
-    'SESSION_COOKIE_SECURE', default=IS_HEROKU, cast=bool
-)
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'
 
-if IS_HEROKU:
-    SECURE_SSL_REDIRECT = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 X_FRAME_OPTIONS = 'DENY'
+
+if IS_HEROKU:
+    ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = int(timedelta(days=365).total_seconds())
+    # Mark session and CSRF cookies as being HTTPS-only.
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+
+
+SILENCED_SYSTEM_CHECKS = [
+    'security.W003',  # We're using django-session-csrf
+    # We can't set SECURE_HSTS_INCLUDE_SUBDOMAINS since this runs under a
+    # mozilla.org subdomain
+    'security.W005',
+]
+
 
 TEMPLATES = [
     {
