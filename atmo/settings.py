@@ -15,8 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from decouple import Csv, config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-ROOT = os.path.dirname(os.path.join(BASE_DIR, '..'))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -188,7 +187,6 @@ SESSION_CACHE_ALIAS = 'default'
 
 SECURE_SSL_REDIRECT = True
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
