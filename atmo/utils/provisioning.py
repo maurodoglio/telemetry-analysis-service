@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.conf import settings
+from datetime import datetime
 import boto3
 import requests
 
@@ -25,8 +26,13 @@ def cluster_start(user_email, identifier, size, public_key, emr_release):
             settings.AWS_CONFIG['SPARK_EMR_BUCKET']
         )
     ).json()
+
+    now = datetime.utcnow().isoformat()
+    log_uri = 's3://{}/{}/{}'.format(settings.AWS_CONFIG['LOG_BUCKET'], identifier, now)
+
     cluster = emr.run_job_flow(
         Name=str(uuid4()),
+        LogUri=log_uri,
         ReleaseLabel='emr-{}'.format(emr_release),
         Instances={
             'MasterInstanceType': settings.AWS_CONFIG['INSTANCE_TYPE'],

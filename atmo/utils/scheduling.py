@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 from django.conf import settings
+from datetime import datetime
 import boto3
 import requests
 
@@ -34,12 +35,18 @@ def spark_job_run(user_email, identifier, notebook_uri, result_is_public, size, 
             settings.AWS_CONFIG['SPARK_EMR_BUCKET']
         )
     ).json()
+
     if result_is_public:
         data_bucket = settings.AWS_CONFIG['PUBLIC_DATA_BUCKET']
     else:
         data_bucket = settings.AWS_CONFIG['PRIVATE_DATA_BUCKET']
+
+    now = datetime.utcnow().isoformat()
+    log_uri = 's3://{}/{}/{}'.format(settings.AWS_CONFIG['LOG_BUCKET'], identifier, now)
+
     cluster = emr.run_job_flow(
         Name=str(uuid4()),
+        LogUri=log_uri,
         ReleaseLabel=settings.AWS_CONFIG['EMR_RELEASE'],
         Instances={
             'MasterInstanceType': settings.AWS_CONFIG['MASTER_INSTANCE_TYPE'],
