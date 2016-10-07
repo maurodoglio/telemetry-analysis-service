@@ -3,7 +3,7 @@ atmo - The code for the Telemetry Analysis Service
 
 [![Build Status](https://travis-ci.org/mozilla/telemetry-analysis-service.svg?branch=master)](https://travis-ci.org/mozilla/telemetry-analysis-service)
 
-[![Coverage status](https://img.shields.io/coveralls/mozilla/telemetry-analysis-service/master.svg)](https://coveralls.io/r/mozilla/telemetry-analysis-service)
+[![codecov](https://codecov.io/gh/mozilla/telemetry-analysis-service/branch/master/graph/badge.svg)](https://codecov.io/gh/mozilla/telemetry-analysis-service)
 
 Run the tests
 -------------
@@ -19,14 +19,14 @@ they are run by [travis](https://travis-ci.org)):
     pip install tox
     tox
 
-The `.travis.yml` file will also run [coveralls](https://coveralls.io) by
+The `.travis.yml` file will also run [codecov](https://codecov.io) by
 default.
 
-If you want to benefit from Travis and Coveralls, you will need to activate
+If you want to benefit from Travis and Codecov, you will need to activate
 them both for your project.
 
 Oh, and you might want to change the "Build Status" and "Coverage Status" links
-at the top of this file to point to your own travis and coveralls accounts.
+at the top of this file to point to your own travis and codecov accounts.
 
 Development Setup
 -----------------
