@@ -2,6 +2,8 @@
 # Tasks run after the Heroku buildpack compile, but prior to the deploy.
 # Failures will block the deploy unless `IGNORE_PREDEPLOY_ERRORS` is set.
 
+echo "$SECRET_KEY"
+
 if [[ -v SKIP_PREDEPLOY ]]; then
     echo "-----> PRE-DEPLOY: Warning: Skipping pre-deploy!"
     exit 0
