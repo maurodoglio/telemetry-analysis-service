@@ -11,6 +11,6 @@ class NewRelicPapertrailMiddleware(object):
     def process_request(self, request):
         if not self.heroku_app_name:
             return
-        log_url = ("https://papertrailapp.com/systems/%s/events?time=#%d" %
+        log_url = ("https://papertrailapp.com/systems/%s/events?time=%d" %
                    (self.heroku_app_name, time.time()))
         newrelic.agent.add_custom_parameter('log_url', log_url)
