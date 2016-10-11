@@ -77,7 +77,7 @@ class SparkJob(models.Model):
             return False  # job isn't even running at the moment
         if at_time is None:
             at_time = timezone.now()
-        if self.last_run_date + timedelta(hours=self.job_timeout) >= at_time:
+        if self.last_run_date and self.last_run_date + timedelta(hours=self.job_timeout) >= at_time:
             return True  # current job run expired
         return False
 
@@ -134,10 +134,9 @@ class SparkJob(models.Model):
     @classmethod
     def step_all(cls):
         """Run all the scheduled tasks that are supposed to run."""
-        now = datetime.now()
         for spark_join in cls.objects.all():
-            if spark_join.should_run(now):
+            if spark_join.should_run():
                 spark_join.run()
                 spark_join.save()
-            if spark_join.is_expired(now):
+            if spark_join.is_expired():
                 spark_join.delete()

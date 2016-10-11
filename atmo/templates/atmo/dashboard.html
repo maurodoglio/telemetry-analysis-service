@@ -60,7 +60,7 @@
         {% for spark_job in user_spark_jobs %}
         <tr>
           <td class="hidden">{{ spark_job.id }}</td>
-          <td>{{ spark_job.identifier }}</td>
+          <td><a href="{% url "jobs-detail" id=spark_job.id %}">{{ spark_job.identifier }}</a></td>
           <td>{{ spark_job.result_visibility }}</td>
           <td>{{ spark_job.size }}</td>
           <td>{{ spark_job.interval_in_hours }}</td>
