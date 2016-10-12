@@ -26,7 +26,7 @@ def cluster_start(user_email, identifier, size, public_key, emr_release):
             settings.AWS_CONFIG['SPARK_EMR_BUCKET']
         )
     ).json()
-    
+
     now = datetime.utcnow().isoformat()
     log_uri = 's3://{}/{}/{}'.format(settings.AWS_CONFIG['LOG_BUCKET'], identifier, now)
 
