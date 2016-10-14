@@ -38,16 +38,19 @@ def cluster_start(user_email, identifier, size, public_key, emr_release):
     ]
 
     if num_instances > 1:
+        market = 'SPOT' if settings.AWS_CONFIG['USE_SPOT_INSTANCES'] == 'true' else 'ON_DEMAND'
         instance_groups.append(
             {
                 'Name': 'Worker Instances',
-                'Market': 'SPOT',
+                'Market': market,
                 'InstanceRole': 'CORE',
                 'InstanceType': settings.AWS_CONFIG['WORKER_INSTANCE_TYPE'],
-                'BidPrice': settings.AWS_CONFIG['CORE_SPOT_BID'],
                 'InstanceCount': num_instances - 1
             }
         )
+
+        if market == 'SPOT':
+            instance_groups[-1]['BidPrice'] = settings.AWS_CONFIG['CORE_SPOT_BID']
 
     cluster = emr.run_job_flow(
         Name=str(uuid4()),
