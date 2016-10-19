@@ -152,6 +152,11 @@ class SparkJob(models.Model):
         if self.current_run_jobflow_id:
             provisioning.cluster_stop(self.current_run_jobflow_id)
 
+    def cleanup(self):
+        """Remove the Spark job notebook file from S3"""
+        if self.notebook_s3_key:
+            scheduling.spark_job_remove(self.notebook_s3_key)
+
     def save(self, notebook_uploadedfile=None, *args, **kwargs):
         if notebook_uploadedfile is not None:  # notebook specified, replace current notebook
             self.notebook_s3_key = scheduling.spark_job_add(
@@ -161,8 +166,10 @@ class SparkJob(models.Model):
         return super(SparkJob, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        self.terminate()  # make sure to shut down the cluster if it's currently running
-        scheduling.spark_job_remove(self.notebook_s3_key)
+        # make sure to shut down the cluster if it's currently running
+        self.terminate()
+        # make sure to shut down the cluster if it's currently running
+        self.cleanup()
         super(SparkJob, self).delete(*args, **kwargs)
 
     @classmethod
