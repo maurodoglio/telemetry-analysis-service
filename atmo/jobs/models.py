@@ -30,7 +30,8 @@ class SparkJob(models.Model):
 
     identifier = models.CharField(
         max_length=100,
-        help_text="Job name, used to non-uniqely identify individual jobs."
+        help_text="Job name, used to uniqely identify individual jobs.",
+        unique=True,
     )
     notebook_s3_key = models.CharField(
         max_length=800,
