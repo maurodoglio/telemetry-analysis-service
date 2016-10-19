@@ -13,11 +13,13 @@ from .. import provisioning, scheduling
 
 
 class SparkJob(models.Model):
-    WEEKLY = 24 * 7
+    DAILY = 24
+    WEEKLY = DAILY * 7
+    MONTHLY = DAILY * 30
     INTERVAL_CHOICES = [
-        (24, "Daily"),
+        (DAILY, "Daily"),
         (WEEKLY, "Weekly"),
-        (24 * 30, "Monthly"),
+        (MONTHLY, "Monthly"),
     ]
     INTERVAL_CHOICES_DEFAULT = INTERVAL_CHOICES[0][0]
     RESULT_VISIBILITY_CHOICES = [
@@ -67,7 +69,8 @@ class SparkJob(models.Model):
         help_text="Date/time that the job was last started, null if never."
     )
     created_by = models.ForeignKey(
-        User, related_name='created_spark_jobs',
+        User,
+        related_name='created_spark_jobs',
         help_text="User that created the scheduled job instance."
     )
 
