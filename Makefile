@@ -43,7 +43,7 @@ stop:
 	docker-compose stop
 
 test: static
-	docker-compose run --service-ports web ./manage.py test
+	docker-compose run web ./manage.py test
 
 up:
 	docker-compose up

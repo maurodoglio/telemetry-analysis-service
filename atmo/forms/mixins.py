@@ -32,7 +32,13 @@ class CreatedByFormMixin(object):
 
 
 class CachedFileFormMixin(object):
-
+    """
+    A model form mixin that automatically adds additional hidden form fields
+    to store a random value to be used as the cache key for caching FileField
+    files on submission. That is needed to prevent having to reselect files
+    over and over again when form submission fails for the fields other than
+    the file fields.
+    """
     def __init__(self, *args, **kwargs):
         super(CachedFileFormMixin, self).__init__(*args, **kwargs)
         self.cache = CachedFileCache()
@@ -44,7 +50,7 @@ class CachedFileFormMixin(object):
             # add any found field to the list of order items
             field_order.append(name)
 
-            # in case it's a fiel input
+            # in case it's a file input
             if isinstance(field, CachedFileField):
                 # we'll use this later in the clean and save step
                 self.cached_filefields[name] = field
@@ -85,7 +91,7 @@ class CachedFileFormMixin(object):
             # get the name of the cache key field name and its value
             cache_key = self.cachekey_input_data(field_name)
 
-            # check form data if the file field if it was submitted
+            # check form data if the file field was submitted
             submitted_file = self.cleaned_data.get(field_name)
             if submitted_file is None:
                 # if not, check the cache and update the cleaned data
