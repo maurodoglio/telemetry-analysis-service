@@ -17,7 +17,7 @@ logger = logging.getLogger("django")
 
 
 @login_required
-def taken_spark_job(request):
+def check_identifier_taken(request):
     """
     Given a Spark job identifier checks if one already exists.
     """

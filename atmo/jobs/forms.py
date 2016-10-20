@@ -16,7 +16,7 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
         regex=r'^[\w-]{1,100}$',
         widget=forms.TextInput(attrs={
             'class': 'form-control identifier-taken-check',
-            'data-identifier-taken-check-url': reverse_lazy('jobs-taken'),
+            'data-identifier-taken-check-url': reverse_lazy('jobs-identifier-taken'),
         }),
         help_text='A brief description of the scheduled Spark job\'s purpose, '
                   'visible in the AWS management console.'

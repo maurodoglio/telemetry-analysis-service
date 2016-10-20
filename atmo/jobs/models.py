@@ -172,7 +172,7 @@ class SparkJob(models.Model):
     def delete(self, *args, **kwargs):
         # make sure to shut down the cluster if it's currently running
         self.terminate()
-        # make sure to shut down the cluster if it's currently running
+        # make sure to clean up the job notebook from storage
         self.cleanup()
         super(SparkJob, self).delete(*args, **kwargs)
 
