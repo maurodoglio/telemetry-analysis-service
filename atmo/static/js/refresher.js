@@ -20,7 +20,6 @@ $(function() {
                   $(refresher).addClass('hidden');
                   if (timeout_id) {
                     window.clearTimeout(timeout_id);
-                    console.log("Refresher stopped.");
                   }
                 }
               }
@@ -38,7 +37,6 @@ $(function() {
           timeout_id = window.setTimeout(updateTimeout, 1000);
         };
         // show the refresher
-        console.log("Refresher init.");
         $(refresher).removeClass('hidden');
         timeout_id = window.setTimeout(updateTimeout, 0);
       }
