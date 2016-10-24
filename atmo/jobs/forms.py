@@ -6,16 +6,19 @@ from django.core.urlresolvers import reverse_lazy
 
 from . import models
 from ..forms.fields import CachedFileField
-from ..forms.mixins import CreatedByFormMixin, CachedFileFormMixin
+from ..forms.mixins import (CreatedByFormMixin, CachedFileFormMixin,
+                            FormControlFormMixin)
 
 
-class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm):
+class BaseSparkJobForm(FormControlFormMixin, CachedFileFormMixin,
+                       CreatedByFormMixin, forms.ModelForm):
     identifier = forms.RegexField(
         required=True,
         label='Job identifier',
         regex=r'^[\w-]{1,100}$',
         widget=forms.TextInput(attrs={
-            'class': 'form-control identifier-taken-check',
+            'required': 'required',
+            'class': 'identifier-taken-check',
             'data-identifier-taken-check-url': reverse_lazy('jobs-identifier-taken'),
         }),
         help_text='A brief description of the scheduled Spark job\'s purpose, '
@@ -23,9 +26,9 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
     )
     result_visibility = forms.ChoiceField(
         choices=models.SparkJob.RESULT_VISIBILITY_CHOICES,
-        widget=forms.Select(
-            attrs={'class': 'form-control', 'required': 'required'}
-        ),
+        widget=forms.Select(attrs={
+            'required': 'required',
+        }),
         label='Job result visibility',
         help_text='Whether notebook results are uploaded to a public '
                   'or private bucket',
@@ -36,7 +39,6 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
         max_value=20,
         label='Job cluster size',
         widget=forms.NumberInput(attrs={
-            'class': 'form-control',
             'required': 'required',
             'min': '1',
             'max': '20',
@@ -46,12 +48,9 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
     )
     interval_in_hours = forms.ChoiceField(
         choices=models.SparkJob.INTERVAL_CHOICES,
-        widget=forms.Select(
-            attrs={
-                'class': 'form-control',
-                'required': 'required',
-            }
-        ),
+        widget=forms.Select(attrs={
+            'required': 'required',
+        }),
         label='Job interval',
         help_text='Interval at which the Spark job should be run',
     )
@@ -61,7 +60,6 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
         max_value=24,
         label='Job timeout',
         widget=forms.NumberInput(attrs={
-            'class': 'form-control',
             'required': 'required',
             'min': '1',
             'max': '24',
@@ -71,17 +69,16 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
     )
     start_date = forms.DateTimeField(
         required=True,
-        widget=forms.DateTimeInput(
-            attrs={
-                'class': 'form-control datetimepicker',
-            }),
+        widget=forms.DateTimeInput(attrs={
+            'class': 'datetimepicker',
+        }),
         label='Job start date',
         help_text='Date and time on which to enable the scheduled Spark job.',
     )
     end_date = forms.DateTimeField(
         required=False,
         widget=forms.DateTimeInput(attrs={
-            'class': 'form-control datetimepicker',
+            'class': 'datetimepicker',
         }),
         label='Job end date (optional)',
         help_text='Date and time on which to disable the scheduled Spark job '
@@ -90,7 +87,6 @@ class BaseSparkJobForm(CachedFileFormMixin, CreatedByFormMixin, forms.ModelForm)
     notebook = CachedFileField(
         required=True,
         widget=forms.FileInput(attrs={
-            'class': 'form-control',
             'required': 'required',
         }),
         label='Analysis Jupyter Notebook',
@@ -133,7 +129,7 @@ class EditSparkJobForm(BaseSparkJobForm):
 
     notebook = CachedFileField(
         required=False,
-        widget=forms.FileInput(attrs={'class': 'form-control'}),
+        widget=forms.FileInput(),
         label='Analysis Jupyter Notebook (optional)',
         help_text='A Jupyter/IPython Notebook has the file '
                   'extension .ipynb.'
@@ -164,7 +160,7 @@ class DeleteSparkJobForm(CreatedByFormMixin, forms.ModelForm):
         label='Confirm termination with Spark job identifier',
         regex=r'^[\w-]{1,100}$',
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'required': 'required',
         }),
     )
 
