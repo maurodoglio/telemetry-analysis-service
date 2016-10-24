@@ -24,12 +24,12 @@ class NewClusterForm(CreatedByFormMixin, forms.ModelForm):
     size = forms.IntegerField(
         label="Cluster size",
         required=True,
-        min_value=1, max_value=20,
+        min_value=1, max_value=30,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'required': 'required',
             'min': '1',
-            'max': '20',
+            'max': '30',
         }),
         help_text='Number of workers to use in the cluster '
                   '(1 is recommended for testing or development).'
