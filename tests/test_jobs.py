@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.utils.text import get_valid_filename
 
 from atmo.jobs import models
+from atmo.clusters.models import Cluster
 
 
 def make_test_notebook(extension='ipynb'):
@@ -104,7 +105,7 @@ def test_create_spark_job(mocker, client, test_user):
         'atmo.provisioning.cluster_info',
         return_value={
             'start_time': timezone.now(),
-            'state': 'BOOTSTRAPPING',
+            'state': Cluster.STATUS_BOOTSTRAPPING,
             'public_dns': None,
         },
     )

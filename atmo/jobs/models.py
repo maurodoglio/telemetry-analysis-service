@@ -108,7 +108,8 @@ class SparkJob(EMRReleaseModel):
         if at_time is None:
             at_time = timezone.now()
         max_run_time = self.last_run_date + timedelta(hours=self.job_timeout)
-        return self.most_recent_status not in Cluster.FINAL_STATUS_LIST and at_time >= max_run_time
+        return (self.most_recent_status not in Cluster.TERMINATED_STATUS_LIST and
+                at_time >= max_run_time)
 
     def should_run(self, at_time=None):
         """Return True if the scheduled Spark job should run, False otherwise."""

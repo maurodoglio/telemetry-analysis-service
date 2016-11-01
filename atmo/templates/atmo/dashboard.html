@@ -13,9 +13,11 @@
       </h2>
     </div>
     <div class="btn-group pull-right">
-      <a href="{% url 'dashboard' %}" class="btn btn-sm btn-default{% if clusters_filter == "active" %} active{% endif %}">Active</a>
-      <a href="{% url 'dashboard' %}?clusters=inactive" class="btn btn-sm btn-default {% if clusters_filter == "inactive" %} active{% endif %}">Inactive</a>
-      <a href="{% url 'dashboard' %}?clusters=all" class="btn btn-sm btn-default{% if clusters_filter == "all" %} active{% endif %}">All</a>
+      {% for clusters_filter in clusters_filters %}
+      <a href="{% url 'dashboard' %}?clusters={{ clusters_filter }}"
+         class="btn btn-sm btn-default{% if clusters_shown == clusters_filter %} active{% endif %}"
+         >{{ clusters_filter|capfirst }}</a>
+      {% endfor %}
     </div>
     <table class="table table-condensed table-striped">
       <thead>

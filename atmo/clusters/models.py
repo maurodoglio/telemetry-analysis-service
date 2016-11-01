@@ -15,19 +15,43 @@ from .. import provisioning
 class ClusterManager(models.Manager):
 
     def active(self):
-        return self.exclude(
-            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
+        return self.filter(
+            most_recent_status__in=Cluster.ACTIVE_STATUS_LIST,
         )
 
-    def inactive(self):
+    def terminated(self):
         return self.filter(
-            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
+            most_recent_status__in=Cluster.TERMINATED_STATUS_LIST,
+        )
+
+    def failed(self):
+        return self.filter(
+            most_recent_status__in=Cluster.FAILED_STATUS_LIST,
         )
 
 
 class Cluster(EMRReleaseModel, models.Model):
-    PENDING_STATUS_LIST = ('STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING')
-    FINAL_STATUS_LIST = ('TERMINATED', 'TERMINATED_WITH_ERRORS', 'FAILED')
+    STATUS_STARTING = 'STARTING'
+    STATUS_BOOTSTRAPPING = 'BOOTSTRAPPING'
+    STATUS_RUNNING = 'RUNNING'
+    STATUS_WAITING = 'WAITING'
+    STATUS_TERMINATING = 'TERMINATING'
+    STATUS_TERMINATED = 'TERMINATED'
+    STATUS_TERMINATED_WITH_ERRORS = 'TERMINATED_WITH_ERRORS'
+
+    ACTIVE_STATUS_LIST = (
+        STATUS_STARTING,
+        STATUS_BOOTSTRAPPING,
+        STATUS_RUNNING,
+        STATUS_WAITING,
+        STATUS_TERMINATING,
+    )
+    TERMINATED_STATUS_LIST = (
+        STATUS_TERMINATED,
+    )
+    FAILED_STATUS_LIST = (
+        STATUS_TERMINATED_WITH_ERRORS,
+    )
 
     identifier = models.CharField(
         max_length=100,
@@ -77,6 +101,9 @@ class Cluster(EMRReleaseModel, models.Model):
     def __repr__(self):
         return "<Cluster {} of size {}>".format(self.identifier, self.size)
 
+    def get_absolute_url(self):
+        return reverse('clusters-detail', kwargs={'id': self.id})
+
     def get_info(self):
         return provisioning.cluster_info(self.jobflow_id)
 
@@ -120,24 +147,25 @@ class Cluster(EMRReleaseModel, models.Model):
 
     @property
     def is_active(self):
-        return self.most_recent_status not in self.FINAL_STATUS_LIST
+        return self.most_recent_status in self.ACTIVE_STATUS_LIST
 
     @property
-    def is_inactive(self):
-        return self.most_recent_status not in self.PENDING_STATUS_LIST
+    def is_terminated(self):
+        return self.most_recent_status in self.TERMINATED_STATUS_LIST
+
+    @property
+    def is_failed(self):
+        return self.most_recent_status in self.FAILED_STATUS_LIST
 
     @property
     def is_terminating(self):
-        return self.most_recent_status == 'TERMINATING'
+        return self.most_recent_status == self.STATUS_TERMINATING
 
     @property
     def is_ready(self):
-        return self.most_recent_status == 'WAITING'
+        return self.most_recent_status == self.STATUS_WAITING
 
     @property
     def is_expiring_soon(self):
         """Returns true if the cluster is expiring in the next hour."""
         return self.end_date <= timezone.now() + timedelta(hours=1)
-
-    def get_absolute_url(self):
-        return reverse('clusters-detail', kwargs={'id': self.id})

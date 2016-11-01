@@ -17,26 +17,27 @@ logger = logging.getLogger("django")
 
 @login_required
 def dashboard(request):
-    clusters = Cluster.objects.filter(
+    # allowed filters for clusters
+    default_filter = 'active'
+    clusters_filters = ['active', 'terminated', 'failed', 'all']
+
+    # the cluster filter defaults to active ones
+    clusters_shown = request.GET.get('clusters', default_filter)
+    if clusters_shown not in clusters_filters:
+        clusters_shown = default_filter
+
+    clusters = getattr(Cluster.objects, clusters_shown)().filter(
         created_by=request.user
     ).order_by("-start_date")
 
-    # the cluster filter defaults to active ones
-    clusters_filter = request.GET.get('clusters', 'active')
+    spark_jobs = SparkJob.objects.filter(
+        created_by=request.user
+    ).order_by("start_date")
 
-    if clusters_filter == 'active':
-        clusters = clusters.exclude(
-            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
-        )
-    elif clusters_filter == 'inactive':
-        clusters = clusters.filter(
-            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
-        )
-
-    jobs = SparkJob.objects.filter(created_by=request.user).order_by("start_date")
     context = {
         'clusters': clusters,
-        'clusters_filter': clusters_filter,
+        'clusters_shown': clusters_shown,
+        'clusters_filters': clusters_filters,
         'spark_jobs': spark_jobs,
     }
     return render(request, 'atmo/dashboard.html', context=context)
