@@ -42,7 +42,7 @@ def test_create_cluster(mocker, monkeypatch, client, test_user):
     assert cluster_start.call_count == 1
     user_email, identifier, size, public_key, emr_release = \
         cluster_start.call_args[0]
-    assert user_email == 'john@smith.com'
+    assert user_email == 'test@example.com'
     assert identifier == 'test-cluster'
     assert size == 5
     assert public_key == 'ssh-rsa AAAAB3'
