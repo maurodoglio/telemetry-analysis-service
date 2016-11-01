@@ -37,7 +37,7 @@ def dashboard(request):
     context = {
         'clusters': clusters,
         'clusters_filter': clusters_filter,
-        'user_spark_jobs': jobs,
+        'spark_jobs': spark_jobs,
     }
     return render(request, 'atmo/dashboard.html', context=context)
 

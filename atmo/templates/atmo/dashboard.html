@@ -64,7 +64,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for spark_job in user_spark_jobs %}
+        {% for spark_job in spark_jobs %}
         <tr>
           <td><a href="{{ spark_job.get_absolute_url }}">{{ spark_job.identifier }}</a></td>
           <td>{{ spark_job.result_visibility }}</td>
@@ -77,7 +77,7 @@
         {% endfor %}
       </tbody>
     </table>
-    {% if not user_spark_jobs %}<p class="text-center">No scheduled jobs to show.</p>{% endif %}
+    {% if not spark_jobs %}<p class="text-center">No scheduled jobs to show.</p>{% endif %}
     <a href="{% url 'jobs-new' %}" class="btn btn-sm btn-default pull-right" title="Schedule a Spark analysis">
         <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Schedule
     </a>
