@@ -160,4 +160,4 @@ def download_spark_job(request, id):
         response['Content-Length'] = job.notebook_s3_object['ContentLength']
         return response
 
-    raise Http404('Could not load Notebook from storage')
+    raise Http404
