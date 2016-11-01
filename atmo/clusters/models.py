@@ -12,8 +12,22 @@ from ..models import EMRReleaseModel
 from .. import provisioning
 
 
+class ClusterManager(models.Manager):
+
+    def active(self):
+        return self.exclude(
+            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
+        )
+
+    def inactive(self):
+        return self.filter(
+            most_recent_status__in=Cluster.FINAL_STATUS_LIST,
+        )
+
+
 class Cluster(EMRReleaseModel, models.Model):
-    FINAL_STATUS_LIST = ('COMPLETED', 'TERMINATED', 'FAILED')
+    PENDING_STATUS_LIST = ('STARTING', 'BOOTSTRAPPING', 'RUNNING', 'WAITING', 'TERMINATING')
+    FINAL_STATUS_LIST = ('TERMINATED', 'TERMINATED_WITH_ERRORS', 'FAILED')
 
     identifier = models.CharField(
         max_length=100,
@@ -54,6 +68,8 @@ class Cluster(EMRReleaseModel, models.Model):
         help_text=("Public address of the master node."
                    "This is only available once the cluster has bootstrapped")
     )
+
+    objects = ClusterManager()
 
     def __str__(self):
         return self.identifier
@@ -105,6 +121,10 @@ class Cluster(EMRReleaseModel, models.Model):
     @property
     def is_active(self):
         return self.most_recent_status not in self.FINAL_STATUS_LIST
+
+    @property
+    def is_inactive(self):
+        return self.most_recent_status not in self.PENDING_STATUS_LIST
 
     @property
     def is_terminating(self):
