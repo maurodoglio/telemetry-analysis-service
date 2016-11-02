@@ -1,7 +1,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
-import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseServerError
 from django.template import Context, loader, TemplateDoesNotExist
@@ -10,9 +9,6 @@ from django.views.decorators.csrf import requires_csrf_token
 
 from .clusters.models import Cluster
 from .jobs.models import SparkJob
-
-
-logger = logging.getLogger("django")
 
 
 @login_required
@@ -26,13 +22,15 @@ def dashboard(request):
     if clusters_shown not in clusters_filters:
         clusters_shown = default_filter
 
+    # get the model manager method depending on the cluster filter
+    # and call it to get the base queryset
     clusters = getattr(Cluster.objects, clusters_shown)().filter(
         created_by=request.user
-    ).order_by("-start_date")
+    ).order_by('-start_date')
 
     spark_jobs = SparkJob.objects.filter(
         created_by=request.user
-    ).order_by("start_date")
+    ).order_by('start_date')
 
     context = {
         'clusters': clusters,

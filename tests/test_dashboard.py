@@ -84,9 +84,7 @@ def dashboard_clusters(mocker, now, test_user):
 
 
 def test_dashboard_active_clusters(client, mocker, test_user, dashboard_clusters):
-
     dashboard_url = reverse('dashboard')
-
     response = client.get(dashboard_url, follow=True)
     # even though we've created both active and inactive clusters,
     # we only have 5, the active ones
@@ -118,7 +116,7 @@ def test_dashboard_terminated_clusters(client, mocker, test_user,
                                        dashboard_clusters):
     dashboard_url = reverse('dashboard')
     response = client.get(dashboard_url + '?clusters=terminated', follow=True)
-    # since we've created active clusters only
+    # since we have created only 5 terminated clusters
     assert response.context['clusters'].count() == 5
     for cluster in response.context['clusters']:
         assert cluster.is_terminated
