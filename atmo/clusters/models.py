@@ -90,7 +90,9 @@ class Cluster(EMRReleaseModel, models.Model):
     )
 
     most_recent_status = models.CharField(
-        max_length=50, default="UNKNOWN",
+        max_length=50,
+        default='',
+        blank=True,
         help_text="Most recently retrieved AWS status for the cluster."
     )
     master_address = models.CharField(
