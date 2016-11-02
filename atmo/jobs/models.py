@@ -108,7 +108,9 @@ class SparkJob(EMRReleaseModel):
         if at_time is None:
             at_time = timezone.now()
         max_run_time = self.last_run_date + timedelta(hours=self.job_timeout)
-        return (self.most_recent_status not in Cluster.TERMINATED_STATUS_LIST and
+        final_states = (Cluster.TERMINATED_STATUS_LIST +
+                        Cluster.FAILED_STATUS_LIST)
+        return (self.most_recent_status not in final_states and
                 at_time >= max_run_time)
 
     def should_run(self, at_time=None):
