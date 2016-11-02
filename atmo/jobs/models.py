@@ -88,7 +88,8 @@ class SparkJob(EMRReleaseModel):
     )
     most_recent_status = models.CharField(
         max_length=50,
-        default='NOT RUNNING',
+        blank=True,
+        default='',
     )
 
     def __str__(self):
@@ -122,10 +123,8 @@ class SparkJob(EMRReleaseModel):
         in `most_recent_status`.
         """
         info = self.get_info()
-        if info is None:
-            self.most_recent_status = "NOT RUNNING"
-        else:
-            self.most_recent_status = info["state"]
+        if info is not None:
+            self.most_recent_status = info['state']
         return self.most_recent_status
 
     def is_expired(self, at_time=None):

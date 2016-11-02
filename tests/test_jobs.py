@@ -365,7 +365,7 @@ def test_spark_job_is_expired(now, test_user):
 
     timeout_run_date = now - timedelta(hours=12)
     jobflow_id = 'my-jobflow-id'
-    running_status = 'RUNNING'
+    running_status = Cluster.STATUS_RUNNING
 
     # No jobflow_id
     spark_job.current_run_jobflow_id = ''
@@ -382,7 +382,7 @@ def test_spark_job_is_expired(now, test_user):
     # Most_recent_status != RUNNING
     spark_job.current_run_jobflow_id = jobflow_id
     spark_job.last_run_date = timeout_run_date
-    spark_job.most_recent_status = "TERMINATED"
+    spark_job.most_recent_status = Cluster.STATUS_TERMINATED
     assert not spark_job.is_expired(at_time=now)
 
     # It hasn't run for more than its timeout
