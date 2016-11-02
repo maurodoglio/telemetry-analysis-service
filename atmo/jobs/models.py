@@ -8,12 +8,14 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.encoding import python_2_unicode_compatible
 
 from ..models import EMRReleaseModel
 from .. import provisioning, scheduling
 from ..clusters.models import Cluster
 
 
+@python_2_unicode_compatible
 class SparkJob(EMRReleaseModel):
     INTERVAL_DAILY = 24
     INTERVAL_WEEKLY = INTERVAL_DAILY * 7

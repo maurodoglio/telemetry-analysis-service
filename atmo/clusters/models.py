@@ -7,6 +7,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
 
 from ..models import EMRReleaseModel
 from .. import provisioning
@@ -30,6 +31,7 @@ class ClusterManager(models.Manager):
         )
 
 
+@python_2_unicode_compatible
 class Cluster(EMRReleaseModel, models.Model):
     STATUS_STARTING = 'STARTING'
     STATUS_BOOTSTRAPPING = 'BOOTSTRAPPING'
