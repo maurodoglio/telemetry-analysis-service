@@ -56,7 +56,7 @@ def new_spark_job(request):
     initial = {
         'identifier': next_identifier,
         'size': 1,
-        'interval_in_hours': SparkJob.WEEKLY,
+        'interval_in_hours': SparkJob.INTERVAL_WEEKLY,
         'job_timeout': 24,
         'start_date': timezone.now(),
     }

@@ -15,20 +15,20 @@ from ..clusters.models import Cluster
 
 
 class SparkJob(EMRReleaseModel):
-    DAILY = 24
-    WEEKLY = DAILY * 7
-    MONTHLY = DAILY * 30
+    INTERVAL_DAILY = 24
+    INTERVAL_WEEKLY = INTERVAL_DAILY * 7
+    INTERVAL_MONTHLY = INTERVAL_DAILY * 30
     INTERVAL_CHOICES = [
-        (DAILY, "Daily"),
-        (WEEKLY, "Weekly"),
-        (MONTHLY, "Monthly"),
+        (INTERVAL_DAILY, 'Daily'),
+        (INTERVAL_WEEKLY, 'Weekly'),
+        (INTERVAL_MONTHLY, 'Monthly'),
     ]
-    INTERVAL_CHOICES_DEFAULT = INTERVAL_CHOICES[0][0]
+    RESULT_PRIVATE = 'private'
+    RESULT_PUBLIC = 'public'
     RESULT_VISIBILITY_CHOICES = [
-        ('private', 'Private: results output to an S3 bucket, viewable with AWS credentials'),
-        ('public', 'Public: results output to a public S3 bucket, viewable by anyone'),
+        (RESULT_PRIVATE, 'Private: results output to an S3 bucket, viewable with AWS credentials'),
+        (RESULT_PUBLIC, 'Public: results output to a public S3 bucket, viewable by anyone'),
     ]
-    RESULT_VISIBILITY_CHOICES_DEFAULT = RESULT_VISIBILITY_CHOICES[0][0]
 
     identifier = models.CharField(
         max_length=100,
@@ -43,7 +43,7 @@ class SparkJob(EMRReleaseModel):
         max_length=50,
         help_text="Whether notebook results are uploaded to a public or private bucket",
         choices=RESULT_VISIBILITY_CHOICES,
-        default=RESULT_VISIBILITY_CHOICES_DEFAULT,
+        default=RESULT_PRIVATE,
     )
     size = models.IntegerField(
         help_text="Number of computers to use to run the job."
@@ -51,7 +51,7 @@ class SparkJob(EMRReleaseModel):
     interval_in_hours = models.IntegerField(
         help_text="Interval at which the job should run, in hours.",
         choices=INTERVAL_CHOICES,
-        default=INTERVAL_CHOICES_DEFAULT,
+        default=INTERVAL_DAILY,
     )
     job_timeout = models.IntegerField(
         help_text="Number of hours before the job times out.",
