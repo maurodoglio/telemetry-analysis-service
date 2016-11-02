@@ -67,11 +67,13 @@ class Cluster(EMRReleaseModel, models.Model):
         help_text="Public key that should be authorized for SSH access to the cluster."
     )
     start_date = models.DateTimeField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         help_text="Date/time that the cluster was started, or null if it isn't started yet."
     )
     end_date = models.DateTimeField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         help_text="Date/time that the cluster will expire and automatically be deleted."
     )
     created_by = models.ForeignKey(
@@ -81,7 +83,9 @@ class Cluster(EMRReleaseModel, models.Model):
     )
 
     jobflow_id = models.CharField(
-        max_length=50, blank=True, null=True,
+        max_length=50,
+        blank=True,
+        null=True,
         help_text="AWS cluster/jobflow ID for the cluster, used for cluster management."
     )
 
@@ -90,7 +94,9 @@ class Cluster(EMRReleaseModel, models.Model):
         help_text="Most recently retrieved AWS status for the cluster."
     )
     master_address = models.CharField(
-        max_length=255, default="", blank=True,
+        max_length=255,
+        default='',
+        blank=True,
         help_text=("Public address of the master node."
                    "This is only available once the cluster has bootstrapped")
     )

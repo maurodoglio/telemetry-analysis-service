@@ -62,7 +62,8 @@ class SparkJob(EMRReleaseModel):
         help_text="Date/time that the job should start being scheduled to run."
     )
     end_date = models.DateTimeField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         help_text="Date/time that the job should stop being scheduled to run, null if no end date."
     )
     is_enabled = models.BooleanField(
@@ -70,17 +71,25 @@ class SparkJob(EMRReleaseModel):
         help_text="Whether the job should run or not."
     )
     last_run_date = models.DateTimeField(
-        blank=True, null=True,
+        blank=True,
+        null=True,
         help_text="Date/time that the job was last started, null if never."
     )
     created_by = models.ForeignKey(
         User,
         related_name='created_spark_jobs',
-        help_text="User that created the scheduled job instance."
+        help_text="User that created the scheduled job instance.",
     )
 
-    current_run_jobflow_id = models.CharField(max_length=50, blank=True, null=True)
-    most_recent_status = models.CharField(max_length=50, default="NOT RUNNING")
+    current_run_jobflow_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+    )
+    most_recent_status = models.CharField(
+        max_length=50,
+        default='NOT RUNNING',
+    )
 
     def __str__(self):
         return self.identifier
@@ -88,13 +97,30 @@ class SparkJob(EMRReleaseModel):
     def __repr__(self):
         return "<SparkJob {} with {} nodes>".format(self.identifier, self.size)
 
+    def get_absolute_url(self):
+        return reverse('jobs-detail', kwargs={'id': self.id})
+
+    @classmethod
+    def step_all(cls):
+        """Run all the scheduled tasks that are supposed to run."""
+        for spark_jobs in cls.objects.all():
+            if spark_jobs.should_run():
+                spark_jobs.run()
+            if spark_jobs.is_expired():
+                # This shouldn't be required as we set a timeout in the bootstrap script,
+                # but let's keep it as a guard.
+                spark_jobs.terminate()
+
     def get_info(self):
         if self.current_run_jobflow_id is None:
             return None
         return provisioning.cluster_info(self.current_run_jobflow_id)
 
     def update_status(self):
-        """Should be called to update latest cluster status in `self.most_recent_status`."""
+        """
+        Should be called to update latest cluster status
+        in `most_recent_status`.
+        """
         info = self.get_info()
         if info is None:
             self.most_recent_status = "NOT RUNNING"
@@ -186,20 +212,6 @@ class SparkJob(EMRReleaseModel):
         # make sure to clean up the job notebook from storage
         self.cleanup()
         super(SparkJob, self).delete(*args, **kwargs)
-
-    @classmethod
-    def step_all(cls):
-        """Run all the scheduled tasks that are supposed to run."""
-        for spark_jobs in cls.objects.all():
-            if spark_jobs.should_run():
-                spark_jobs.run()
-            if spark_jobs.is_expired():
-                # This shouldn't be required as we set a timeout in the bootstrap script,
-                # but let's keep it as a guard.
-                spark_jobs.terminate()
-
-    def get_absolute_url(self):
-        return reverse('jobs-detail', kwargs={'id': self.id})
 
     def get_results(self):
         return scheduling.get_spark_job_results(self.identifier, self.is_public)
