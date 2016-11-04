@@ -176,7 +176,7 @@ class SparkJob(EMRReleaseModel):
 
     @property
     def is_public(self):
-        return self.result_visibility == 'public'
+        return self.result_visibility == self.RESULT_PUBLIC
 
     @property
     def notebook_name(self):
