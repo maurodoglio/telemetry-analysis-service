@@ -21,6 +21,8 @@ def run_jobs():
         if job.should_run():
             job.run()
             run_jobs.append(job.identifier)
+
+        # and then check if the job is expired and terminate it if needed
         if job.is_expired:
             # This shouldn't be required as we set a timeout in the bootstrap script,
             # but let's keep it as a guard.

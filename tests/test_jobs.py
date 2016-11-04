@@ -349,43 +349,36 @@ def test_spark_job_is_expired(now, test_user):
         job_timeout=12,
         start_date=now - timedelta(days=1),
         created_by=test_user,
+        current_run_jobflow_id='my-jobflow-id',
     )
-    # A spark job cannot expire if:
-    # it doesn't have a jobflow_id OR
-    # it doesn't have a a last_run_date OR
-    # its most_recent_status is not RUNNING OR
-    # it hasn't run for more than its timeout
+    # A spark job expires if:
+    # or has run before and finished (or not)
+    # it hasn't run for longer than its timeout
 
     timeout_run_date = now - timedelta(hours=12)
-    jobflow_id = 'my-jobflow-id'
     running_status = Cluster.STATUS_RUNNING
 
-    # No jobflow_id
-    spark_job.current_run_jobflow_id = ''
-    spark_job.last_run_date = timeout_run_date
-    spark_job.most_recent_status = running_status
+    # No last_run_date and no status
+    spark_job.last_run_date = None
+    spark_job.most_recent_status = ''
     assert not spark_job.is_expired
 
-    # No last_run_date
-    spark_job.current_run_jobflow_id = jobflow_id
+    # No last_run_date and running status
     spark_job.last_run_date = None
     spark_job.most_recent_status = running_status
     assert not spark_job.is_expired
 
     # Most_recent_status != RUNNING
-    spark_job.current_run_jobflow_id = jobflow_id
     spark_job.last_run_date = timeout_run_date
     spark_job.most_recent_status = Cluster.STATUS_TERMINATED
     assert not spark_job.is_expired
 
     # It hasn't run for more than its timeout
-    spark_job.current_run_jobflow_id = jobflow_id
     spark_job.last_run_date = timeout_run_date + timedelta(seconds=1)
     spark_job.most_recent_status = running_status
     assert not spark_job.is_expired
 
     # All the conditions are met
-    spark_job.current_run_jobflow_id = jobflow_id
     spark_job.last_run_date = timeout_run_date
     spark_job.most_recent_status = running_status
     assert spark_job.is_expired

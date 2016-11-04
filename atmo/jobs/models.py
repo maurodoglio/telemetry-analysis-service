@@ -107,7 +107,7 @@ class SparkJob(EMRReleaseModel):
         Looks at both the cluster status and our own record when
         we asked it to run.
         """
-        return (self.most_recent_status == self.DEFAULT_STATUS and
+        return (self.most_recent_status == self.DEFAULT_STATUS or
                 self.last_run_date is None)
 
     @property
@@ -117,12 +117,15 @@ class SparkJob(EMRReleaseModel):
 
     @property
     def is_runnable(self):
+        """
+        Either the job has never run before or was never finished
+        """
         return self.has_never_run or self.has_finished
 
     @property
     def is_expired(self):
         """Whether the current job run has run out of time"""
-        if not self.current_run_jobflow_id or self.last_run_date is None:
+        if self.has_never_run:
             # Job isn't even running at the moment and never ran before
             return False
         max_run_time = self.last_run_date + timedelta(hours=self.job_timeout)
