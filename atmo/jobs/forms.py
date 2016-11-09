@@ -118,13 +118,14 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
                                         'allowed to be uploaded')
         return notebook_file
 
-    def save(self):
+    def save(self, commit=True):
         # create the model without committing, since we haven't
         # set the required created_by field yet
         spark_job = super(BaseSparkJobForm, self).save(commit=False)
 
-        # actually save the scheduled Spark job, and return the model object
-        spark_job.save(self.cleaned_data['notebook'])
+        if commit:
+            # actually save the scheduled Spark job, and return the model object
+            spark_job.save(self.cleaned_data['notebook'])
         return spark_job
 
 
