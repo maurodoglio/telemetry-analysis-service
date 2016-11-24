@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from functools import wraps
+import inspect
 
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import available_attrs
@@ -25,10 +26,17 @@ def permission_required(perm, klass, **params):
             return render(request, 'change_user.html', context={'user': user})
 
     """
+    ignore = params.pop('ignore', [])
+
     def decorator(view_func):
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
-            obj = get_object_or_404(klass, **kwargs)
+            filters = {}
+            for kwarg, kwvalue in kwargs.items():
+                if kwarg in ignore:
+                    continue
+                filters[kwarg] = kwvalue
+            obj = get_object_or_404(klass, **filters)
             response = get_403_or_None(
                 request,
                 perms=[perm],

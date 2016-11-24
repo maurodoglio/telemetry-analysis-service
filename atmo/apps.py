@@ -95,3 +95,9 @@ class HealthAppConfig(AppConfig):
 
     def ready(self):
         checks.register()
+
+
+class KeysAppConfig(AppConfig):
+    name = 'atmo.keys'
+    label = 'keys'
+    verbose_name = 'Keys'

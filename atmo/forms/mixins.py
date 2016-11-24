@@ -4,7 +4,6 @@
 from collections import OrderedDict
 import uuid
 from django import forms
-from django.core.exceptions import ImproperlyConfigured
 
 from .cache import CachedFileCache
 from .fields import CachedFileField
