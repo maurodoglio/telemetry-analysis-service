@@ -42,7 +42,7 @@ dependencies:
 test:
   override:
     - cp .env-dist .env
-    - make test
+    - make ci
 
 # appropriately tag and push the container to dockerhub
 deployment:
