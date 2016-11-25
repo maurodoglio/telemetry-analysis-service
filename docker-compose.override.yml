@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  db:
+    ports:
+      - "15433:5432"
+  app:
+    volumes:
+      - .:/app
