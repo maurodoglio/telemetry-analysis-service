@@ -231,7 +231,7 @@ class Core(Constance, CSP, AWS, Configuration):
     USE_TZ = True
     DATETIME_FORMAT = 'Y-m-d H:i'  # simplified ISO format since we assume UTC
 
-    STATIC_ROOT = values.Value(default='/opt/static-root/')
+    STATIC_ROOT = values.Value(default='/opt/static/')
     STATIC_URL = '/static/'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     STATICFILES_FINDERS = [
@@ -240,7 +240,7 @@ class Core(Constance, CSP, AWS, Configuration):
         'npm.finders.NpmFinder',
     ]
 
-    NPM_ROOT_PATH = values.Value(default='/opt/npm-root/')
+    NPM_ROOT_PATH = values.Value(default='/opt/npm/')
     NPM_STATIC_FILES_PREFIX = 'npm'
     NPM_FILE_PATTERNS = {
         'ansi_up': ['ansi_up.js'],

@@ -19,10 +19,14 @@ build:
 	docker-compose build
 
 ci:
-	docker-compose -f docker-compose.yml run web bin/run tests
+	mkdir coverage
+	sudo chown 10001:0 coverage
+	cp .env-dist .env
+	docker-compose -f docker-compose.yml -f docker-compose.ci.yml run web bin/run test
 
 clean: stop
 	docker-compose rm -f
+	rm -rf coverage/ .coverage
 
 creds:
 	@docker-compose run web ./manage.py add_google_credentials \
@@ -41,7 +45,7 @@ stop:
 	docker-compose stop
 
 test:
-	docker-compose run web bin/run tests
+	docker-compose run web bin/run test
 
 up:
 	docker-compose up

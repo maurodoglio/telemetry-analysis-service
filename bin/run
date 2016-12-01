@@ -6,7 +6,7 @@ set -eo pipefail
 : "${PORT:=8000}"
 
 usage() {
-  echo "usage: bin/run web|localweb|worker|scheduler|tests"
+  echo "usage: bin/run web|localweb|worker|scheduler|test"
   exit 1
 }
 
@@ -27,8 +27,9 @@ case $1 in
   scheduler)
     exec newrelic-admin run-python manage.py rqscheduler --retry
     ;;
-  tests)
-    python manage.py collectstatic --noinput --link
+  test)
+    env
+    python manage.py collectstatic --noinput
     pytest
     ;;
   *)

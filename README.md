@@ -98,14 +98,11 @@ To add a new dependency to atmo, please:
 
 That will rebuild the images used by docker-compose.
 
-Note: An empty `node_modules` will be created by docker-compose to allow
-build-time installation of those packages.
-
 Run the tests
 -------------
 
 There's a sample test in `tests/test_users.py` for your convenience,
-that you can run using the following command:
+that you can run using the following command on your computer:
 
     make test
 
