@@ -28,8 +28,9 @@ RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
     apt-get update && apt-get install -y nodejs
 
 # Create static and npm roots
-RUN mkdir -p /opt/static-root /opt/npm-root && \
-    chown -R 10001:0 /opt/static-root /opt/npm-root
+RUN mkdir -p /opt/coverage /opt/npm /opt/static && \
+    chown -R 10001:0 /opt && \
+    chmod -R g+w /opt
 
 # Switch to /tmp to install dependencies outside home dir
 WORKDIR /tmp
@@ -38,12 +39,14 @@ WORKDIR /tmp
 COPY requirements.txt /tmp/
 RUN pip install --upgrade --no-cache-dir -r requirements.txt
 
+# Switch to /opt/npm to install dependencies outside home dir
+WORKDIR /opt/npm
+
 # Install frontend dependencies using NPM
-COPY package.json /tmp/
+COPY package.json /opt/npm/
 RUN npm install && \
-    cp -r /tmp/node_modules /opt/npm-root/ && \
-    chown -R 10001:0 /opt/npm-root && \
-    chmod -R g+w /opt/npm-root
+    chown -R 10001:0 /opt/npm && \
+    chmod -R g+w /opt/npm
 
 # Switch back to home directory
 WORKDIR /app

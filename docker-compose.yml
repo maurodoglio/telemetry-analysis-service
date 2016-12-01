@@ -24,7 +24,7 @@ services:
     links:
       - db
       - redis
-    command: bin/run localweb
+    command: bin/run web
 
   worker:
     extends:
@@ -32,6 +32,8 @@ services:
     links:
       - db
       - redis
+    volumes_from:
+      - web
     command: bin/run worker
 
   scheduler:
@@ -40,4 +42,6 @@ services:
     links:
       - db
       - redis
+    volumes_from:
+      - web
     command: bin/run scheduler
