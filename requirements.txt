@@ -30,8 +30,9 @@ gunicorn==19.6.0 \
 whitenoise==3.2.2 \
     --hash=sha256:90a576ecb938cfef3fd1dba0c82d10e8e9ff0acb6079d7edba64822db0e4384d \
     --hash=sha256:e4c77cdde3f7a1cd2c1d985d6a3d7dc8aff5f3d18c2f331e7171933aacaeb440
-django-csp==2.0.3 \
-    --hash=sha256:d32576baad77fdd9e6859be97c2b6a3c17a6f484364389db731f0697b7a19661
+django-csp==3.1 \
+    --hash=sha256:9208219c341ddbe371b5fd217ced0c916a5e2f7184bc603415074afcace6b51c \
+    --hash=sha256:b3fed21f5cae56763119abc93c0ee43d897e39a597ed99b2ca617ff6e4b595fc
 pytz==2016.7 \
     --hash=sha256:cfe881048e0bcb348b901bc1972a54b5e5389274315acbe9384d68569b8ed1f9 \
     --hash=sha256:e16a04228fa684f14e5b4c9cd8057a28c5ec08c1a58890d2f4c30f5bf62ffbf9 \
