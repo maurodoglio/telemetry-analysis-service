@@ -10,6 +10,13 @@ usage() {
   exit 1
 }
 
+run_tests() {
+  python manage.py collectstatic --noinput
+  coverage erase
+  coverage run -m py.test
+  coverage report
+}
+
 wait_for() {
   echo Waiting for $1 to listen on $2...
   while ! nc -z $1 $2; do echo sleeping; sleep $SLEEP; done
@@ -37,8 +44,11 @@ case $1 in
     exec newrelic-admin run-python manage.py rqscheduler --retry
     ;;
   test)
-    python manage.py collectstatic --noinput
-    exec pytest
+    run_tests
+    # submit coverage
+    coverage xml
+    env
+    bash <(curl -s https://codecov.io/bash) -s /tmp
     ;;
   *)
     exec "$@"

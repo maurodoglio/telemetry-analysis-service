@@ -28,8 +28,8 @@ RUN curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
     echo 'deb-src https://deb.nodesource.com/node_4.x jessie main' >> /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && apt-get install -y nodejs
 
-# Create coverage, static and npm roots
-RUN mkdir -p /opt/coverage /opt/npm /opt/static && \
+# Create static and npm roots
+RUN mkdir -p /opt/npm /opt/static && \
     chown -R 10001:10001 /opt
 
 # Install Python dependencies

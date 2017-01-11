@@ -1,16 +1,9 @@
-sudo: required
 language: python
 python:
-  - "2.7"
+  - 2.7
 services:
   - docker
-env:
-  global:
-    - DJANGO_DEBUG=False
 install:
     pip install -U docker-compose
 script:
-  - make ci
-after_success:
-  - ls -la coverage
-  - bash <(curl -s https://codecov.io/bash)
+  - make test

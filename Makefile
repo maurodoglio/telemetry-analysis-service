@@ -16,12 +16,6 @@ help:
 build:
 	docker-compose build
 
-ci:
-	mkdir coverage
-	sudo chown 10001:0 coverage
-	cp .env-dist .env
-	docker-compose run web test
-
 clean: stop
 	docker-compose rm -f
 	rm -rf coverage/ .coverage
@@ -39,7 +33,7 @@ stop:
 	docker-compose stop
 
 test:
-	docker-compose run web bin/run test
+	@bin/test
 
 up:
 	docker-compose up

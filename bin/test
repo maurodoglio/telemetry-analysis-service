@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+# copy the .env template to .env if not there already
+[ ! -f .env ] && cp .env-dist .env
+
+# default variables
+export DJANGO_DEBUG=False
+export DEVELOPMENT=1
+export DJANGO_SECRET_KEY=some-very-very-very-very-very-very-long-secret-key
+
+# pass CI env vars into docker containers for codecov submission
+[ ! -z ${CI+check} ] && \
+    echo "Getting Codecov environment variables" && \
+    export CI_ENV=`bash <(curl -s https://codecov.io/env)`
+
+# run docker compose with the given environment variables
+docker-compose run -e DEVELOPMENT -e DJANGO_SECRET_KEY -e DJANGO_DEBUG $CI_ENV web test
