@@ -1,25 +1,34 @@
 #!/usr/bin/env bash
-
 set -eo pipefail
 
 # default variables
 : "${PORT:=8000}"
+: "${SLEEP:=2}"
 
 usage() {
-  echo "usage: bin/run web|localweb|worker|scheduler|test"
+  echo "usage: bin/run web|web-dev|worker|scheduler|test"
   exit 1
+}
+
+wait_for() {
+  echo Waiting for $1 to listen on $2...
+  while ! nc -z $1 $2; do echo sleeping; sleep $SLEEP; done
 }
 
 [ $# -lt 1 ] && usage
 
+# Only wait for backend services in development
+# http://stackoverflow.com/a/13864829
+[ ! -z ${DEVELOPMENT+check} ] && wait_for db 5432 && wait_for redis 6379
+
 case $1 in
-  localweb)
-    python manage.py migrate
-    exec python manage.py runserver 0.0.0.0:${PORT}
-    ;;
   web)
     newrelic-admin run-python manage.py migrate
     exec newrelic-admin run-program gunicorn atmo.wsgi:application -b 0.0.0.0:${PORT} --workers 4 --access-logfile -
+    ;;
+  web-dev)
+    python manage.py migrate
+    exec python manage.py runserver 0.0.0.0:${PORT}
     ;;
   worker)
     exec newrelic-admin run-python manage.py rqworker --worker-class=rq.SimpleWorker default
@@ -28,11 +37,10 @@ case $1 in
     exec newrelic-admin run-python manage.py rqscheduler --retry
     ;;
   test)
-    env
     python manage.py collectstatic --noinput
-    pytest
+    exec pytest
     ;;
   *)
-    usage
+    exec "$@"
     ;;
 esac

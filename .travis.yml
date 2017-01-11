@@ -4,6 +4,9 @@ python:
   - "2.7"
 services:
   - docker
+env:
+  global:
+    - DJANGO_DEBUG=False
 install:
     pip install -U docker-compose
 script:

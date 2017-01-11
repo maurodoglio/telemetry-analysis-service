@@ -7,12 +7,18 @@ services:
     image: redis:3.2
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     environment:
-      - DJANGO_DEBUG
-      - DJANGO_SECRET_KEY
+      - DEVELOPMENT=1
+      - DJANGO_SECRET_KEY=bd2b6169a99f2561168eb6b39c3fe9ad4b184a2e485781a3c875a1d1052d469d
     env_file:
       - .env
+    volumes:
+      - $PWD:/app
+      - $PWD/coverage:/opt/coverage
+    command: "true"
 
   web:
     extends:
@@ -24,7 +30,7 @@ services:
     links:
       - db
       - redis
-    command: bin/run web
+    command: web-dev
 
   worker:
     extends:
@@ -32,9 +38,7 @@ services:
     links:
       - db
       - redis
-    volumes_from:
-      - web
-    command: bin/run worker
+    command: worker
 
   scheduler:
     extends:
@@ -42,6 +46,4 @@ services:
     links:
       - db
       - redis
-    volumes_from:
-      - web
-    command: bin/run scheduler
+    command: scheduler

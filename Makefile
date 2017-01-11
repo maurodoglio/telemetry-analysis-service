@@ -1,4 +1,4 @@
-.PHONY: build clean creds migrate redis-cli revision shell stop test up
+.PHONY: build clean migrate redis-cli revision shell stop test up
 
 help:
 	@echo "Welcome to the Telemetry Analysis Service\n"
@@ -6,8 +6,6 @@ help:
 	@echo "  build      Builds the docker images for the docker-compose setup"
 	@echo "  ci         Run the test with the CI specific Docker setup"
 	@echo "  clean      Stops and removes all docker containers"
-	@echo "  creds CLIENT_ID=<CLIENT_ID> CLIENT_SECRET=<CLIENT_SECRET>"
-	@echo "             Sets the Google Credentials required for authentication"
 	@echo "  migrate    Runs the Django database migrations"
 	@echo "  redis-cli  Opens a Redis CLI"
 	@echo "  shell      Opens a Bash shell"
@@ -22,15 +20,11 @@ ci:
 	mkdir coverage
 	sudo chown 10001:0 coverage
 	cp .env-dist .env
-	docker-compose -f docker-compose.yml -f docker-compose.ci.yml run web bin/run test
+	docker-compose run web test
 
 clean: stop
 	docker-compose rm -f
 	rm -rf coverage/ .coverage
-
-creds:
-	@docker-compose run web ./manage.py add_google_credentials \
-	--client-id="$(CLIENT_ID)" --client-secret="$(CLIENT_SECRET)"
 
 migrate:
 	docker-compose run web python manage.py migrate --run-syncdb

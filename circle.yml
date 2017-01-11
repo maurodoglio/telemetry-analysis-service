@@ -12,6 +12,8 @@ machine:
     - docker
   python:
     version: 2.7.12
+  environment:
+    DJANGO_DEBUG: False
 
 dependencies:
   pre:
@@ -38,7 +40,8 @@ dependencies:
 
 test:
   override:
-    - make ci
+    - cp .env-dist .env
+    - make test
 
 # appropriately tag and push the container to dockerhub
 deployment:
