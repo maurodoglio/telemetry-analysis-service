@@ -3,7 +3,8 @@ set -eo pipefail
 
 # default variables
 : "${PORT:=8000}"
-: "${SLEEP:=2}"
+: "${SLEEP:=1}"
+: "${TRIES:=60}"
 
 usage() {
   echo "usage: bin/run web|web-dev|worker|scheduler|test"
@@ -18,8 +19,16 @@ run_tests() {
 }
 
 wait_for() {
-  echo Waiting for $1 to listen on $2...
-  while ! nc -z $1 $2; do echo sleeping; sleep $SLEEP; done
+  tries=0
+  echo "Waiting for $1 to listen on $2..."
+  while true; do
+    [[ $tries -lt $TRIES ]] || return
+    (echo > /dev/tcp/$1/$2) >/dev/null 2>&1
+    result=
+    [[ $? -eq 0 ]] && return
+    sleep $SLEEP
+    tries=$((tries + 1))
+  done
 }
 
 [ $# -lt 1 ] && usage

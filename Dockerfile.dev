@@ -16,7 +16,7 @@ RUN mkdir /app && \
 # install a few essentials and clean apt caches afterwards
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        apt-transport-https build-essential curl git libpq-dev netcat \
+        apt-transport-https build-essential curl git libpq-dev \
         postgresql-client gettext sqlite3 libffi-dev  && \
     apt-get autoremove -y && \
     apt-get clean && \
