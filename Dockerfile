@@ -58,3 +58,9 @@ USER 10001
 
 RUN python manage.py collectstatic --noinput
 
+# Using /bin/bash as the entrypoint works around some volume mount issues on Windows
+# where volume-mounted files do not have execute bits set.
+# https://github.com/docker/compose/issues/2301#issuecomment-154450785 has additional background.
+ENTRYPOINT ["/bin/bash", "/app/bin/run"]
+
+CMD ["web"]
