@@ -55,3 +55,6 @@ COPY . /app
 RUN chown -R 10001:10001 /app
 
 USER 10001
+
+RUN python manage.py collectstatic --noinput
+
