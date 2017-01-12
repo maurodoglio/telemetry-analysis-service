@@ -36,7 +36,7 @@ RUN mkdir -p /opt/npm /opt/static && \
 COPY requirements.txt /tmp/
 # Switch to /tmp to install dependencies outside home dir
 WORKDIR /tmp
-RUN pip install --upgrade --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install frontend dependencies using NPM
 COPY package.json /opt/npm/
