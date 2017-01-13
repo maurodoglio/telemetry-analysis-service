@@ -417,6 +417,10 @@ class Dev(Base):
 class Test(Dev):
     """Configuration to be used during testing"""
 
+    DEBUG = False
+
+    SECRET_KEY = values.Value('not-so-secret-after-all')
+
     PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.MD5PasswordHasher',
     )
@@ -477,3 +481,8 @@ class Stage(Base):
 
 class Prod(Stage):
     """Configuration to be used in prod environment"""
+
+
+class Build(Prod):
+    """Configuration to be used in build (!) environment"""
+    SECRET_KEY = values.Value('not-so-secret-after-all')

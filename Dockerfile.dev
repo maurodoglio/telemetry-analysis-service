@@ -1,10 +1,12 @@
 FROM python:2-slim
 MAINTAINER Jannis Leidel <jezdez@mozilla.com>
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH /app/
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/ \
+    DJANGO_CONFIGURATION=Dev \
+    PORT=8000
 
-EXPOSE 8000
+EXPOSE $PORT
 
 # add a non-privileged user for installing and running the application
 # don't use --create-home option to prevent populating with skeleton files

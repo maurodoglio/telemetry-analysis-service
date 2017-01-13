@@ -1,10 +1,12 @@
 FROM python:2-slim
 MAINTAINER Jannis Leidel <jezdez@mozilla.com>
 
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONPATH /app/
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/ \
+    DJANGO_CONFIGURATION=Prod \
+    PORT=8000
 
-EXPOSE 8000
+EXPOSE $PORT
 
 # add a non-privileged user for installing and running the application
 # don't use --create-home option to prevent populating with skeleton files
@@ -56,7 +58,8 @@ RUN chown -R 10001:10001 /app
 
 USER 10001
 
-RUN python manage.py collectstatic --noinput
+RUN DJANGO_CONFIGURATION=Build && \
+    python manage.py collectstatic --noinput
 
 # Using /bin/bash as the entrypoint works around some volume mount issues on Windows
 # where volume-mounted files do not have execute bits set.
