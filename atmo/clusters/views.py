@@ -34,7 +34,7 @@ def new_cluster(request):
     context = {
         'form': form,
     }
-    return render(request, 'atmo/cluster-new.html', context)
+    return render(request, 'atmo/clusters/new.html', context)
 
 
 @login_required
@@ -51,7 +51,7 @@ def terminate_cluster(request, id):
     context = {
         'cluster': cluster,
     }
-    return render(request, 'atmo/cluster-terminate.html', context=context)
+    return render(request, 'atmo/clusters/terminate.html', context=context)
 
 
 @login_required
@@ -61,4 +61,4 @@ def detail_cluster(request, id):
     context = {
         'cluster': cluster,
     }
-    return render(request, 'atmo/cluster-detail.html', context=context)
+    return render(request, 'atmo/clusters/detail.html', context=context)
