@@ -134,7 +134,7 @@ class Core(Constance, CSP, AWS, Configuration):
         # Project specific apps
         'atmo.apps.AtmoAppConfig',
         'atmo.clusters',
-        'atmo.apps.HealthApp',
+        'atmo.apps.HealthAppConfig',
         'atmo.jobs',
         'atmo.users',
 

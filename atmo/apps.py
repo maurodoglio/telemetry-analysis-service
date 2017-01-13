@@ -88,7 +88,7 @@ class AtmoAppConfig(AppConfig):
             register_job_schedule()
 
 
-class HealthApp(AppConfig):
+class HealthAppConfig(AppConfig):
     name = 'atmo.health'
     label = 'health'
     verbose_name = 'ATMO Health'
