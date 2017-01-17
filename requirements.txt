@@ -95,8 +95,9 @@ redis==2.10.5 \
 click==6.6 \
     --hash=sha256:fcf697e1fd4b567d817c69dab10a4035937fe6af175c05fd6806b69f74cbc6c4 \
     --hash=sha256:cc6a19da8ebff6e7074f731447ef7e112bd23adf3de5c597cf9989f2fd8defe9
-rq==0.6.0 \
-    --hash=sha256:2392de2d97d5a1c3b94d1eb6a1ad9bfcd77c3b1ab1534da9cf15750c67eb2f1b
+rq==0.7.1 \
+    --hash=sha256:6c36f146914f6a28009dbcee0c4610600afd1f4f493ce3a2afbd467076cddaac \
+    --hash=sha256:b0e98fcfe980cbc7644447d17ea2c177fcbd5c04f1f92d5136c47f00ed2d583d
 django-rq==0.9.3 \
     --hash=sha256:6ecb657bc9780a7bfa69d853a595c5b058c0f4a1f3011f1b2af268cc1b065b94 \
     --hash=sha256:021d489f56e3a0c34aef3dc9db528f3c50565b1e4b13ad917b1559669a810036
