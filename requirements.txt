@@ -69,9 +69,9 @@ jmespath==0.9.0 \
     --hash=sha256:ade5261b0d7d34b6f53accc91e6881b579b40161ed575e6ac465de5edad32815
 futures==3.0.5 \
     --hash=sha256:f7f16b6bf9653a918a03f1f2c2d62aac0cd64b1bc088e93ea279517f6b61120b
-botocore==1.4.68 \
-    --hash=sha256:39aae8bf732f661a587c072d354d25236765020bb61c625b10dfe2b8cc6c12f8 \
-    --hash=sha256:bd03dc434efe76e07302b5ce3e9d9d787dadcde18f410ee7f07a43b84848d312
+botocore==1.5.0 \
+    --hash=sha256:55da7c8ffe755648f5ca1642ee3495ea6ea9cb3ae0fdf7c278b3cf644cb9a45a \
+    --hash=sha256:068ae60bc926f8ed47e6a4b2bc7b972536a090eb8b6be63f10aa0c9803eceb95
 s3transfer==0.1.9 \
     --hash=sha256:17114f393101a6c4a49318429b9facede6183ec52fd14ca54e09aa496da56fbc
 python-dateutil==2.5.3 \
