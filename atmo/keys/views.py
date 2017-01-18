@@ -74,7 +74,7 @@ def delete_key(request, id):
             request,
             mark_safe(
                 '<h4>Key not deleted!</h4> '
-                'At least one SSH key needs to exists, please add '
+                'At least one SSH key needs to exist, please add '
                 'another one before you delete this one.'
             )
         )

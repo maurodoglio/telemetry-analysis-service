@@ -107,7 +107,7 @@ def test_delete_key(client, ssh_key, ssh_key_maker, test_user, test_user2):
     response = client.get(delete_url, follow=True)
     assert response.status_code == 200
     assert response.redirect_chain[-1] == (reverse('keys-list'), 302)
-    assert_message_contains(response, 'At least one SSH key needs to exists')
+    assert_message_contains(response, 'At least one SSH key needs to exist')
 
     # login the second user so we can check the delete_sshkey permission
     client.force_login(test_user2)

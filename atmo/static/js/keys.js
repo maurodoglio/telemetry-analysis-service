@@ -20,7 +20,7 @@ $(function() {
         key_textarea.val(event.target.result);
       };
 
-      // Read in the image file as a data URL.
+      // Read in the ssh key file as a data URL.
       reader.readAsText(file);
     }
 
@@ -37,7 +37,6 @@ $(function() {
 
       var files = event.originalEvent.dataTransfer.files; // FileList object.
 
-      // Loop through the FileList and render image files as thumbnails.
       $.each(files, function(index, file) {
         readFile(file);
       });
