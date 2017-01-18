@@ -3,8 +3,6 @@ atmo - The code for the Telemetry Analysis Service
 
 [![Travis CI](https://travis-ci.org/mozilla/telemetry-analysis-service.svg?branch=master)](https://travis-ci.org/mozilla/telemetry-analysis-service)
 
-[![CircleCI](https://circleci.com/gh/mozilla/telemetry-analysis-service.svg?style=svg)](https://circleci.com/gh/mozilla/telemetry-analysis-service)
-
 [![codecov](https://codecov.io/gh/mozilla/telemetry-analysis-service/branch/master/graph/badge.svg)](https://codecov.io/gh/mozilla/telemetry-analysis-service)
 
 [![Dependencies](https://img.shields.io/librariesio/github/mozilla/telemetry-analysis-service.svg)](https://libraries.io/github/mozilla/telemetry-analysis-service)
