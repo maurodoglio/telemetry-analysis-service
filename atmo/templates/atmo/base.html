@@ -10,7 +10,7 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="{% static "npm/bootstrap/dist/css/bootstrap.min.css" %}">
     <script type="text/javascript" src="{% static "npm/bootstrap/dist/js/bootstrap.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "npm/bootstrap-confirmation/bootstrap-confirmation.js" %}"></script>
+    <script type="text/javascript" src="{% static "npm/bootstrap-confirmation2/bootstrap-confirmation.min.js" %}"></script>
     <!-- Bootstrap-Datetimepicker -->
     <script type="text/javascript" src="{% static "npm/moment/min/moment.min.js" %}"></script>
     <script type="text/javascript" src="{% static "npm/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js" %}"></script>
@@ -50,6 +50,7 @@
                 <li><a href="{% url 'account_email' %}">Emails</a></li>
                 <li><a href="{% url 'socialaccount_connections' %}">Accounts</a></li>
                 {% endcomment %}
+                <li><a href="{% url 'keys-list' %}">Your keys</a></li>
                 <li><a href="{% url 'account_logout' %}">Log out</a></li>
               </ul>
             </li>
@@ -93,9 +94,15 @@
             <li><a href="https://mzl.la/2f3Mv36" target="_blank">Report a bug</a></li>
             <li><a href="https://github.com/mozilla/telemetry-analysis-service" target="_blank">Contribute code</a></li>
           </ul>
-          {% if short_sha1 and long_sha1 %}
+          {% if version or short_sha1 %}
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://github.com/mozilla/telemetry-analysis-service/commit/{{ long_sha1 }}">Revision: {{ short_sha1 }}</a></li>
+            <li>
+            {% if version %}
+              <a href="https://github.com/mozilla/telemetry-analysis-service/releases/tag/{{ version }}">Version: {{ version }}</a>
+            {% else %}
+              <a href="https://github.com/mozilla/telemetry-analysis-service/tree/{{ long_sha1 }}">Revision: {{ short_sha1 }}</a>
+            {% endif %}
+            </li>
           </ul>
           {% endif %}
           <p class="navbar-text navbar-right" data-toggle="tooltip" id="time">All times in UTC</p>

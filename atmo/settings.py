@@ -54,6 +54,7 @@ class AWS(object):
         # available EMR releases, to be used as choices for Spark jobs and clusters
         # forms. Please keep the latest (newest) as the first item
         'EMR_RELEASES': (
+            '5.2.1',
             '5.0.0',
             '4.5.0',
         ),
@@ -134,8 +135,9 @@ class Core(Constance, CSP, AWS, Configuration):
         # Project specific apps
         'atmo.apps.AtmoAppConfig',
         'atmo.clusters',
-        'atmo.apps.HealthApp',
+        'atmo.apps.HealthAppConfig',
         'atmo.jobs',
+        'atmo.apps.KeysAppConfig',
         'atmo.users',
 
         # Third party apps
@@ -246,7 +248,7 @@ class Core(Constance, CSP, AWS, Configuration):
             'dist/css/*',
             'dist/js/bootstrap*.js',
         ],
-        'bootstrap-confirmation': ['bootstrap-confirmation.js'],
+        'bootstrap-confirmation2': ['bootstrap-confirmation.min.js'],
         'eonasdan-bootstrap-datetimepicker': [
             'build/css/bootstrap-datetimepicker.min.css',
             'build/js/*.js',
@@ -424,6 +426,8 @@ class Test(Dev):
     PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.MD5PasswordHasher',
     )
+
+    MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 
 class Stage(Base):

@@ -4,12 +4,15 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.views import generic, static
 
 from . import views
 
 handler500 = 'atmo.views.server_error'
 
+# require login before visiting the admin, to enforce django-allauth
+admin.site.login = login_required(admin.site.login)
 
 urlpatterns = [
     url(r'^$', views.dashboard, name='dashboard'),
@@ -19,6 +22,7 @@ urlpatterns = [
 
     url(r'clusters/', include('atmo.clusters.urls')),
     url(r'jobs/', include('atmo.jobs.urls')),
+    url(r'keys/', include('atmo.keys.urls')),
 
     # contribute.json url
     url(r'^(?P<path>contribute\.json)$', static.serve, {'document_root': settings.BASE_DIR}),

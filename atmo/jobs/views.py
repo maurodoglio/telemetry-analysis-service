@@ -2,20 +2,21 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 import logging
+
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, JsonResponse, StreamingHttpResponse
 from django.shortcuts import redirect, render
-from django.utils.text import get_valid_filename
 from django.utils import timezone
+from django.utils.text import get_valid_filename
 
 from allauth.account.utils import user_display
 
-from .forms import NewSparkJobForm, EditSparkJobForm, TakenSparkJobForm
+from .forms import EditSparkJobForm, NewSparkJobForm, TakenSparkJobForm
 from .models import SparkJob
-from ..decorators import (view_permission_required, change_permission_required,
-                          delete_permission_required)
-
+from ..decorators import (change_permission_required,
+                          delete_permission_required, view_permission_required)
 from ..models import next_field_value
+
 
 logger = logging.getLogger("django")
 
@@ -77,7 +78,7 @@ def new_spark_job(request):
     context = {
         'form': form,
     }
-    return render(request, 'atmo/spark-job-new.html', context)
+    return render(request, 'atmo/jobs/new.html', context)
 
 
 @login_required
@@ -99,7 +100,7 @@ def edit_spark_job(request, id):
     context = {
         'form': form,
     }
-    return render(request, 'atmo/spark-job-edit.html', context)
+    return render(request, 'atmo/jobs/edit.html', context)
 
 
 @login_required
@@ -112,7 +113,7 @@ def delete_spark_job(request, id):
     context = {
         'spark_job': spark_job,
     }
-    return render(request, 'atmo/spark-job-delete.html', context=context)
+    return render(request, 'atmo/jobs/delete.html', context=context)
 
 
 @login_required
@@ -124,7 +125,7 @@ def detail_spark_job(request, id):
     }
     if 'render' in request.GET and spark_job.notebook_s3_key:
         context['notebook_content'] = spark_job.notebook_s3_object['Body'].read()
-    return render(request, 'atmo/spark-job-detail.html', context=context)
+    return render(request, 'atmo/jobs/detail.html', context=context)
 
 
 @login_required
