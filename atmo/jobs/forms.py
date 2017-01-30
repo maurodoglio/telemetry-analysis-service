@@ -19,7 +19,7 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
                        CreatedByModelFormMixin, forms.ModelForm):
     identifier = forms.RegexField(
         required=True,
-        label='Job identifier',
+        label='Identifier',
         regex=r'^[\w-]{1,100}$',
         widget=forms.TextInput(attrs={
             'required': 'required',
@@ -31,7 +31,7 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
     )
     description = forms.CharField(
         required=True,
-        label='Job description',
+        label='Description',
         strip=True,
         widget=forms.Textarea(attrs={
             'required': 'required',
@@ -42,18 +42,19 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
     )
     result_visibility = forms.ChoiceField(
         choices=models.SparkJob.RESULT_VISIBILITY_CHOICES,
-        widget=forms.Select(attrs={
+        widget=forms.RadioSelect(attrs={
             'required': 'required',
+            'class': 'radioset',
         }),
-        label='Job result visibility',
+        label='Result visibility',
         help_text='Whether notebook results are uploaded to a public '
-                  'or private bucket',
+                  'or private S3 bucket.',
     )
     size = forms.IntegerField(
         required=True,
         min_value=1,
         max_value=settings.AWS_CONFIG['MAX_CLUSTER_SIZE'],
-        label='Job cluster size',
+        label='Cluster size',
         widget=forms.NumberInput(attrs={
             'required': 'required',
             'min': '1',
@@ -64,17 +65,18 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
     )
     interval_in_hours = forms.ChoiceField(
         choices=models.SparkJob.INTERVAL_CHOICES,
-        widget=forms.Select(attrs={
+        widget=forms.RadioSelect(attrs={
             'required': 'required',
+            'class': 'radioset',
         }),
-        label='Job interval',
-        help_text='Interval at which the Spark job should be run',
+        label='Run interval',
+        help_text='Interval at which the Spark job should be run.',
     )
     job_timeout = forms.IntegerField(
         required=True,
         min_value=1,
         max_value=24,
-        label='Job timeout',
+        label='Timeout',
         widget=forms.NumberInput(attrs={
             'required': 'required',
             'min': '1',
@@ -88,7 +90,7 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
         widget=forms.DateTimeInput(attrs={
             'class': 'datetimepicker',
         }),
-        label='Job start date (UTC)',
+        label='Start date',
         help_text='Date and time of when the scheduled Spark job should '
                   'start running.',
     )
@@ -97,16 +99,16 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
         widget=forms.DateTimeInput(attrs={
             'class': 'datetimepicker',
         }),
-        label='Job end date (UTC)',
+        label='End date',
         help_text='Optional date and time of when the scheduled Spark job '
                   'should stop running - leave this blank if the job should '
                   'not be disabled.',
     )
     notebook = CachedFileField(
         required=True,
-        widget=forms.FileInput(),  # no need to specific required attr here
+        widget=forms.FileInput(attrs={'accept': '.ipynb'}),
         label='Analysis Jupyter Notebook',
-        help_text='A Jupyter/IPython Notebook with a file ipynb '
+        help_text='A Jupyter/IPython Notebook with a file .ipynb '
                   'extension.'
     )
 
@@ -114,11 +116,11 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
         super(BaseSparkJobForm, self).__init__(*args, **kwargs)
         now = dateformat.format(timezone.now(), settings.DATETIME_FORMAT)
         self.fields['start_date'].label = mark_safe(
-            '%s <small>Currently: %s</small>' %
+            '%s <span class="optional-label">(UTC) Currently: %s</span>' %
             (self.fields['start_date'].label, now)
         )
         self.fields['end_date'].label = mark_safe(
-            '%s <small>Currently: %s</small>' %
+            '%s <span class="optional-label">(UTC) Currently: %s</span>' %
             (self.fields['end_date'].label, now)
         )
 
@@ -168,13 +170,19 @@ class NewSparkJobForm(BaseSparkJobForm):
 
     class Meta(BaseSparkJobForm.Meta):
         fields = BaseSparkJobForm.Meta.fields + ['emr_release']
+        widgets = {
+            'emr_release': forms.RadioSelect(attrs={
+                'required': 'required',
+                'class': 'radioset',
+            }),
+        }
 
 
 class EditSparkJobForm(BaseSparkJobForm):
     prefix = 'edit'
     identifier = forms.CharField(
         disabled=True,
-        label='Job identifier',
+        label='Identifier',
         widget=forms.TextInput(attrs={'required': 'required'}),
         help_text='A brief description of the scheduled Spark job\'s purpose, '
                   'visible in the AWS management console.'
@@ -182,7 +190,7 @@ class EditSparkJobForm(BaseSparkJobForm):
 
     notebook = CachedFileField(
         required=False,
-        widget=forms.FileInput(),
+        widget=forms.FileInput(attrs={'accept': '.ipynb'}),
         label='Analysis Jupyter Notebook',
         help_text='Optional Jupyter/IPython Notebook with a file ipynb '
                   'extension.'
@@ -193,7 +201,7 @@ class EditSparkJobForm(BaseSparkJobForm):
         widget=forms.DateTimeInput(attrs={
             'class': 'datetimepicker',
         }),
-        label='Job start date (UTC)',
+        label='Start date (UTC)',
         help_text='Date and time of when the scheduled Spark job should '
                   'start running. Changing this field will reset the job '
                   'schedule. Only future dates are allowed.',
