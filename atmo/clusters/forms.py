@@ -21,8 +21,9 @@ class NewClusterForm(FormControlFormMixin, CreatedByModelFormMixin,
         widget=forms.TextInput(attrs={
             'required': 'required',
         }),
-        help_text='A brief description of the cluster\'s purpose, '
-                  'visible in the AWS management console.',
+        help_text='A unique identifier to identify your cluster, visible in '
+                  'the AWS management console. (Lowercase, use hyphens '
+                  'instead of spaces.)'
     )
     size = forms.IntegerField(
         label='Size',

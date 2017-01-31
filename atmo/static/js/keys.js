@@ -16,7 +16,7 @@ $(function() {
       reader.onload = function(event) {
         // use the filename..
         var title = file.name.replace(/.pub/g, '');
-        // or the -- if available -- the user found in the key content
+        // or -- if available -- the user found in the key content
         if (event.target.result.length > 0) {
           var split_result = event.target.result.split(' ');
           if (split_result.length > 2) {

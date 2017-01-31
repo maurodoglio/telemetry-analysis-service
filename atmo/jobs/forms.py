@@ -27,7 +27,8 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
             'data-identifier-taken-check-url': reverse_lazy('jobs-identifier-taken'),
         }),
         help_text='A unique identifier to identify your Spark job, visible in '
-                  'the AWS management console. (Lowercase, use hyphens instead of spaces.)'
+                  'the AWS management console. (Lowercase, use hyphens '
+                  'instead of spaces.)'
     )
     description = forms.CharField(
         required=True,
@@ -37,8 +38,9 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
             'required': 'required',
             'rows': 2,
         }),
-        help_text='A brief description of your Spark job\'s purpose. This is '
-                  'intended to provide extra context for the data engineering team.'
+        help_text="A brief description of your Spark job's purpose. "
+                  "This is intended to provide extra context for the "
+                  "data engineering team."
     )
     result_visibility = forms.ChoiceField(
         choices=models.SparkJob.RESULT_VISIBILITY_CHOICES,
@@ -100,16 +102,15 @@ class BaseSparkJobForm(FormControlFormMixin, CachedFileModelFormMixin,
             'class': 'datetimepicker',
         }),
         label='End date',
-        help_text='Optional date and time of when the scheduled Spark job '
-                  'should stop running - leave this blank if the job should '
+        help_text='Date and time of when the scheduled Spark job should '
+                  'stop running - leave this blank if the job should '
                   'not be disabled.',
     )
     notebook = CachedFileField(
         required=True,
         widget=forms.FileInput(attrs={'accept': '.ipynb'}),
         label='Analysis Jupyter Notebook',
-        help_text='A Jupyter/IPython Notebook with a file .ipynb '
-                  'extension.'
+        help_text='A Jupyter/IPython Notebook with a .ipynb file extension.'
     )
 
     def __init__(self, *args, **kwargs):
@@ -184,16 +185,15 @@ class EditSparkJobForm(BaseSparkJobForm):
         disabled=True,
         label='Identifier',
         widget=forms.TextInput(attrs={'required': 'required'}),
-        help_text='A brief description of the scheduled Spark job\'s purpose, '
-                  'visible in the AWS management console.'
+        help_text="A brief description of the scheduled Spark job's purpose, "
+                  "visible in the AWS management console."
     )
 
     notebook = CachedFileField(
         required=False,
         widget=forms.FileInput(attrs={'accept': '.ipynb'}),
         label='Analysis Jupyter Notebook',
-        help_text='Optional Jupyter/IPython Notebook with a file ipynb '
-                  'extension.'
+        help_text='A Jupyter/IPython Notebook with a .ipynb file extension.',
     )
 
     start_date = forms.DateTimeField(
