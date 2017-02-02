@@ -76,7 +76,7 @@ def cluster_start(user_email, identifier, size, public_key, emr_release):
                 'Path': 's3://{}/bootstrap/telemetry.sh'.format(
                     settings.AWS_CONFIG['SPARK_EMR_BUCKET']
                 ),
-                'Args': ['--public-key', public_key]
+                'Args': ['--public-key', public_key, '--email', user_email]
             }
         }],
         Tags=[
