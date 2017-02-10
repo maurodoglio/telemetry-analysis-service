@@ -20,14 +20,12 @@ dependencies:
     - sudo apt-get install python-dev
     # run tests using an upgraded version of docker-compose
     - pip install --upgrade docker-compose
-  override:
-    # build Docker image first to make sure it'll build correctly
-    - ./bin/build
 
 test:
   override:
-    # run the tests using our test script
-    - ./bin/test
+    # build the Docker image and run the tests using our test script
+    - case $CIRCLE_NODE_INDEX in 0) ./bin/build ;; 1) ./bin/test ;; esac:
+        parallel: true
 
 deployment:
   latest:
