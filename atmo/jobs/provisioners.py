@@ -56,7 +56,10 @@ class SparkJobProvisioner(Provisioner):
                 'Name': 'setup-telemetry-spark-job',
                 'ScriptBootstrapAction': {
                     'Path': self.script_uri,
-                    'Args': ['--timeout', str(job_timeout * 60)]
+                    'Args': [
+                        '--timeout', str(job_timeout * 60),
+                        '--email', user_email,
+                    ]
                 }
             }],
             'Steps': [{

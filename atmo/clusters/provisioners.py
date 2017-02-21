@@ -43,7 +43,10 @@ class ClusterProvisioner(Provisioner):
                 'Name': 'setup-telemetry-cluster',
                 'ScriptBootstrapAction': {
                     'Path': self.script_uri,
-                    'Args': ['--public-key', public_key]
+                    'Args': [
+                        '--public-key', public_key,
+                        '--email', user_email,
+                    ]
                 }
             }],
             'Steps': [{
