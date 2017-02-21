@@ -99,7 +99,10 @@ def test_cluster_start(mocker, cluster_provisioner, ssh_key):
             {
                 'Name': 'setup-telemetry-cluster',
                 'ScriptBootstrapAction': {
-                    'Args': ['--public-key', public_key],
+                    'Args': [
+                        '--public-key', public_key,
+                        '--email', user_email,
+                    ],
                     'Path': cluster_provisioner.script_uri,
                 }
             }
@@ -489,7 +492,10 @@ def test_spark_job_run(mocker, is_public, spark_job_provisioner):
             {
                 'Name': 'setup-telemetry-spark-job',
                 'ScriptBootstrapAction': {
-                    'Args': ['--timeout', str(job_timeout * 60)],
+                    'Args': [
+                        '--timeout', str(job_timeout * 60),
+                        '--email', user_email,
+                    ],
                     'Path': spark_job_provisioner.script_uri,
                 }
             }
