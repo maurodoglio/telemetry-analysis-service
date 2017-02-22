@@ -51,6 +51,7 @@ class Cluster(EMRReleaseModel, CreatedByModel):
     FAILED_STATUS_LIST = (
         STATUS_TERMINATED_WITH_ERRORS,
     )
+    FINAL_STATUS_LIST = TERMINATED_STATUS_LIST + FAILED_STATUS_LIST
 
     identifier = models.CharField(
         max_length=100,

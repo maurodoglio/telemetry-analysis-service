@@ -32,7 +32,6 @@ class SparkJob(EMRReleaseModel, CreatedByModel):
         (RESULT_PRIVATE, 'Private'),
         (RESULT_PUBLIC, 'Public'),
     ]
-    FINAL_STATUS_LIST = Cluster.TERMINATED_STATUS_LIST + Cluster.FAILED_STATUS_LIST
 
     identifier = models.CharField(
         max_length=100,
@@ -113,7 +112,7 @@ class SparkJob(EMRReleaseModel, CreatedByModel):
     def has_finished(self):
         """Whether the job's cluster is terminated or failed"""
         return (self.latest_run and
-                self.latest_run.status in self.FINAL_STATUS_LIST)
+                self.latest_run.status in Cluster.FINAL_STATUS_LIST)
 
     @property
     def is_runnable(self):
@@ -287,8 +286,8 @@ class SparkJobRun(EditedAtModel):
             self.status = info['state']
             if self.status == Cluster.STATUS_RUNNING:
                 self.run_date = timezone.now()
-            elif self.status in (Cluster.STATUS_TERMINATED,
-                                 Cluster.STATUS_TERMINATED_WITH_ERRORS):
+            elif self.status in Cluster.FINAL_STATUS_LIST:
+                # set the terminated date to now
                 self.terminated_date = timezone.now()
             self.save()
         return self.status
