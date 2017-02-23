@@ -100,7 +100,10 @@ class Cluster(EMRReleaseModel, CreatedByModel):
                    "This is only available once the cluster has bootstrapped")
     )
 
-    expiration_mail_sent = models.BooleanField(default=False)
+    expiration_mail_sent = models.BooleanField(
+        default=False,
+        help_text="Whether the expiration mail were sent."
+    )
 
     objects = ClusterManager()
 
