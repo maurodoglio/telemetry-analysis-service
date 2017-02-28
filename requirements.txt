@@ -106,8 +106,8 @@ django-rq==0.9.4 \
     --hash=sha256:ef45ccdd402912c20e7250dd1a79432d871a1acf39f932a0f1af32d4eb806196
 croniter==0.3.15 \
     --hash=sha256:ac0c9811ebdecd27bc29eb0711e2d87c8c280a53d0e92c48b600654d23b1d541
-django-allauth==0.30.0 \
-    --hash=sha256:231f1e980dee8ee56be4f64e6a4b77cb32b41d977e6ea6bd310b2c8c0bc354bb
+django-allauth==0.31.0 \
+    --hash=sha256:edfff4599cd5431e4af380ddb9fc66e7b923157dcac67cceb5604b3c58003907
 python3-openid==3.0.10 \
     --hash=sha256:a89c86d10180ada1945e8aa8d92ab95d0a4f3059b7c872e520d661e6dd8076f4 \
     --hash=sha256:915d9adcf77b7ae801e377c7732ab3208eaedc4fe99cb2b37f8155b076c6eb1e
