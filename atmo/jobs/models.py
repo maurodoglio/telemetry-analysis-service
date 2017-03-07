@@ -2,7 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from datetime import timedelta
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -152,6 +154,9 @@ class SparkJob(EMRReleaseModel, CreatedByModel):
 
     def get_absolute_url(self):
         return reverse('jobs-detail', kwargs={'id': self.id})
+
+    def get_full_url(self):
+        return urljoin(settings.SITE_URL, self.get_absolute_url())
 
     def is_due(self, now=None):
         """
