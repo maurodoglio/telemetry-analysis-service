@@ -6,6 +6,7 @@ import logging
 import newrelic.agent
 
 from .models import SparkJob
+from atmo.clusters.models import Cluster
 from atmo.clusters.provisioners import ClusterProvisioner
 
 logger = logging.getLogger(__name__)
@@ -21,17 +22,20 @@ def run_jobs():
     jobs = SparkJob.objects.all()
 
     # get the jobs with prior runs
-    jobs_with_runs = jobs.filter(runs__isnull=False).prefetch_related('runs')
-    logger.debug('Updating Spark jobs: %s', jobs_with_runs)
+    jobs_with_active_runs = jobs.filter(
+        runs__isnull=False,
+        runs__status__in=Cluster.ACTIVE_STATUS_LIST,
+    ).prefetch_related('runs')
+    logger.debug('Updating Spark jobs: %s', jobs_with_active_runs)
 
     # create a map between the jobflow ids of the latest runs and the jobs
     jobflow_job_map = {
         job.latest_run.jobflow_id: job
-        for job in jobs_with_runs
+        for job in jobs_with_active_runs
     }
     # get the created dates of the job runs to limit the ListCluster API call
     provisioner = ClusterProvisioner()
-    runs_created_at = jobs_with_runs.datetimes('runs__created_at', 'day')
+    runs_created_at = jobs_with_active_runs.datetimes('runs__created_at', 'day')
     logger.debug('Fetching clusters older than %s', runs_created_at[0])
 
     cluster_list = provisioner.list(created_after=runs_created_at[0])
