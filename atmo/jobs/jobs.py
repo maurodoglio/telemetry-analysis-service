@@ -23,7 +23,6 @@ def run_jobs():
 
     # get the jobs with prior runs
     jobs_with_active_runs = jobs.filter(
-        runs__isnull=False,
         runs__status__in=Cluster.ACTIVE_STATUS_LIST,
     ).prefetch_related('runs')
     logger.debug('Updating Spark jobs: %s', jobs_with_active_runs)
@@ -39,7 +38,7 @@ def run_jobs():
     logger.debug('Fetching clusters older than %s', runs_created_at[0])
 
     cluster_list = provisioner.list(created_after=runs_created_at[0])
-    logger.debug('Cluster found: %s', cluster_list)
+    logger.debug('Clusters found: %s', cluster_list)
 
     for cluster_info in cluster_list:
         # filter out the clusters that don't relate to the job run ids
