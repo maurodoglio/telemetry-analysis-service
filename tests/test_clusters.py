@@ -55,6 +55,13 @@ def test_no_keys_redirect(client, test_user):
             [m for m in get_messages(response.wsgi_request)][0].message)
 
 
+def test_redirect_keys(client, test_user):
+    assert not test_user.created_sshkeys.exists()
+    response = client.get(reverse('clusters-new'), follow=True)
+    assert response.status_code == 200
+    assert response.redirect_chain[-1] == (reverse('keys-new'), 302)
+
+
 def test_create_cluster(client, test_user, ssh_key, cluster_provisioner_mocks):
     start_date = timezone.now()
 

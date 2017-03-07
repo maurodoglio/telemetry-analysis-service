@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 
 from atmo.clusters.provisioners import ClusterProvisioner
 from ..clusters.models import Cluster
-from ..models import CreatedByModel, EditedAtModel, EMRReleaseModel
+from ..models import CreatedByModel, EditedAtModel, EMRReleaseModel, ForgivingOneToOneField
 from .provisioners import SparkJobProvisioner
 
 
@@ -294,5 +294,35 @@ class SparkJobRun(EditedAtModel):
             elif self.status in Cluster.FINAL_STATUS_LIST:
                 # set the terminated date to now
                 self.terminated_date = timezone.now()
+                # if the job cluster terminated with error raise the alarm
+                if self.status == Cluster.STATUS_TERMINATED_WITH_ERRORS:
+                    SparkJobRunAlert.objects.create(
+                        run=self,
+                        reason=info['state_change_reason']
+                    )
             self.save()
         return self.status
+
+
+class SparkJobRunAlert(EditedAtModel):
+    """
+    A data model to store job run alerts for later processing by an
+    async job that sends out emails.
+    """
+    run = ForgivingOneToOneField(
+        SparkJobRun,
+        on_delete=models.CASCADE,
+        related_name='alert',  # run.alert & alert.run
+        primary_key=True,
+    )
+    reason = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="The reason for the creation of the alert.",
+    )
+    mail_sent_date = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="The datetime the alert email was sent.",
+    )

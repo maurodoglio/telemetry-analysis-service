@@ -31,7 +31,7 @@ def send_expiration_mails():
         expiration_mail_sent=False,
     )
     for cluster in soon_expired:
-        subject = 'Cluster %s is expiring soon!' % cluster.identifier
+        subject = '[ATMO] Cluster %s is expiring soon!' % cluster.identifier
         body = render_to_string(
             'atmo/clusters/mails/expiration_body.txt', {
                 'cluster': cluster,
