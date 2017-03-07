@@ -131,6 +131,7 @@ def test_create_spark_job(client, mocker, notebook_maker,
         return_value={
             'start_time': timezone.now(),
             'state': Cluster.STATUS_BOOTSTRAPPING,
+            'state_change_reason': None,
             'public_dns': None,
         },
     )
@@ -257,7 +258,7 @@ def test_spark_job_update_statuses(request, mocker, client, test_user,
         created_by=test_user,
     )
     spark_job.runs.create(
-        status='',
+        status=models.DEFAULT_STATUS,
         scheduled_date=one_hour_ago,
     )
 
@@ -294,6 +295,7 @@ def test_spark_job_update_statuses(request, mocker, client, test_user,
         return_value={
             'start_time': timezone.now(),
             'state': Cluster.STATUS_TERMINATED,
+            'state_change_reason': None,
             'public_dns': None,
         },
     )

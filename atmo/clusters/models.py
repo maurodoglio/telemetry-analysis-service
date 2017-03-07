@@ -80,14 +80,12 @@ class Cluster(EMRReleaseModel, CreatedByModel):
         null=True,
         help_text="Date/time that the cluster will expire and automatically be deleted."
     )
-
     jobflow_id = models.CharField(
         max_length=50,
         blank=True,
         null=True,
         help_text="AWS cluster/jobflow ID for the cluster, used for cluster management."
     )
-
     most_recent_status = models.CharField(
         max_length=50,
         default='',
@@ -101,7 +99,6 @@ class Cluster(EMRReleaseModel, CreatedByModel):
         help_text=("Public address of the master node."
                    "This is only available once the cluster has bootstrapped")
     )
-
     expiration_mail_sent = models.BooleanField(
         default=False,
         help_text="Whether the expiration mail were sent."

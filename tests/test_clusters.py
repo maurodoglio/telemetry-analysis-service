@@ -24,6 +24,7 @@ def cluster_provisioner_mocks(mocker):
             return_value={
                 'start_time': timezone.now(),
                 'state': models.Cluster.STATUS_BOOTSTRAPPING,
+                'state_change_reason': None,
                 'public_dns': 'master.public.dns.name',
             },
         ),
