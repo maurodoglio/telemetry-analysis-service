@@ -28,7 +28,7 @@ job_schedule = {
     },
     'send_run_alert_mails': {
         'cron_string': '* * * * *',
-        'func': 'atmo.clusters.jobs.send_run_alert_mails',
+        'func': 'atmo.jobs.jobs.send_run_alert_mails',
         'timeout': 60,
     },
     'update_clusters_info': {
