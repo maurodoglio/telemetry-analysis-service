@@ -86,7 +86,7 @@ def send_run_alert_mails():
     for alert in failed_run_alerts:
         subject = '[ATMO] Running Spark job %s failed' % alert.run.spark_job.identifier
         body = render_to_string(
-            'atmo/jobs/mails/run_alert_body.txt', {
+            'atmo/jobs/mails/failed_run_alert_body.txt', {
                 'alert': alert,
                 'site_url': settings.SITE_URL,
             }
