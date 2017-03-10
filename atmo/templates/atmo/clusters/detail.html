@@ -15,7 +15,6 @@
       <h4>Automatic shutdown</h4>
       This cluster will be automatically terminated at
       {{ cluster.end_date }} UTC, <strong>in {{ cluster.end_date|timeuntil }}</strong>.
-      Be sure to save any work!
     </div>
     <h3>Access</h3>
     {% if not cluster.is_ready %}
