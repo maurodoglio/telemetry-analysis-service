@@ -32,8 +32,7 @@ def send_expiration_mails():
             email_address=cluster.created_by.email,
             subject="Cluster {} is expiring soon!".format(cluster.identifier),
             body=(
-                "Your cluster {} will be terminated in roughly one hour, around {}. "
-                "Please save all unsaved work before the machine is shut down.\n"
+                "Your cluster {} will be terminated in roughly one hour, around {}.\n"
                 "\n"
                 "This is an automated message from the Telemetry Analysis service. "
                 "See https://analysis.telemetry.mozilla.org/ for more details."

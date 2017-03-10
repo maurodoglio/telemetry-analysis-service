@@ -3,6 +3,8 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from collections import OrderedDict
 
+import constance
+
 from ..provisioners import Provisioner
 
 
@@ -59,6 +61,7 @@ class SparkJobProvisioner(Provisioner):
                     'Args': [
                         '--timeout', str(job_timeout * 60),
                         '--email', user_email,
+                        '--efs-dns', constance.config.AWS_EFS_DNS,
                     ]
                 }
             }],

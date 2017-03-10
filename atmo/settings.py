@@ -36,6 +36,10 @@ class Constance:
             0.84,
             'The spot instance bid price for the cluster workers',
         ),
+        'AWS_EFS_DNS': (
+            'fs-616ca0c8.efs.us-west-2.amazonaws.com',  # the current dev instance of EFS
+            'The DNS name of the EFS mount for EMR clusters'
+        )
     }
 
 
@@ -529,6 +533,18 @@ class Stage(Base):
 
 class Prod(Stage):
     """Configuration to be used in prod environment"""
+
+    @property
+    def CONSTANCE_CONFIG(self):
+        config = super().CONSTANCE_CONFIG.copy()
+        override = {
+            'AWS_EFS_DNS': (
+                'fs-d0c30f79.efs.us-west-2.amazonaws.com',  # the current prod instance of EFS
+                'The DNS name of the EFS mount for EMR clusters'
+            )
+        }
+        config.update(override)
+        return config
 
 
 class Heroku(Prod):

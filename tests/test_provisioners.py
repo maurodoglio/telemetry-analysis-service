@@ -102,6 +102,7 @@ def test_cluster_start(mocker, cluster_provisioner, ssh_key):
                     'Args': [
                         '--public-key', public_key,
                         '--email', user_email,
+                        '--efs-dns', constance.config.AWS_EFS_DNS,
                     ],
                     'Path': cluster_provisioner.script_uri,
                 }
@@ -495,6 +496,7 @@ def test_spark_job_run(mocker, is_public, spark_job_provisioner):
                     'Args': [
                         '--timeout', str(job_timeout * 60),
                         '--email', user_email,
+                        '--efs-dns', constance.config.AWS_EFS_DNS,
                     ],
                     'Path': spark_job_provisioner.script_uri,
                 }
