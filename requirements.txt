@@ -296,3 +296,8 @@ https://github.com/ui/rq-scheduler/archive/5dd071328ee3eeaad67ecf7cb2550ef8fa08a
 rq-retry==0.3.0 \
     --hash=sha256:a0ecb39b02c9df3bac9ef88cda2d93cefb9120e3d8ccef920b38a851330e917f \
     --hash=sha256:c8cafedf3b11b931f422b12b304c9815cc84c3d145cd05aff337a0b973d0c000
+CommonMark==0.7.3 \
+    --hash=sha256:5576b8efdf16c122dd5ac46b5ae39ccd77af8a0983bf5e262d3829d2a79cd0f4 \
+    --hash=sha256:5f20ebd91614c8d339d4cded314894feb5d9a54c3b52c1ff9883794557149ea8
+future==0.16.0 \
+    --hash=sha256:e39ced1ab767b5936646cedba8bcce582398233d6a627067d4c6a454c90cfedb
