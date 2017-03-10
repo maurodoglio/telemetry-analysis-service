@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 from datetime import timedelta
 import os
+import subprocess
 
 from configurations import Configuration, values
 from django.contrib.messages import constants as messages
@@ -442,6 +443,14 @@ class Dev(Base):
                 )
 
     DOTENV = os.path.join(Core.BASE_DIR, '.env')
+
+    @property
+    def VERSION(self):
+        output = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0'])
+        if output:
+            return {'version': output.decode().strip()}
+        else:
+            return {}
 
 
 class Test(Dev):
