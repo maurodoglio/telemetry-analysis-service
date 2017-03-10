@@ -60,8 +60,6 @@ class SparkJobProvisioner(Provisioner):
                     'Path': self.script_uri,
                     'Args': [
                         '--timeout', str(job_timeout * 60),
-                        '--email', user_email,
-                        '--efs-dns', constance.config.AWS_EFS_DNS,
                     ]
                 }
             }],
