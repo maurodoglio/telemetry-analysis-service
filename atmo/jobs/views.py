@@ -110,8 +110,6 @@ def detail_spark_job(request, id):
     context = {
         'spark_job': spark_job,
     }
-    if 'render' in request.GET:
-        context['notebook_content'] = spark_job.notebook_s3_object['Body'].read().decode('utf-8')
     return render(request, 'atmo/jobs/detail.html', context=context)
 
 

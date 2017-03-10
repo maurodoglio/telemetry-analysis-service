@@ -4,8 +4,6 @@
 
 {% block head_title %}Spark job {{ spark_job }}{% endblock %}
 
-{% block body_attrs %}data-refresh-url="{{ request.build_absolute_uri }}?render=1"{% endblock %}
-
 {% block head_extra %}
 <script type="text/javascript" src="{% static "npm/marked/marked.min.js" %}"></script>
 <script type="text/javascript" src="{% static "npm/ansi_up/ansi_up.js" %}"></script>

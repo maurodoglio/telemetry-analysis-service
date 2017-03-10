@@ -2,8 +2,6 @@
 
 {% block head_title %}Spark cluster {{ cluster.identifier }}{% endblock %}
 
-{% block body_attrs %}data-refresh-url="{{ request.build_absolute_uri }}"{% endblock %}
-
 {% block content %}
 <div class="page-header">
     <h2>Spark cluster <small>{{ cluster }}</small></h2>
@@ -22,8 +20,7 @@
       {% if cluster.is_terminating %}
       Your cluster is currently terminating. Good bye, old friend.
       {% else %}
-      Your cluster is still launching. Please wait and the connection
-      details will appear here when it is ready.
+      Your cluster is still launching. Please refresh this page to see the connection details.
       {% endif %}
     </p>
     {% else %}
@@ -131,7 +128,7 @@ Host {{ cluster.identifier }}
         {% if cluster.master_address %}
         {{ cluster.master_address }}
         {% else %}
-        Please wait, instance details will appear when the master is ready.
+        Please refresh to check if the instance details of the master are ready.
         {% endif %}
       </dd>
       <dt>Start date</dt>

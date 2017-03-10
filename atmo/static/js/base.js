@@ -32,8 +32,21 @@ $(function() {
   };
 
   AtmoCallbacks.add(atmoTooltips);
+  var atmoTime = function() {
+    var time = $('#time'),
+        utc_now = function() {
+          return moment().utcOffset(0).format('YYYY-MM-DD HH:mm:ss');
+        };
+    var updateTime = function() {
+      time.attr('data-content', utc_now());
+      window.setTimeout(updateTime, 1000);
+    }
+    updateTime();
+  }
+
   AtmoCallbacks.add(atmoConfirmations);
   AtmoCallbacks.add(atmoTabs);
+  AtmoCallbacks.add(atmoTime);
   $(document).ready(function() {
     AtmoCallbacks.fire();
   });

@@ -40,18 +40,16 @@
       </div>
     </nav>
     <div class="container" id="content-container">
-      <div id="refresh-container">
-        <div class="row">
-          <div class="col-sm-12">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible alert-dragons" role="alert">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-              {{ message }}
-            </div>
-            {% endfor %}
+      <div class="row">
+        <div class="col-sm-12">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible alert-dragons" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            {{ message }}
           </div>
+          {% endfor %}
         </div>
         {% block content %}
         {% endblock %}
@@ -84,9 +82,6 @@
           </ul>
           {% endif %}
           <p class="navbar-text navbar-right" data-toggle="tooltip" id="time">All times in UTC</p>
-          <p class="navbar-text navbar-right hidden" id="refresher">
-            Refresh<span id="refresh-timer"></span>
-          </p>
         </div>
       </div>
     </nav>
@@ -99,7 +94,6 @@
     <script type="text/javascript" src="{% static "js/base.js" %}"></script>
     <script type="text/javascript" src="{% static "js/fileinput.js" %}"></script>
     <script type="text/javascript" src="{% static "js/forms.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/refresher.js" %}"></script>
     {% if settings.SENTRY_PUBLIC_DSN %}
     <script type="text/javascript" src="{% static "npm/raven-js/dist/raven.min.js" %}"></script>
     <script type="text/javascript" src="{% static "js/raven.js" %}"></script>
