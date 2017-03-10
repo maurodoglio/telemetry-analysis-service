@@ -153,10 +153,6 @@ def test_create_spark_job(client, mocker, notebook_maker,
     assert str(spark_job.latest_run) == '12345'
     assert repr(spark_job.latest_run) == '<SparkJobRun 12345 from job %s>' % spark_job.identifier
 
-    response = client.get(spark_job.get_absolute_url() + '?render=true', follow=True)
-    assert response.status_code == 200
-    assert 'notebook_content' in response.context
-
     # forcibly resetting the cached_property latest_run
     old_latest_run = spark_job.latest_run
     del spark_job.latest_run
