@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 
-from ..models import CreatedByModel, EMRReleaseModel
+from ..models import CreatedByModel, EditedAtModel, EMRReleaseModel
 from .provisioners import ClusterProvisioner
 
 
@@ -31,7 +31,7 @@ class ClusterQuerySet(models.QuerySet):
         )
 
 
-class Cluster(EMRReleaseModel, CreatedByModel):
+class Cluster(EMRReleaseModel, CreatedByModel, EditedAtModel):
     STATUS_STARTING = 'STARTING'
     STATUS_BOOTSTRAPPING = 'BOOTSTRAPPING'
     STATUS_RUNNING = 'RUNNING'
