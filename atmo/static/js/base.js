@@ -134,7 +134,7 @@ $(function() {
         }
       });
       // schedule the call of this function
-      timeout_id = window.setTimeout(updateModifiedDate, 5000);
+      timeout_id = window.setTimeout(updateModifiedDate, 60000);
     };
     updateModifiedDate();
   };
