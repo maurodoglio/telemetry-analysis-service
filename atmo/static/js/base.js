@@ -88,8 +88,8 @@ $(function() {
     $.get(checker_url).done(function(data) {
       if (data !== 'ok') {
         checker.removeClass('hidden');
-        checker.closest('li').removeClass('hidden');
       }
+      checker.closest('li').removeClass('hidden');
     });
   };
 
