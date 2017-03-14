@@ -19,6 +19,27 @@ from .provisioners import SparkJobProvisioner
 DEFAULT_STATUS = ''
 
 
+class SparkJobQuerySet(models.QuerySet):
+
+    def with_runs(self):
+        return self.filter(runs__isnull=False)
+
+    def active(self):
+        return self.filter(
+            runs__status__in=Cluster.ACTIVE_STATUS_LIST,
+        )
+
+    def terminated(self):
+        return self.filter(
+            most_recent_status__in=Cluster.TERMINATED_STATUS_LIST,
+        )
+
+    def failed(self):
+        return self.filter(
+            most_recent_status__in=Cluster.FAILED_STATUS_LIST,
+        )
+
+
 class SparkJob(EMRReleaseModel, CreatedByModel):
     INTERVAL_DAILY = 24
     INTERVAL_WEEKLY = INTERVAL_DAILY * 7
@@ -77,6 +98,8 @@ class SparkJob(EMRReleaseModel, CreatedByModel):
         default=True,
         help_text="Whether the job should run or not."
     )
+
+    objects = SparkJobQuerySet.as_manager()
 
     class Meta:
         permissions = [

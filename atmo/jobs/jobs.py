@@ -27,9 +27,7 @@ def run_jobs():
     jobs = SparkJob.objects.all()
 
     # get the jobs with prior runs
-    jobs_with_active_runs = jobs.filter(
-        runs__status__in=Cluster.ACTIVE_STATUS_LIST,
-    ).prefetch_related('runs')
+    jobs_with_active_runs = jobs.active().prefetch_related('runs')
     logger.debug('Updating Spark jobs: %s', jobs_with_active_runs)
 
     # create a map between the jobflow ids of the latest runs and the jobs
