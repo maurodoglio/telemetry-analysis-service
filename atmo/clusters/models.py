@@ -13,7 +13,7 @@ from ..models import CreatedByModel, EMRReleaseModel
 from .provisioners import ClusterProvisioner
 
 
-class ClusterManager(models.Manager):
+class ClusterQuerySet(models.QuerySet):
 
     def active(self):
         return self.filter(
@@ -125,7 +125,7 @@ class Cluster(EMRReleaseModel, CreatedByModel):
         help_text="Whether the expiration mail were sent."
     )
 
-    objects = ClusterManager()
+    objects = ClusterQuerySet.as_manager()
 
     class Meta:
         permissions = [
