@@ -6,6 +6,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound, StreamingHttpResponse
 from django.shortcuts import redirect, render
+from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.text import get_valid_filename
 
@@ -13,8 +14,8 @@ from allauth.account.utils import user_display
 
 from .forms import EditSparkJobForm, NewSparkJobForm, SparkJobAvailableForm
 from .models import SparkJob
-from ..decorators import (change_permission_required,
-                          delete_permission_required, view_permission_required)
+from ..decorators import (change_permission_required, delete_permission_required,
+                          modified_date, view_permission_required)
 from ..models import next_field_value
 
 
@@ -105,14 +106,15 @@ def delete_spark_job(request, id):
 
 @login_required
 @view_permission_required(SparkJob)
+@modified_date
 def detail_spark_job(request, id):
     spark_job = SparkJob.objects.get(pk=id)
     context = {
         'spark_job': spark_job,
     }
-    if 'render' in request.GET:
-        context['notebook_content'] = spark_job.notebook_s3_object['Body'].read().decode('utf-8')
-    return render(request, 'atmo/jobs/detail.html', context=context)
+    if spark_job.latest_run:
+        context['modified_date'] = spark_job.latest_run.modified_at
+    return TemplateResponse(request, 'atmo/jobs/detail.html', context=context)
 
 
 @login_required

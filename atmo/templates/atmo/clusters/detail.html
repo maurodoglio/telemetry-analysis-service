@@ -2,7 +2,10 @@
 
 {% block head_title %}Spark cluster {{ cluster.identifier }}{% endblock %}
 
-{% block body_attrs %}data-refresh-url="{{ request.build_absolute_uri }}"{% endblock %}
+{% block body_attrs %}data-modified-date="{{ modified_date.isoformat }}"{% endblock %}
+
+{% block modified_date_title %}Cluster status outdated{% endblock modified_date_title %}
+{% block modified_date_description %}The cluster was updated on the server.{% endblock modified_date_description %}
 
 {% block content %}
 <div class="page-header">
