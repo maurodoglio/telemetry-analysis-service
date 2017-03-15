@@ -3,8 +3,6 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from collections import OrderedDict
 
-import constance
-
 from ..provisioners import Provisioner
 
 

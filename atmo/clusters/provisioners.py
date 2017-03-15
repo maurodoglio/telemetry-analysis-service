@@ -20,7 +20,6 @@ class ClusterProvisioner(Provisioner):
         params = super().job_flow_params(*args, **kwargs)
         # don't auto-terminate the cluster
         params.setdefault('Instances', {})['KeepJobFlowAliveWhenNoSteps'] = True
-        emr_release = kwargs.get('emr_release')
         zeppelin_application = 'Zeppelin'
         params.setdefault('Applications', []).append({
             'Name': zeppelin_application

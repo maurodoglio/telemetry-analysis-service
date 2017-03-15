@@ -1,7 +1,7 @@
 import os
 
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.functional import cached_property
 
