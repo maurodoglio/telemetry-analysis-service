@@ -3,7 +3,7 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseServerError
-from django.template import Context, loader, TemplateDoesNotExist
+from django.template import Context, TemplateDoesNotExist, loader
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import requires_csrf_token
 from guardian.shortcuts import get_objects_for_user

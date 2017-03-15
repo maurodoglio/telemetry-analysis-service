@@ -11,10 +11,11 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 
 from atmo.clusters.provisioners import ClusterProvisioner
-from ..clusters.models import Cluster
-from ..models import CreatedByModel, EditedAtModel, EMRReleaseModel, ForgivingOneToOneField
-from .provisioners import SparkJobProvisioner
 
+from ..clusters.models import Cluster
+from ..models import (CreatedByModel, EditedAtModel, EMRReleaseModel,
+                      ForgivingOneToOneField)
+from .provisioners import SparkJobProvisioner
 
 DEFAULT_STATUS = ''
 

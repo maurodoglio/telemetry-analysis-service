@@ -1,11 +1,10 @@
 import os
 
+import CommonMark
 from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.functional import cached_property
-
-import CommonMark
 from pkg_resources import parse_version
 
 

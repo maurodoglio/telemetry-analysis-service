@@ -1,7 +1,6 @@
+from django.conf import settings
 from django.db import models
 from django.db.models.fields.related import ReverseOneToOneDescriptor
-from django.conf import settings
-
 from guardian.utils import get_user_obj_perms_model
 
 

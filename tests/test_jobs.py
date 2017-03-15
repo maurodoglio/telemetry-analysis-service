@@ -11,7 +11,7 @@ from django.utils import timezone
 from freezegun import freeze_time
 
 from atmo.clusters.models import Cluster
-from atmo.jobs import models, jobs
+from atmo.jobs import jobs, models
 
 
 @pytest.fixture

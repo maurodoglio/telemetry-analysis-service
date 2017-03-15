@@ -3,11 +3,11 @@
 # file, you can obtain one at http://mozilla.org/MPL/2.0/.
 from datetime import datetime
 
-from botocore.stub import Stubber, ANY
-from django.conf import settings
-from freezegun import freeze_time
 import constance
 import pytest
+from botocore.stub import ANY, Stubber
+from django.conf import settings
+from freezegun import freeze_time
 
 from atmo.provisioners import Provisioner
 

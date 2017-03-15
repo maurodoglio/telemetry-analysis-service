@@ -10,15 +10,15 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-from datetime import timedelta
 import os
 import subprocess
+from datetime import timedelta
 
 from configurations import Configuration, values
 from django.contrib.messages import constants as messages
 from django.core.urlresolvers import reverse_lazy
-from raven.transport.requests import RequestsHTTPTransport
 from dockerflow.version import get_version
+from raven.transport.requests import RequestsHTTPTransport
 
 
 class Constance:
