@@ -114,17 +114,18 @@ $(function() {
       return;
     };
     var updateModifiedDate = function() {
+      // get the current page with a HEAD request
       $.ajax({
         url: window.location,
         type: 'head',
         success: function(res, code, xhr) {
+          //  and chekc if there is a modified date header attached
           var returned_modified_date = moment(xhr.getResponseHeader("X-ATMO-Modified-Date"));
           if (!returned_modified_date.isValid()) {
-            console.log(returned_modified_date);
             return;
           }
+          // if it's valid and the difference to the original date is non-zero
           var difference = returned_modified_date.diff(parsed_modified_date, 'seconds');
-          console.log(returned_modified_date, parsed_modified_date, difference);
           if (difference != 0) {
             // show the modification alert
             $('#modified-date-alert').removeClass('hidden');
