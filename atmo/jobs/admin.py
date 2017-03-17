@@ -76,4 +76,5 @@ class SparkJobRunAlertAdmin(admin.ModelAdmin):
     ]
     search_fields = [
         'reason_code',
+        'reason_message',
     ]
