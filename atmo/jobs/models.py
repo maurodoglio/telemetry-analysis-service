@@ -385,6 +385,15 @@ class SparkJobRun(EditedAtModel):
     def info(self):
         return self.spark_job.cluster_provisioner.info(self.jobflow_id)
 
+    @property
+    def status_css_class(self):
+        if self.status in Cluster.ACTIVE_STATUS_LIST:
+            return 'success'
+        if self.status in Cluster.FAILED_STATUS_LIST:
+            return 'danger'
+
+        return None
+
     def update_status(self, info=None):
         """
         Updates latest status and life cycle datetimes.

@@ -83,11 +83,12 @@
           <th>Job timeout</th>
           <th>Start date</th>
           <th>End date</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
         {% for spark_job in spark_jobs %}
-        <tr>
+        <tr class="{{ spark_job.latest_run.status_css_class }}">
           <td><a href="{{ spark_job.urls.detail }}">{{ spark_job.identifier }}</a></td>
           {% if view.is_sparkjob_maintainer and view.jobs_shown == view.all_job_filter %}
             <td>{% user_display spark_job.created_by %}</td>
@@ -98,6 +99,7 @@
           <td>{% if spark_job.job_timeout %}{{ spark_job.job_timeout }}h{% else %}n/a{% endif %}</td>
           <td>{{ spark_job.start_date }}</td>
           <td>{{ spark_job.end_date|default:"n/a" }}</td>
+          <td>{{ spark_job.latest_run.status }}</td>
         </tr>
         {% endfor %}
       </tbody>
