@@ -94,13 +94,12 @@ def update_jobs_statuses():
             spark_job_run = spark_job_run_map.get(cluster_info['jobflow_id'])
             if spark_job_run is None:
                 continue
-
             logger.debug(
-                'Updating job status for %s, latest run %s',
+                'Updating job status for %s, run %s',
                 spark_job_run.spark_job,
                 spark_job_run,
             )
-            # update the latest run status
+            # update the Spark job run status
             with transaction.atomic():
                 spark_job_run.update_status(cluster_info)
                 updated_spark_job_runs.append(
