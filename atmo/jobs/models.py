@@ -337,6 +337,15 @@ class SparkJob(EMRReleaseModel, CreatedByModel, EditedAtModel):
         super().delete(*args, **kwargs)
 
 
+class SparkJobRunQuerySet(models.QuerySet):
+
+    def active(self):
+        """
+        The Spark jobs that have an active cluster status.
+        """
+        return self.filter(status__in=Cluster.ACTIVE_STATUS_LIST)
+
+
 class SparkJobRun(EditedAtModel):
 
     spark_job = models.ForeignKey(
@@ -375,6 +384,8 @@ class SparkJobRun(EditedAtModel):
         null=True,
         help_text="Date/time that the job was terminated.",
     )
+
+    objects = SparkJobRunQuerySet.as_manager()
 
     class Meta:
         get_latest_by = 'created_at'
