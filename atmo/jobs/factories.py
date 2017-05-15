@@ -36,7 +36,7 @@ class SparkJobRunFactory(factory.django.DjangoModelFactory):
     run_date = None
     terminated_date = None
     emr_release_version = factory.LazyAttribute(lambda run: run.spark_job.emr_release.version)
-    # created_at = factory.LazyFunction(timezone.now)
+    created_at = factory.LazyFunction(timezone.now)
 
     class Meta:
         model = models.SparkJobRun

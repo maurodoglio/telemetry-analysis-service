@@ -84,7 +84,7 @@ def update_jobs_statuses():
     updated_spark_job_runs = []
     if runs_created_at:
         earliest_created_at = runs_created_at[0]
-        logger.debug('Fetching clusters older than %s', earliest_created_at)
+        logger.debug('Fetching clusters since %s', earliest_created_at)
 
         cluster_list = provisioner.list(created_after=earliest_created_at)
         logger.debug('Clusters found: %s', cluster_list)

@@ -258,8 +258,8 @@ def test_update_jobs_statuses_full(mocker, now, user,
         spark_job=spark_job1,
         status=Cluster.STATUS_RUNNING,
     )
-    # setting created_at explicitely here since factoryboy isn't handling
-    # auto_now fields sch as created_at nicely, same for the other runs below
+    # setting created_at explicitly here since factoryboy isn't handling
+    # auto_now fields such as created_at nicely, same for the other runs below
     spark_job1_run.created_at = spark_job1.start_date
     spark_job1_run.save()
 
