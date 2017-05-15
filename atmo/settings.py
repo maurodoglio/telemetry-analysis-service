@@ -97,7 +97,7 @@ class Celery:
             },
         },
         'update_jobs_statuses': {
-            'schedule': crontab(minute='*'),
+            'schedule': crontab(minute='*/15'),
             'task': 'atmo.jobs.tasks.update_jobs_statuses',
             'options': {
                 'soft_time_limit': 14 * 60,
