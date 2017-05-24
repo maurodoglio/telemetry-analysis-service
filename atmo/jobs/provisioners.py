@@ -79,7 +79,7 @@ class SparkJobProvisioner(Provisioner):
         })
 
         cluster = self.emr.run_job_flow(**job_flow_params)
-        return cluster['JobFlowId']
+        return (cluster['JobFlowId'], job_flow_params)
 
     def results(self, identifier, is_public):
         if is_public:

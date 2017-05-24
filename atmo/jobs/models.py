@@ -223,7 +223,7 @@ class SparkJob(EMRReleaseModel, CreatedByModel, EditedAtModel):
         # if the job ran before and is still running, don't start it again
         if not self.is_runnable:
             return
-        jobflow_id = self.provisioner.run(
+        jobflow_id, job_flow_params = self.provisioner.run(
             user_username=self.created_by.username,
             user_email=self.created_by.email,
             identifier=self.identifier,
@@ -237,6 +237,7 @@ class SparkJob(EMRReleaseModel, CreatedByModel, EditedAtModel):
         run = self.runs.create(
             spark_job=self,
             jobflow_id=jobflow_id,
+            log_uri=job_flow_params.get('LogUri', ''),
             scheduled_at=timezone.now(),
             emr_release_version=self.emr_release.version,
             size=self.size,
@@ -326,6 +327,11 @@ class SparkJobRun(EditedAtModel):
         help_text="Number of computers used to run the job.",
         blank=True,
         null=True,
+    )
+    log_uri = models.CharField(
+        max_length=255,
+        blank=True,
+        default='',
     )
     status = models.CharField(
         max_length=50,

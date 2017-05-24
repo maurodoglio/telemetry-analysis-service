@@ -258,7 +258,7 @@ def test_spark_job_run(mocker, is_public, spark_job_provisioner, user):
     stubber.add_response('run_job_flow', response, expected_params)
 
     with stubber:
-        jobflow_id = spark_job_provisioner.run(
+        jobflow_id, params = spark_job_provisioner.run(
             user_username=user.username,
             user_email=user.email,
             identifier=identifier,
@@ -269,3 +269,8 @@ def test_spark_job_run(mocker, is_public, spark_job_provisioner, user):
             job_timeout=job_timeout,
         )
         assert jobflow_id == '12345'
+        assert (
+            params['LogUri'] ==
+            's3://log-bucket/%s/%s/2017-02-03T13:48:09+00:00' %
+            (spark_job_provisioner.log_dir, identifier)
+        )

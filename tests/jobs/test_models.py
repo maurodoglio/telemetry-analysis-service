@@ -349,3 +349,14 @@ def test_expires(mocker, now, spark_job_factory, cluster_provisioner_mocks):
     spark_job.save()
     spark_job.refresh_from_db()
     assert not spark_job.expired_date
+
+
+@freeze_time('2016-04-05 13:25:47')
+def test_run_stores_info_latest_run(spark_job, sparkjob_provisioner_mocks):
+    spark_job.run()
+
+    assert spark_job.latest_run.jobflow_id == '12345'
+    assert spark_job.latest_run.log_uri == 's3://log-bucket/path/to/logs.tar.gz'
+    assert spark_job.latest_run.emr_release_version == spark_job.emr_release.version
+    assert spark_job.latest_run.size == spark_job.size
+    assert spark_job.latest_run.scheduled_at == timezone.now()
