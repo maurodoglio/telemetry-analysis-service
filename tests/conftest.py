@@ -166,7 +166,8 @@ def sparkjob_provisioner_mocks(mocker):
         ),
         'run': mocker.patch(
             'atmo.jobs.provisioners.SparkJobProvisioner.run',
-            return_value='12345',
+            return_value=('12345',
+                          {'LogUri': 's3://log-bucket/path/to/logs.tar.gz'}),
         ),
         'remove': mocker.patch(
             'atmo.jobs.provisioners.SparkJobProvisioner.remove',
