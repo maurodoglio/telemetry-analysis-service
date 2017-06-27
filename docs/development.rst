@@ -24,11 +24,14 @@ To set the application up, please copy the ``.env-dist`` file to one named
 appropriate value.
 
 Set the ``DJANGO_SECRET_KEY`` variable using the output of the following
-command:
+command, based on which Python your container is using:
 
 .. code-block:: console
-
+    # Python 2.7
     python -c "from django.utils.crypto import get_random_string; print(get_random_string(50))"
+
+    # Python 3.6
+    python -c "import secrets; print(secrets.token_urlsafe(50))"
 
 To start the application, run:
 
