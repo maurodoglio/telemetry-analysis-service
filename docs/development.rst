@@ -28,7 +28,7 @@ command:
 
 .. code-block:: console
 
-    python -c "import secrets; print(secrets.token_urlsafe(50))"
+    python -c "from django.utils.crypto import get_random_string; print(get_random_string(50))"
 
 To start the application, run:
 
