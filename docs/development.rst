@@ -27,6 +27,7 @@ Set the ``DJANGO_SECRET_KEY`` variable using the output of the following
 command after logging into the Docker container with ``make shell``:
 
 .. code-block:: console
+
     python -c "import secrets; print(secrets.token_urlsafe(50))"
 
 To start the application, run:
