@@ -24,13 +24,9 @@ To set the application up, please copy the ``.env-dist`` file to one named
 appropriate value.
 
 Set the ``DJANGO_SECRET_KEY`` variable using the output of the following
-command, based on which Python your container is using:
+command after logging into the Docker container with ``make shell``:
 
 .. code-block:: console
-    # Python 2.7
-    python -c "from django.utils.crypto import get_random_string; print(get_random_string(50))"
-
-    # Python 3.6
     python -c "import secrets; print(secrets.token_urlsafe(50))"
 
 To start the application, run:
