@@ -66,11 +66,11 @@ tornado==4.5.1 \
 livereload==2.5.1 \
     --hash=sha256:5ed6506f5d526ee712da9f3739c27714e6f3376f3e481728d298efceae0ec83a \
     --hash=sha256:422de10d7ea9467a1ba27cbaffa84c74b809d96fb1598d9de4b9b676adf35e2c
-pyenchant==1.6.8 \
-    --hash=sha256:71ae3daf02e8814f1f4188f9eb77ea7a3d1b7ba9ea3732271848f37bbb87e684 \
-    --hash=sha256:d05f3cd04ed4582a0bca5e51e37c82db68de1d44117dd60d019a1116c142d0f3 \
-    --hash=sha256:7ead2ee74f1a4fc2a7199b3d6012eaaaceea03fbcadcb5df67d2f9d0d51f050a \
-    --hash=sha256:9614f5c8cf20fbb6e4ee881dfd6d7776fd114f958a14675ff21a8878d5490d39
+pyenchant==1.6.10 \
+    --hash=sha256:030fd8d1483d9a222a7e390cd5debc1f2e18ff5180f0ed64813e6da6ef916124 \
+    --hash=sha256:7aafa8b9e08f565bb4d1639e94de770bf08a390b41fd3dcb38a311e880f1b020 \
+    --hash=sha256:51f700c397026182cb0bebe6dc1982bd62732aff41fead7c14f83b56ac06a3f4 \
+    --hash=sha256:c1a0eff71a78fafe37ccaa00be4e008696b558e41b23ae7fc2cf3d9adfc0fb88
 sphinxcontrib-spelling==2.3.0 \
     --hash=sha256:008ec060f312367222992824abed00124cce0dd31c375a89b2053010df0e3be8 \
     --hash=sha256:87c870b915341d6c64365d8e8116973c9d2a6c0c55296d90f0082ef4e89132f8
