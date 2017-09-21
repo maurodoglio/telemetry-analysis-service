@@ -60,6 +60,12 @@ class Provisioner:
             os.environ.get('DJANGO_CONFIGURATION', 'unknown')
         ).rsplit('.', 1)[-1].lower()
 
+        # the S3 URI to the zeppelin setup step
+        self.zeppelin_uri = (
+            's3://%s/steps/zeppelin/zeppelin.sh' %
+            constance.config.AWS_SPARK_EMR_BUCKET
+        )
+
     def spark_emr_configuration(self):
         """
         Fetch the Spark EMR configuration data to be passed as the
@@ -137,6 +143,7 @@ class Provisioner:
             'Applications': [
                 {'Name': 'Spark'},
                 {'Name': 'Hive'},
+                {'Name': 'Zeppelin'}
             ],
             'Tags': [
                 {'Key': 'Owner', 'Value': user_email},

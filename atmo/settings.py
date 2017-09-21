@@ -242,7 +242,7 @@ class AWS:
         'https://s3-%s.amazonaws.com/%s/' %
         (AWS_CONFIG['AWS_REGION'], AWS_CONFIG['PUBLIC_DATA_BUCKET'])
     )
-    #: The URL to show public job results with.
+    #: The URL to show public Jupyter job results with.
     PUBLIC_NB_URL = (
         'https://nbviewer.jupyter.org/url/s3-%s.amazonaws.com/%s/' %
         (AWS_CONFIG['AWS_REGION'], AWS_CONFIG['PUBLIC_DATA_BUCKET'])
@@ -455,12 +455,13 @@ class Core(AWS, Celery, Constance, CSP, Configuration):
         ],
         'raven-js': [
             'dist/raven.*',
-        ]
+        ],
+        'remarkable': ['dist/remarkable.min.js']
     }
 
     # the directory to have Whitenoise serve automatically on the root of the URL
     WHITENOISE_ROOT = os.path.join(THIS_DIR, 'static', 'public')
-
+    WHITENOISE_ALLOW_ALL_ORIGINS = False
     SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
     SESSION_CACHE_ALIAS = 'default'
 

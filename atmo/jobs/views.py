@@ -4,22 +4,21 @@
 import logging
 
 from botocore.exceptions import ClientError
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import (HttpResponse, HttpResponseNotFound,
                          StreamingHttpResponse)
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template.response import TemplateResponse
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.utils.text import get_valid_filename
 
-from .. import names
 from ..clusters.models import EMRRelease
 from ..decorators import (change_permission_required,
                           delete_permission_required, modified_date,
                           view_permission_required)
-from ..models import next_field_value
 from .forms import EditSparkJobForm, NewSparkJobForm, SparkJobAvailableForm
 from .models import SparkJob
 
@@ -48,10 +47,8 @@ def new_spark_job(request):
     """
     View to schedule a new Spark job to run on AWS EMR.
     """
-    identifier = names.random_scientist()
-    next_identifier = next_field_value(SparkJob, 'identifier', identifier)
     initial = {
-        'identifier': next_identifier,
+        'identifier': '',
         'size': 1,
         'interval_in_hours': SparkJob.INTERVAL_WEEKLY,
         'job_timeout': 24,
@@ -132,6 +129,28 @@ def detail_spark_job(request, id):
     if spark_job.latest_run:
         context['modified_date'] = spark_job.latest_run.modified_at
     return TemplateResponse(request, 'atmo/jobs/detail.html', context=context)
+
+
+@login_required
+@view_permission_required(SparkJob)
+@modified_date
+def detail_zeppelin_job(request, id):
+    """
+    View to show the details for the scheduled Zeppelin job with the given ID.
+    """
+    spark_job = get_object_or_404(SparkJob, pk=id)
+    response = ''
+    if spark_job.results:
+        markdown_url = ''.join([x for x in spark_job.results['data'] if x.endswith('md')])
+        bucket = settings.AWS_CONFIG['PUBLIC_DATA_BUCKET']
+        markdown_file = spark_job.provisioner.s3.get_object(Bucket=bucket,
+                                                            Key=markdown_url)
+        response = markdown_file['Body'].read().decode('utf-8')
+
+    context = {
+        'markdown': response
+    }
+    return TemplateResponse(request, 'atmo/jobs/zeppelin_notebook.html', context=context)
 
 
 @login_required

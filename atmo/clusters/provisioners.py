@@ -14,11 +14,6 @@ class ClusterProvisioner(Provisioner):
 
     def __init__(self):
         super().__init__()
-        # the S3 URI to the zeppelin setup step
-        self.zeppelin_uri = (
-            's3://%s/steps/zeppelin/zeppelin.sh' %
-            constance.config.AWS_SPARK_EMR_BUCKET
-        )
 
     def job_flow_params(self, *args, **kwargs):
         """
@@ -28,10 +23,6 @@ class ClusterProvisioner(Provisioner):
         params = super().job_flow_params(*args, **kwargs)
         # don't auto-terminate the cluster
         params.setdefault('Instances', {})['KeepJobFlowAliveWhenNoSteps'] = True
-        zeppelin_application = 'Zeppelin'
-        params.setdefault('Applications', []).append({
-            'Name': zeppelin_application
-        })
         return params
 
     def start(self, user_username, user_email, identifier, emr_release, size, public_key):

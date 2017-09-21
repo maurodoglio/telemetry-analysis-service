@@ -84,6 +84,15 @@ class SparkJobProvisioner(Provisioner):
                 }
             }],
             'Steps': [{
+                'Name': 'setup-zeppelin',
+                'ActionOnFailure': 'TERMINATE_JOB_FLOW',
+                'HadoopJarStep': {
+                    'Jar': self.jar_uri,
+                    'Args': [
+                        self.zeppelin_uri
+                    ]
+                }
+            }, {
                 'Name': 'RunNotebookStep',
                 'ActionOnFailure': 'TERMINATE_JOB_FLOW',
                 'HadoopJarStep': {

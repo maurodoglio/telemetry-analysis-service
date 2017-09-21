@@ -17,6 +17,10 @@ def test_new_spark_job(client):
     response = client.get(reverse('jobs-new'))
     assert response.status_code == 200
     assert 'form' in response.context
+    f = response.context['form']
+    assert f.initial['identifier'] == ''
+    assert f.initial['size'] == 1
+    assert f.initial['job_timeout'] == 24
 
 
 @pytest.mark.usefixtures('transactional_db')
@@ -237,6 +241,30 @@ def test_delete_spark_job(request, mocker, client, user, user2,
     cluster_provisioner_mocks['stop'].assert_called_with(jobflow_id)
     # and also removed from the database
     assert not models.SparkJob.objects.filter(pk=spark_job.pk).exists()
+
+
+def test_detail_zeppelin_job(client, mocker, now, one_hour_ago, user, user2,
+                             sparkjob_provisioner_mocks, spark_job_provisioner,
+                             spark_job_with_run_factory, emr_release, spark_job):
+
+    spark_job = spark_job_with_run_factory(
+        start_date=one_hour_ago,
+        created_by=user,
+        emr_release=emr_release,
+    )
+
+    zeppelin_url = reverse('jobs-zeppelin', kwargs={'id': spark_job.id})
+
+    client.force_login(user2)
+    response = client.get(zeppelin_url, follow=True)
+    assert response.status_code == 403
+
+    client.force_login(user)
+    response = client.get(zeppelin_url)
+    assert response.status_code == 200
+
+    expected = {'markdown': ''}
+    assert response.context_data == expected
 
 
 def test_download(client, mocker, now, one_hour_ago, user, user2,
