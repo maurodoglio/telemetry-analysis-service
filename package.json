@@ -12,7 +12,7 @@
     "bootstrap": "3.3.7",
     "bootstrap-confirmation2": "2.4.0",
     "bootstrap-datetime-picker": "2.4.4",
-    "clipboard": "1.7.1",
+    "clipboard": "2.0.0",
     "jquery": "3.2.1",
     "marked": "0.3.12",
     "moment": "2.20.1",
