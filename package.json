@@ -18,7 +18,7 @@
     "moment": "2.21.0",
     "moment-timezone": "0.5.14",
     "notebookjs": "0.3.0",
-    "parsleyjs": "2.8.0",
+    "parsleyjs": "2.8.1",
     "prismjs": "1.8.4",
     "raven-js": "3.23.1",
     "remarkable": "1.7.1"
