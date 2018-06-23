@@ -1,0 +1,52 @@
+# These environment variables must be set in CircleCI UI
+#
+# DOCKERHUB_REPO - docker hub repo, format: <username>/<repo>
+# DOCKER_EMAIL   - login info for docker hub
+# DOCKER_USER
+# DOCKER_PASS
+#
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: docker:stable
+    working_directory: ~/atmo
+
+    steps:
+      - run:
+          name: Install essential packages
+          command: |
+            apk update
+            apk add --update --no-cache \
+                    ca-certificates \
+                    build-base \
+                    bash \
+                    make \
+                    git \
+                    openssh \
+                    docker \
+                    py-pip \
+                    python-dev
+            pip install docker-compose
+
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Build Docker images
+          working_directory: ~/atmo
+          command: |
+            docker info
+            ./bin/build
+
+      - run:
+          name: Run tests
+          working_directory: ~/atmo
+          command: ./bin/test
+
+      - run:
+          name: Deploy
+          working_directory: ~/atmo
+          command: ./bin/deploy
