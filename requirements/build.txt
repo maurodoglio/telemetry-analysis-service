@@ -54,9 +54,9 @@ funcsigs==1.0.2 \
 pbr==4.2.0 \
     --hash=sha256:b486975c0cafb6beeb50ca0e17ba047647f229087bd74e37f4a7e2cac17d2caa \
     --hash=sha256:1b8be50d938c9bb75d0eaf7eda111eec1bf6dc88a62a6412e33bf077457e0f45
-redis==2.10.6 \
-    --hash=sha256:8a1900a9f2a0a44ecf6e8b5eb3e967a9909dfed219ad66df094f27f7d6f330fb \
-    --hash=sha256:a22ca993cea2962dbb588f9f30d0015ac4afcc45bee27d3978c0dbe9e97c6c0f
+redis==3.0.0 \
+    --hash=sha256:909b50e34b9780cf9201f4a11d4572952141a4da9f8740c561b2befd59dfd8de \
+    --hash=sha256:78815017ef63db5f42f3e1207f50ffd07b4b4b98ba7ffe78da59b8543b1e9a27
 django-redis==4.9.0 \
     --hash=sha256:a90343c33a816073b735f0bed878eaeec4f83b75fcc0dce2432189b8ea130424 \
     --hash=sha256:15b47faef6aefaa3f47135a2aeb67372da300e4a4cf06809c66ab392686a2155
