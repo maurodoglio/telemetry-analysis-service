@@ -234,6 +234,9 @@ class AWS:
         # Tags for accounting purposes
         "ACCOUNTING_APP_TAG": "telemetry-analysis",
         "ACCOUNTING_TYPE_TAG": "worker",
+        "ACCOUNTING_COST_CENTER_TAG": "5650",
+        "ACCOUNTING_PROGRAM_CODE_TAG": "data",
+        "ACCOUNTING_PROGRAM_NAME_TAG": "data",
         # Buckets for storing S3 data
         "CODE_BUCKET": "telemetry-analysis-code-2",
         "PUBLIC_DATA_BUCKET": "telemetry-public-analysis-2",
