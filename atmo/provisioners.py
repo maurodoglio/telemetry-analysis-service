@@ -146,6 +146,12 @@ class Provisioner:
                 {"Key": "Application", "Value": self.config["INSTANCE_APP_TAG"]},
                 {"Key": "App", "Value": self.config["ACCOUNTING_APP_TAG"]},
                 {"Key": "Type", "Value": self.config["ACCOUNTING_TYPE_TAG"]},
+                {"Key": "app", "Value": self.config["ACCOUNTING_APP_TAG"]},
+                {"Key": "env", "Value": self.environment},
+                {"Key": "cost_center", "Value": self.config["ACCOUNTING_COST_CENTER_TAG"]},
+                {"Key": "program_code", "Value": self.config["ACCOUNTING_PROGRAM_CODE_TAG"]},
+                {"Key": "program_name", "Value": self.config["ACCOUNTING_PROGRAM_NAME_TAG"]},
+                {"Key": "realm", "Value": self.environment},
             ],
             "VisibleToAllUsers": True,
         }
