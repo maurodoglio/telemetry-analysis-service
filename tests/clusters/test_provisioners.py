@@ -87,6 +87,12 @@ def test_cluster_start(mocker, cluster_provisioner, ssh_key, user):
             },
             {"Key": "App", "Value": cluster_provisioner.config["ACCOUNTING_APP_TAG"]},
             {"Key": "Type", "Value": cluster_provisioner.config["ACCOUNTING_TYPE_TAG"]},
+            {"Key": "app", "Value": cluster_provisioner.config["ACCOUNTING_APP_TAG"]},
+            {"Key": "env", "Value": "test"},
+            {"Key": "cost_center", "Value": cluster_provisioner.config["ACCOUNTING_COST_CENTER_TAG"]},
+            {"Key": "program_code", "Value": cluster_provisioner.config["ACCOUNTING_PROGRAM_CODE_TAG"]},
+            {"Key": "program_name", "Value": cluster_provisioner.config["ACCOUNTING_PROGRAM_NAME_TAG"]},
+            {"Key": "realm", "Value": "test"},
         ],
         "VisibleToAllUsers": True,
     }

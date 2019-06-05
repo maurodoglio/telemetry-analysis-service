@@ -42,6 +42,10 @@ def test_job_flow_params(
         ["Application", config["INSTANCE_APP_TAG"]],
         ["App", config["ACCOUNTING_APP_TAG"]],
         ["Type", config["ACCOUNTING_TYPE_TAG"]],
+        ["app", config["ACCOUNTING_APP_TAG"]],
+        ["cost_center", config["ACCOUNTING_COST_CENTER_TAG"]],
+        ["program_code", config["ACCOUNTING_PROGRAM_CODE_TAG"]],
+        ["program_name", config["ACCOUNTING_PROGRAM_NAME_TAG"]],
     ]
 
     tags = {}
@@ -251,6 +255,12 @@ def test_spark_job_run(mocker, is_public, spark_job_provisioner, user):
                 "Key": "Type",
                 "Value": spark_job_provisioner.config["ACCOUNTING_TYPE_TAG"],
             },
+            {"Key": "app", "Value": spark_job_provisioner.config["ACCOUNTING_APP_TAG"]},
+            {"Key": "env", "Value": "test"},
+            {"Key": "cost_center", "Value": spark_job_provisioner.config["ACCOUNTING_COST_CENTER_TAG"]},
+            {"Key": "program_code", "Value": spark_job_provisioner.config["ACCOUNTING_PROGRAM_CODE_TAG"]},
+            {"Key": "program_name", "Value": spark_job_provisioner.config["ACCOUNTING_PROGRAM_NAME_TAG"]},
+            {"Key": "realm", "Value": "test"},
         ],
         "VisibleToAllUsers": True,
     }
